@@ -1,0 +1,16 @@
+report_dir: reports/baseline-m0
+implemented_dimensions:
+  - instruction
+  - tool_call
+  - field_extraction
+  - hallucination
+  - intent
+  - restraint
+  - multiturn
+  - speed
+business_hours:
+  open_hour: 9
+  close_hour: 21
+speed_thresholds:
+  first_token_ms_good: 800
+  total_ms_good: 1500

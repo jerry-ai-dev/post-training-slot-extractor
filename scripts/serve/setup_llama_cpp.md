@@ -15,6 +15,10 @@
 
 从 `https://huggingface.co/Qwen/Qwen3-0.6B-GGUF` 下载 `Qwen3-0.6B-Q8_0.gguf` 到 `models/gguf/`。
 
+阶段二 M0 baseline 另用两档（均放 `models/gguf/`）：
+- `Qwen3-1.7B-Q8_0.gguf`：官方 `Qwen/Qwen3-1.7B-GGUF`（仅提供 Q8_0 一档），非门控，可直接 `curl` 下载。
+- `Qwen3-4B-Instruct-2507-Q4_K_M.gguf`：官方 4B 仓库门控，改用 `unsloth/Qwen3-4B-Instruct-2507-GGUF` 镜像。
+
 ## 期望目录
 
 - `deployment/llama_cpp/bin/llama-server.exe`（及同目录下的 `ggml-*.dll` 等依赖）

@@ -1,0 +1,7 @@
+backend: llama_server
+model: qwen3-0.6b
+base_url: http://127.0.0.1:8080/v1
+api_key: local-no-key
+temperature: 0.0
+max_tokens: 256
+timeout_s: 120

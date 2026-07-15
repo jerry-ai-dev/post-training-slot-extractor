@@ -1,23 +1,23 @@
 backend: mock
-model: mock-phase01
+model: mock-phase02-v08
 temperature: 0.0
 max_tokens: 256
 responses:
-  final-basic-0001:
-    text: '{"action":"final","gender":"female","start_time":"2026-06-09 14:00","duration":"60分钟","project":"精油按摩","preference":"无","technician_name":"王芳","confirmation":false,"info_complete":true,"unrelated":false,"missing_info":[]}'
+  ask-0001:
+    text: '{"action":"final","gender":null,"start_time":"2026-06-09 14:00","duration_minutes":null,"preferences":["肩颈"],"technician_name":null,"technician_status":"not_checked","confirmation":false,"info_complete":false,"unrelated":false,"missing_info":["duration_minutes"],"reply_type":"ask_duration","reply":"请问您想按摩多长时间呢？"}'
     prefill_ms: 4.0
     first_token_ms: 8.0
     total_ms: 35.0
     output_tokens: 60
-  tool-call-0001:
-    text: '{"action":"tool_call","tool_name":"find_technicians","arguments":{"technician_name":"小王","start_time":"2026-06-09 14:00","duration":"未知","gender":"未知","preference":"无"}}'
+  unrelated-0001:
+    text: '{"action":"final","gender":null,"start_time":null,"duration_minutes":null,"preferences":[],"technician_name":null,"technician_status":"not_checked","confirmation":false,"info_complete":false,"unrelated":true,"missing_info":[],"reply_type":"handoff","reply":null}'
+    prefill_ms: 4.0
+    first_token_ms: 8.0
+    total_ms: 35.0
+    output_tokens: 40
+  specific-available-01-call:
+    text: '{"action":"tool_call","tool_name":"find_technicians","arguments":{"technician_name":"王芳","start_time":"2026-06-09 14:00","duration_minutes":60,"gender":null,"preferences":["肩颈"]}}'
     prefill_ms: 3.0
     first_token_ms: 7.0
     total_ms: 28.0
     output_tokens: 42
-  unknown-field-0001:
-    text: '{"action":"final","gender":"未知","start_time":"2026-06-10 10:30","duration":"未知","project":"足疗","preference":"无","technician_name":"未知","confirmation":false,"info_complete":false,"unrelated":false,"missing_info":["duration"]}'
-    prefill_ms: 5.0
-    first_token_ms: 10.0
-    total_ms: 40.0
-    output_tokens: 58

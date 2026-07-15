@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Protocol
+from typing import Any, Protocol
 
 from slot_extractor.schemas.results import GenerationResult
 
@@ -16,5 +16,7 @@ class GenerationParams:
 class Backend(Protocol):
     model: str
 
-    def generate(self, prompt: str, params: GenerationParams | None = None) -> GenerationResult:
+    def generate(
+        self, messages: list[dict[str, Any]], params: GenerationParams | None = None
+    ) -> GenerationResult:
         raise NotImplementedError

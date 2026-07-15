@@ -31,6 +31,23 @@ class CaseResult:
     layer: str
     model_output: str
     dimensions: dict[str, DimensionScore]
+    total_ms: float | None = None
+    first_token_ms: float | None = None
+    tokens_per_s: float | None = None
+
+
+@dataclass(frozen=True)
+class TimingSummary:
+    """全样本原始时延统计（不卡阈值，供后续分析）。单位：毫秒 / tokens/s。"""
+
+    count: int
+    total_ms_mean: float | None
+    total_ms_p50: float | None
+    total_ms_p95: float | None
+    total_ms_max: float | None
+    total_ms_min: float | None
+    first_token_ms_mean: float | None
+    tokens_per_s_mean: float | None
 
 
 @dataclass(frozen=True)
@@ -39,3 +56,4 @@ class Scorecard:
     n: int
     dimensions: dict[str, DimensionScore]
     cases: list[CaseResult]
+    timing: TimingSummary | None = None

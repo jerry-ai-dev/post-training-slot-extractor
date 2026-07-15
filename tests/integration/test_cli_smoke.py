@@ -19,5 +19,6 @@ def test_cli_smoke_writes_report(tmp_path: Path, capsys) -> None:
     captured = capsys.readouterr()
 
     assert exit_code == 0
-    assert "Slot-Extractor 评估分数卡" in captured.out
-    assert (tmp_path / "scorecard-mock-phase01.json").exists()
+    assert "Appointment-Agent 评估分数卡" in captured.out
+    assert "任务正确性" in captured.out
+    assert (tmp_path / "scorecard-mock-phase02-v08.json").exists()

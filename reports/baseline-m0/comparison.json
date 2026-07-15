@@ -1,0 +1,117 @@
+{
+  "dataset": "data/eval/test.jsonl",
+  "cases": 51,
+  "final_cases": 36,
+  "tool_call_cases": 15,
+  "quality_dimensions": [
+    "protocol",
+    "task_correctness"
+  ],
+  "task_formula": "final=0.70*structured_score+0.30*reply_score; tool_call=mean(action,tool_name,arguments)",
+  "preference_semantics": "local BAAI/bge-small-zh-v1.5 cosine similarity with negation gate; threshold=0.70",
+  "effective_pass_rule": "protocol_pass=true and task_correctness>=0.95",
+  "llm_judge": false,
+  "models": {
+    "qwen3-0.6b": {
+      "protocol": 0.39215686274509803,
+      "protocol_pass": "20/51",
+      "task_correctness": 0.3770201872757939,
+      "effective_pass": "2/51",
+      "final_structured": 0.5050505050505051,
+      "final_reply": 0.28446161066864195,
+      "timing_ms": {
+        "mean": 3676.67,
+        "p95": 4810.59,
+        "first_token_mean": 1716.71
+      },
+      "tokens_per_second": 21.98
+    },
+    "qwen3-1.7b": {
+      "protocol": 0.7254901960784313,
+      "protocol_pass": "37/51",
+      "task_correctness": 0.6466128328035567,
+      "effective_pass": "6/51",
+      "final_structured": 0.6590909090909091,
+      "final_reply": 0.5102796950692249,
+      "timing_ms": {
+        "mean": 6568.75,
+        "p95": 9774.28,
+        "first_token_mean": 3121.09
+      },
+      "tokens_per_second": 12.88
+    },
+    "qwen3-4b-instruct-2507": {
+      "protocol": 0.8235294117647058,
+      "protocol_pass": "42/51",
+      "task_correctness": 0.6756925533827352,
+      "effective_pass": "25/51",
+      "final_structured": 0.9318181818181819,
+      "final_reply": 0.7916602418638781,
+      "timing_ms": {
+        "mean": 10007.51,
+        "p95": 14098.73,
+        "first_token_mean": 5817.12
+      },
+      "tokens_per_second": 9.69
+    },
+    "gpt-5.6-sol": {
+      "protocol": 1.0,
+      "protocol_pass": "51/51",
+      "task_correctness": 0.9878166389580302,
+      "effective_pass": "51/51",
+      "final_structured": 1.0,
+      "final_reply": 0.9424674617462541,
+      "timing_ms": {
+        "mean": 3450.37,
+        "p95": 5097.71,
+        "first_token_mean": null
+      },
+      "tokens_per_second": 36.08,
+      "timing_note": "remote Responses API; not directly comparable with local llama.cpp"
+    }
+  },
+  "scenario_slices": {
+    "confirmation": {
+      "count": 6,
+      "qwen3-0.6b": 0.33100425436632336,
+      "qwen3-1.7b": 0.5883518205931999,
+      "qwen3-4b": 0.8460606060606061,
+      "gpt-5.6-sol": 0.971359217247073
+    },
+    "missing_information": {
+      "count": 9,
+      "qwen3-0.6b": 0.6473213050565991,
+      "qwen3-1.7b": 0.5584935508935509,
+      "qwen3-4b": 0.9419189436294698,
+      "gpt-5.6-sol": 0.9814444319125268
+    },
+    "multi_turn": {
+      "count": 10,
+      "qwen3-0.6b": 0.4538377259994907,
+      "qwen3-1.7b": 0.5993414437939864,
+      "qwen3-4b": 0.8462552497757396,
+      "gpt-5.6-sol": 0.9802076738602403
+    },
+    "tool_call": {
+      "count": 15,
+      "qwen3-0.6b": 0.2285714285714286,
+      "qwen3-1.7b": 0.7238095238095238,
+      "qwen3-4b": 0.1619047619047619,
+      "gpt-5.6-sol": 1.0
+    },
+    "tool_result": {
+      "count": 27,
+      "qwen3-0.6b": 0.3818973598017409,
+      "qwen3-1.7b": 0.6287698718856838,
+      "qwen3-4b": 0.7401129529575653,
+      "gpt-5.6-sol": 0.9831721740609927
+    },
+    "unrelated": {
+      "count": 5,
+      "qwen3-0.6b": 0.6181818181818182,
+      "qwen3-1.7b": 0.709090909090909,
+      "qwen3-4b": 1.0,
+      "gpt-5.6-sol": 1.0
+    }
+  }
+}

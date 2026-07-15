@@ -12,8 +12,10 @@ def test_scorecard_aggregates_dimensions_and_renders_na() -> None:
                 layer="final",
                 model_output="{}",
                 dimensions={
-                    "instruction": DimensionScore("instruction", 1.0, True, "ok"),
-                    "speed": DimensionScore("speed", 0.5, False, "slow"),
+                    "protocol": DimensionScore("protocol", 1.0, True, "ok"),
+                    "task_correctness": DimensionScore(
+                        "task_correctness", 0.8, False, "partial"
+                    ),
                 },
             )
         ],
@@ -21,7 +23,9 @@ def test_scorecard_aggregates_dimensions_and_renders_na() -> None:
 
     text = render_scorecard(card)
 
-    assert card.dimensions["instruction"].score == 1.0
-    assert card.dimensions["hallucination"].score is None
-    assert "Slot-Extractor 评估分数卡" in text
+    assert card.dimensions["protocol"].score == 1.0
+    assert card.dimensions["task_correctness"].score == 0.8
+    assert card.dimensions["resource"].score is None
+    assert "Appointment-Agent 评估分数卡" in text
+    assert "任务正确性" in text
     assert "n/a" in text

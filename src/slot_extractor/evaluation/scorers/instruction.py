@@ -12,7 +12,7 @@ from slot_extractor.schemas.sample import Sample
 
 
 class InstructionScorer:
-    dimension = "instruction"
+    dimension = "protocol"
 
     def applies_to(self, sample: Sample) -> bool:
         return True

@@ -23,9 +23,14 @@ class MockBackend:
         self.model = model
         self._responses = responses
 
-    def generate(self, prompt: str, params: GenerationParams | None = None) -> GenerationResult:
-        match = re.search(r"Sample ID:\s*([^\n]+)", prompt)
-        sample_id = match.group(1).strip() if match else ""
+    def generate(
+        self, messages: list[dict[str, Any]], params: GenerationParams | None = None
+    ) -> GenerationResult:
+        sample_id = next((m.get("_sample_id", "") for m in messages if m.get("_sample_id")), "")
+        if not sample_id:
+            joined = "\n".join(str(m.get("content", "")) for m in messages)
+            match = re.search(r"Sample ID:\s*([^\n]+)", joined)
+            sample_id = match.group(1).strip() if match else ""
         if sample_id not in self._responses:
             raise ValueError(f"mock response not configured for sample id: {sample_id}")
         response = self._responses[sample_id]

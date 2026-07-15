@@ -18,6 +18,11 @@ data/raw/*
 data/interim/*
 data/processed/*
 data/eval/*
+# 评估集破例入库（尺子需 git 版本化）
+!data/eval/test.jsonl
+!data/eval/DATASET_CARD.md
+!data/eval/dataset_contract.json
+!data/eval/test.sha256
 models/base/*
 models/adapters/*
 models/merged/*
@@ -26,6 +31,7 @@ models/imatrix/*
 experiments/runs/*
 experiments/baselines/*
 reports/generated/*
+!reports/generated/scorecard-gpt-5.6-sol.json
 
 # Local llama.cpp binaries (downloaded per-machine, never committed)
 deployment/llama_cpp/bin/*

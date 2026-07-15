@@ -1,0 +1,86 @@
+{
+  "version": "2.1",
+  "business_hours": {
+    "open": "09:00",
+    "close": "21:00"
+  },
+  "fields": {
+    "gender": {
+      "allowed_values": ["female", "male", null]
+    },
+    "technician_status": {
+      "allowed_values": [
+        "not_checked",
+        "available",
+        "unavailable",
+        "not_found",
+        "no_match"
+      ]
+    },
+    "reply_type": {
+      "allowed_values": [
+        "handoff",
+        "ask_start_time",
+        "ask_duration",
+        "ask_start_time_and_duration",
+        "confirm_available",
+        "inform_unavailable",
+        "inform_not_found",
+        "inform_no_match",
+        "booking_authorized",
+        "acknowledge_result",
+        "appointment_paused"
+      ]
+    }
+  },
+  "completion": {
+    "allowed_missing_slots": ["start_time", "duration_minutes"],
+    "missing_slot_order": ["start_time", "duration_minutes"]
+  },
+  "reply": {
+    "allowed_acts": [
+      "ask_for_start_time",
+      "ask_for_duration",
+      "inform_technician_available",
+      "request_confirmation",
+      "inform_technician_unavailable",
+      "inform_technician_not_found",
+      "inform_no_match",
+      "acknowledge_booking_authorization",
+      "acknowledge_result",
+      "acknowledge_pause",
+      "claim_booking_success"
+    ],
+    "allowed_required_fields": [
+      "technician_name",
+      "start_time",
+      "duration_minutes",
+      "preferences"
+    ]
+  },
+  "facts": {
+    "technicians": [
+      {
+        "name": "王芳",
+        "gender": "female",
+        "specialties": ["肩颈", "精油", "足部"]
+      },
+      {
+        "name": "李明",
+        "gender": "male",
+        "specialties": ["泰式", "足部", "精油"]
+      }
+    ]
+  },
+  "tools": {
+    "find_technicians": {
+      "arguments": [
+        "technician_name",
+        "start_time",
+        "duration_minutes",
+        "gender",
+        "preferences"
+      ]
+    }
+  }
+}
