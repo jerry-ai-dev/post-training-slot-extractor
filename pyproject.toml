@@ -1,0 +1,47 @@
+[project]
+name = "slot-extractor-finetune"
+version = "0.1.0"
+description = "Local fine-tuning and evaluation harness for appointment slot extraction."
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "httpx>=0.27.0",
+    "pyyaml>=6.0.1",
+]
+
+[project.scripts]
+slot-eval = "scripts.eval.run_eval:main"
+
+[dependency-groups]
+dev = [
+    "pytest>=8.2.0",
+    "ruff>=0.5.0",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+
+[tool.ruff.lint.per-file-ignores]
+# Test fixtures embed exact-schema JSON as single-line string literals;
+# keeping them verbatim is worth more than the 100-char line limit.
+"tests/**/*.py" = ["E501"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = [
+    "local_backend: requires a running local llama-server",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/slot_extractor", "scripts"]
+
+[tool.hatch.build]
+dev-mode-dirs = ["src", "."]

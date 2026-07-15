@@ -1,0 +1,1032 @@
+0:00
+In this video, we're going to take a
+0:01
+look at this agentic skill framework
+0:02
+called superpowers which can help our AI
+0:04
+agent here to make less mistakes but
+0:06
+enforce it to follow this structured
+0:08
+workflow that I'm going to show you in
+0:09
+this video. And most importantly in this
+0:11
+video, I'm also going to cover why we
+0:13
+should use superpowers. How is it
+0:14
+different compared to the traditional
+0:16
+specdriven developments? And later on
+0:17
+this video, I'm also going to show you
+0:19
+how we can be able to use this building
+0:20
+a feature on this production application
+0:22
+called book zero.ai. And right here you
+0:24
+can see I was able to use this framework
+0:25
+here to build a feature on top of the
+0:27
+current existing application that we
+0:28
+have or we can to sync any new changes
+0:30
+that happen for the connected Google
+0:32
+Drive folders that we have in this
+0:34
+application. So with that being said,
+0:35
+that's what we're going to cover in this
+0:36
+video on how we can be able to improve
+0:38
+the accuracy for our coding agents using
+0:40
+this agentic framework. And speaking of
+0:42
+accuracy, I'm currently still working on
+0:43
+a video on how we can be able to make
+0:45
+our AI agent here 100% accurate. So, if
+0:47
+you're interested to see this content,
+0:49
+make sure to subscribe to this channel,
+0:50
+like this video and you will be able to
+0:52
+get notified once this video is out.
+0:54
+This is going to be a big banger because
+0:56
+I'm going to put all my knowledge that I
+0:58
+know on how we can be able to enforce
+1:00
+coding agent here much more accurate
+1:02
+compared to the traditional way on how
+1:03
+we're going to vibe code. So, make sure
+1:05
+to subscribe to this channel and this
+1:07
+content is coming very, very soon
+1:09
+hopefully by the end of this week. So,
+1:10
+with that being said, if that sounds
+1:12
+interesting, let's get into this. All
+1:13
+right, so before we jump in, a quick
+1:15
+intro for those who are new here. My
+1:16
+name is Eric and I spent years as a
+1:18
+senior software engineer at companies
+1:19
+like Amazon, AWS and Microsoft. And I
+1:22
+have started this channel to share
+1:24
+everything that I learned along the way
+1:26
+from AI and coding to automations, web
+1:28
+3, career developments and more all
+1:31
+broken down into practical tutorials
+1:33
+that you can actually follow. And of
+1:35
+course, we also have a school community
+1:37
+where you can get access to all the
+1:38
+resource templates plus our community
+1:41
+supports. So, if you're ready to level
+1:42
+up, make sure to check out my YouTube
+1:44
+channel and hit that subscribe button.
+1:46
+Now, let's get back to the video. All
+Why Superpowers
+1:48
+right, so now you've been wondering why
+1:49
+would you even use superpowers at all
+1:51
+when we already have like GSD, spec kit,
+1:53
+BM method, and so many more. Right now,
+1:55
+the reason is very simple. Yes,
+1:57
+superpowers here has ability like what
+1:58
+GSD have to delegate different task to
+2:01
+different sub agents like what we have
+2:02
+for GSD. But the biggest selling point
+2:04
+here for superpowers is testdriven
+2:06
+developments which is a development
+2:08
+framework that's being used by
+2:09
+large-time companies and enterprises.
+2:11
+And what essentially test-driven
+2:12
+development does here is basically just
+2:14
+going to first focusing on writing test
+2:16
+first before it's going to write the
+2:17
+code. And the benefit of using this
+2:19
+approach here is that it's able to set
+2:21
+the rule first on exactly what's the
+2:22
+expectation, clarify the expectation
+2:25
+before we're going to do the
+2:26
+implementation because often times we're
+2:28
+doing implementations, we don't even
+2:29
+know what the expectation is. So in this
+2:31
+case by having to create a test first
+2:33
+then we're going to make our application
+2:34
+here behave what we said in our
+2:36
+automation testing then we're going to
+2:37
+do the refactoring try to make our
+2:39
+application here our codebase much more
+2:41
+cleaner much more scalable and then
+2:43
+we're going to cycle through until we
+2:44
+have nothing to refactor anymore and
+2:46
+that's really what separates superpowers
+2:48
+here aside from other specdriven
+2:49
+development frameworks out there. Now
+2:51
+aside from this the entire workflows for
+2:53
+superpowers here are also very
+2:54
+different. Now, of course, if you want
+2:55
+to learn more about other development
+2:56
+workflows from other spec driven
+2:58
+development frameworks, then you can
+2:59
+check out this playlist right here where
+3:01
+I organize all the spec driven
+3:03
+development frameworks that I have
+3:04
+review on this channel inside of this
+3:06
+playlist. But now back to the
+3:07
+superpowers here for the development
+3:08
+workflows. Here you can see this is the
+3:10
+entire full development workflows for
+3:12
+the entire superpowers frameworks. And
+3:14
+what it first does here is we'll
+3:15
+basically try to do some brainstorming
+3:17
+making sure that we have the entire plan
+3:19
+down before we're going to step in to do
+3:21
+the implementation. Same thing for any
+3:22
+other spectrum developments. But what's
+3:24
+different here is that it's going to
+3:25
+first using the get work trees try to
+3:27
+seclude this into a separate environment
+3:29
+so that we can be able to have multiple
+3:30
+implementations here working at the same
+3:32
+time using the get work trees and then
+3:34
+once we've done the brainstorming
+3:36
+setting up the environment then we
+3:37
+basically going to do the planning
+3:39
+breaking the plan here into different
+3:40
+tasks so that we can be able to execute
+3:42
+them one by one and eventually here
+3:44
+we're going to delegate each task here
+3:45
+into different sub agents so that each
+3:47
+task here have a fresh context window so
+3:49
+that we can be able to avoid the context
+3:50
+rod and be able to complete a task much
+3:52
+more accurate And at the end of it,
+3:54
+we're also going to follow the
+3:55
+test-driven development here to making
+3:57
+sure that all tests here are passing
+3:59
+when we're completing a project step by
+4:00
+step. And eventually what's going to
+4:02
+happen here is going to review the
+4:03
+entire codebase against what we have in
+4:05
+our spec and also our test plan. And
+4:07
+eventually it's going to merge that get
+4:09
+work trees into our main branch by
+4:11
+creating a pull request. So the other
+4:12
+team members here can be able to review
+4:14
+it. So you can see that this entire
+4:15
+workflow here is much more modern
+4:17
+because it uses like work trees also
+4:19
+using different sub aents here to
+4:20
+delegate the task as well as using like
+4:22
+test-driven developments here to making
+4:23
+sure that our application here is test
+4:25
+covered and also making it more
+4:27
+scalable. So now you understand the
+4:28
+entire suit powers workflow on how we
+4:30
+can be able to use that to develop
+4:31
+anything. So in this case let's take a
+4:32
+look how we can be able to set this up
+4:34
+on our local machine how we can be able
+4:35
+to use this here to build a feature on
+4:37
+our application. All right so to get
+Setup
+4:38
+started first thing first we're going to
+4:39
+do here is make sure to have superpowers
+4:41
+here installed onto our project. So we
+4:43
+have two options. One is we can be able
+4:44
+to use claw code right through the
+4:46
+official marketplace or it's going to be
+4:48
+through the plugins marketplace. But
+4:50
+both option here are both available. It
+4:52
+will give you the same results. So
+4:53
+simply just going to copy one of the
+4:55
+command right here. You can see I'm
+4:56
+going to do this for the official
+4:57
+marketplace from claw code. And here you
+5:00
+can see I have open a project here
+5:01
+called bookkeeping app and started my
+5:03
+clock code session right here. Simply
+5:05
+I'm just going to paste that right here.
+5:06
+And we're basically just going to
+5:07
+install superpowers onto this project.
+5:09
+So now if I were to enter this, you can
+5:11
+see that it has fully installed because
+5:13
+it's already done. So if I want to
+5:15
+manage this, I simply just going to type
+5:17
+in plugins. And here I can be able to
+5:18
+confirm if I have this plug-in
+5:20
+installed. So if I were to head over to
+5:22
+the install tab and if I were to go
+5:24
+down, you can see that the third one
+5:25
+here is superpowers. And that's the
+5:27
+plugin here that I have just installed.
+5:29
+And if I were to enter this, you can see
+5:30
+that it gives you a description of what
+5:32
+this plug-in does. So here is the
+5:34
+description and also the commands that
+5:36
+we can use, the agents, and also the
+5:37
+skills. And here if we ever want to
+5:39
+disable this or uninstall, we can simply
+5:41
+do so as well. So once we have
+5:43
+everything is installed here for
+5:45
+superpowers, what we're going to do now
+5:46
+is we're going to see how we can use it.
+Brainstorming
+5:48
+So first I'm going to clear the context
+5:49
+right here. So right here you can see if
+5:51
+we were to use it, the only way we can
+5:53
+use it is basically do the slash command
+5:54
+right here for typing superpowers. And
+5:57
+you can see that we can be able to write
+5:58
+plan, brainstorm, execute plan. But the
+6:00
+problem here is that those commands
+6:02
+right here are deprecated, which means
+6:03
+that they're outdated. We should not be
+6:04
+able to use that for superpowers. But
+6:06
+instead of that, we should just trigger
+6:07
+the skills that come with for
+6:09
+superpowers instead. So simply, I'm just
+6:11
+going to use the brainstorm skills that
+6:13
+we have for superpowers. You can see
+6:15
+that it's part of the super power right
+6:16
+here. So now what I can do here is
+6:18
+basically using the brainstorm skill
+6:20
+here to brainstorm anything that we want
+6:21
+to add onto this project, right? Maybe
+6:23
+it could be a feature, maybe it could be
+6:25
+a improvement, right? Anything that you
+6:27
+want to add on this project, we can be
+6:28
+able to start to brainstorm this. So now
+6:30
+here you can see I have an application
+6:31
+that I built called book0ero.ai. And
+6:33
+what essentially this application does
+6:34
+here is to automate the booking process
+6:36
+for businesses. And here you can see one
+6:38
+of the feature that I have is managing
+6:39
+receipts. So user upload a bunch of
+6:41
+receipts like images, all kinds of files
+6:43
+onto this platform and we're basically
+6:45
+using OCR here to extract those
+6:46
+informations. Right? So if we were to
+6:48
+head over here, you can see I can click
+6:49
+on view details and I can be able to see
+6:51
+the receipts on the left and also the
+6:53
+values that we have extracted on the
+6:54
+right. So the feature that I want to add
+6:56
+here is basically adding ability to
+6:58
+reync any Google drive folders that user
+7:00
+upload and we would have the process
+7:01
+here to re-upload any new files from
+7:03
+those Google Drive folders onto the
+7:05
+receipts page right here or even the
+7:07
+transaction page that we have here as
+7:09
+well. So for example if user upload like
+7:11
+new bank statements or new receipts onto
+7:13
+a Google drive folder we should be able
+7:14
+to have ability here to reync these
+7:16
+folders that user have selected. So here
+7:18
+you can see that's exactly what I'm
+7:20
+going to do. And to make the process
+7:21
+here simple, you can see here that I
+7:22
+have crafted a Jira ticket on exactly
+7:24
+what's the feature scope on how we're
+7:26
+going to do this. For example, the
+7:27
+context for the UX decisions, the scope,
+7:29
+the entire sync flow as well as some
+7:31
+edge cases that we should think about
+7:32
+before we're going to add this feature.
+7:34
+So then what I'm going to do here is
+7:35
+just going to copy this link for this
+7:36
+Jurro ticket. head over to claw code and
+7:38
+basically paste the entire juro ticket
+7:41
+calling the brainstorm scale and you can
+7:43
+see that it's going to trigger that
+7:44
+first by understand what the ticket is
+7:46
+explore the existing cloud import
+7:48
+architecture and then what it proposed
+7:49
+me here is that it will basically allow
+7:51
+me to show the mockups in the browser so
+7:53
+that we can walk through the designs as
+7:55
+we start to do the brainstorming so for
+7:56
+example one of the question that it
+7:57
+asked me for the sync button here is how
+7:59
+we should display this visually and what
+8:01
+it essentially does here as you can see
+8:02
+it's going to create a HTML page and
+8:04
+here you can see it gives you a mockup
+8:06
+on which option we're going to select.
+8:08
+So if I were to head over to browser
+8:09
+here, open that port, you can see that I
+8:11
+have proposed three options on which UI
+8:13
+directions we should go for for this
+8:15
+particular feature. So you can see we
+8:17
+can have a separate private button icon
+8:19
+only or a drop-own split. So I choose
+8:21
+the drop-own split here for the import
+8:23
+button here. You can see that we have
+8:24
+this option right here. Okay. So in this
+8:26
+case I chose C right here and then here
+8:28
+you can see it continuously to ask me
+8:30
+additional questions. So after it has
+Spec
+8:32
+done the brainstorming here you can see
+8:33
+it has created the spec inside of the
+8:35
+docs folder and here you can see if I
+8:37
+were to open this this is the entire
+8:39
+spec. So first it has the title and also
+8:41
+the context and furthermore we have our
+8:44
+design decisions as well as we have the
+8:46
+entire architecture layout. So how user
+8:48
+is going to use it right? So user click
+8:50
+on the sync connected folder button
+8:52
+here. It will basically show the stage
+8:54
+one for the folder list on what are the
+8:55
+folder we have connected. Then it shows
+8:58
+the file preview on what are the files
+8:59
+we're going to import either from
+9:00
+receipts or statements here. Then we're
+9:02
+going to close this and we're basically
+9:04
+just going to activate the job indicator
+9:06
+alerts. So here are the API routes we're
+9:08
+going to create. Right? So these are the
+9:10
+query parameters. This is the API routes
+9:12
+and then we also have the connected
+9:14
+folder scan as well as the new
+9:15
+components that we're going to add in
+9:17
+this feature. And as well as here you
+9:18
+can see has found some edge cases and
+9:20
+also how we're going to handle them.
+9:21
+Furthermore, we also have the acceptance
+9:23
+criteria. So after we review this,
+9:25
+everything looks good. We're going to
+Implementation Plan
+9:26
+approve this and it's going to start to
+9:28
+design the implementation plan. So here
+9:29
+you can see that's exactly what I told
+9:31
+it to do to basically transition to the
+9:33
+implementation plan. And right now you
+9:34
+can see it's going to break this entire
+9:36
+plan into a list of task that we're
+9:38
+going to execute for this entire plan.
+9:39
+And it is doing that by triggering the
+9:41
+superpowers writing plan skill to
+9:43
+basically converting the spec into a
+9:45
+full implementation plans. And as
+9:46
+results here you can see after we have
+9:48
+the entire implementation plan created
+9:49
+you can see we can find it inside of a
+9:51
+docs folder. If I were to open this,
+9:53
+this is what the entire implementation
+9:55
+plan look like. So you can see we have a
+9:56
+task one. And here you can see for this
+9:58
+entire implementation plan, it give you
+10:00
+a specific on what to modify and what to
+10:02
+do, right? So here you can see this is
+10:03
+the test file that we're going to add.
+10:04
+And also this is the implementation
+10:06
+we're going to add for this step. Right?
+10:08
+So here you can see this the big task.
+10:10
+So task one is to adding this to the
+10:11
+Google Drive adapter. And you can see
+10:13
+that for each task here, we're breaking
+10:14
+down to different steps. And for each
+10:16
+step here, we have a checkbox on exactly
+10:18
+what to do, right? So you can see we can
+10:20
+be able to review this before we're
+10:21
+going to execute this. So it's going to
+10:22
+run the test to verify it fails. So the
+10:25
+expectation here is basically have it to
+10:26
+fail and then we're going to implement
+10:28
+it. Then we're going to have it to see
+10:30
+the test here to verify and pass. Right?
+10:32
+So we're going to do the testing first
+10:34
+before we're going to do the
+10:35
+implementation. And you can see here
+10:36
+that after it has done the test, it's
+10:38
+also going to commit the changes as we
+10:40
+go. So you can see that we can be able
+10:42
+to review this further for all the steps
+10:43
+that we have here. But once we done so,
+Sub-Agent Execution
+10:45
+if we want to implement this, we have
+10:47
+two options. So you can see here that
+10:48
+total for the implementation plan here
+10:50
+we're breaking down into 11 tasks and
+10:53
+what we can do here is that we can be
+10:54
+able to execute in two options. One is
+10:56
+we can be able to execute this in using
+10:58
+the sub agents approach. What we're
+10:59
+going to dispatch a fresh sub aent here
+11:01
+per task and review this between task
+11:03
+fast iterations or what we can do here
+11:05
+is we can do a inline execution which is
+11:07
+used to call the parallel execution. Uh
+11:09
+which means that it's going to execute
+11:10
+task in the sessions using the executing
+11:13
+plan here batch execution with
+11:14
+checkpoints. But for our case here, I'm
+11:16
+just going to go with the recommendation
+11:17
+approach because for each task here, you
+11:19
+can see it's going to trigger a sub
+11:20
+agent here with a fresh context window
+11:22
+per task so that we can build a review
+11:24
+between task with fast iterations so
+11:26
+that we know exactly what happened here.
+11:28
+So in this case, I'm going to choose the
+11:29
+option one here and it's going to use
+11:31
+the sub aentdriven approach. And here
+11:33
+you can see it's asking me if we want to
+11:34
+create the work tree inside of the
+11:35
+project level or in the global location.
+11:37
+So in this case I choose the project
+11:39
+level. So in this case I choose number
+11:41
+one. And then here you can see it's
+11:42
+going to create that inside of the
+11:43
+current project that we have. And then
+11:45
+what happened here you can see it's
+11:46
+going to trigger different sub agents to
+11:48
+execute these task list. So right here
+11:49
+you can see we have task one here is all
+11:51
+complete and it's currently starting
+11:53
+working on the task two. And then here
+Code Review & Testing
+11:54
+you can see after all the 11 tasks here
+11:56
+are completed now it's currently running
+11:58
+the final code review here across the
+12:00
+entire implementation. So right here you
+12:02
+can see it's going to trigger the code
+12:03
+reviewer skill from superpowers here to
+12:04
+do the full implementation review. So
+12:06
+right here you can see it has done some
+12:08
+good reviews. has found some critical
+12:10
+and important issues and it's going to
+12:11
+do the fixes here. So for example, the
+12:13
+steel credits, the confirmed selections
+12:15
+and also some misleading data here for
+12:17
+the metadata on the multiffolder jobs
+12:19
+and then here you can see it's going to
+12:20
+dispatch a fix agent here to fix those
+12:22
+two code issues that we have found. So
+12:24
+you can clearly see that doesn't matter
+12:26
+if it's implementations or fixing
+12:27
+things, it's going to delegate the job
+12:29
+here to a sub agent here to do this. So
+12:31
+after you can see it's done you can see
+12:33
+this is the summary on what has been
+12:34
+done in this work tree and this is what
+12:37
+it has built and here is the
+12:38
+verification as well as the review nodes
+12:41
+that it has left after it has done the
+12:42
+code review. So in this case I'm going
+12:44
+to do a manual smoke test first before
+12:46
+going to commit this and merge it to
+12:47
+main branch. So now finally if I want to
+Demo
+12:49
+test this feature here you can see I've
+12:50
+navigated to the receipts page and right
+12:52
+here you can see I have a bunch of
+12:53
+receipts uploaded with a Google Drive
+12:55
+folder. So I simply just going to click
+12:57
+on the three dots right here click on
+12:58
+the sync connected folders. You can see
+13:00
+that this is the entire folder that
+13:02
+we're connected with all the receipts
+13:04
+that we have. So if I were to click on
+13:05
+disync one folder, you can see we have
+13:07
+nothing. You can see all folders here
+13:09
+are all up to date because I haven't
+13:11
+made any changes or haven't add any new
+13:13
+files onto that folder. So in this case
+13:15
+to test this, I have navigated to Google
+13:17
+Drive right here. I'm going to select
+13:18
+these files that we have and we're just
+13:20
+going to add these new files here into
+13:22
+this Google Drive folder. And once we
+13:24
+have those files here moved over into
+13:25
+this Google Drive folder. And now if I
+13:27
+were to head over to Booker Zero.ai I
+13:29
+for the application. Click on three dots
+13:31
+again. Sync for the connected folder.
+13:33
+And here if I were to click on the sync
+13:35
+one folder right here, you can see that
+13:37
+these files here are all picked up and
+13:38
+are detected so that we can be able to
+13:40
+sync it for the Google Drive folder. So
+13:41
+now what I'm going to do here is I'm
+13:43
+going to click on the import six files.
+13:44
+And now you can see all six files here
+13:46
+are successfully imported into the
+13:48
+receipts page. So you can see that the
+13:50
+feature here is verified and is fully
+13:52
+working on our application. So there you
+13:54
+have it guys. That's exactly how you can
+13:55
+use this agentic skill framework
+13:57
+superpowers to basically enforce your AI
+13:59
+agent here much more accurate. So with
+14:01
+that being said, if you do find out in
+14:02
+this video, please make sure to like
+14:03
+this video and of course make sure to
+14:05
+subscribe to this channel because
+14:06
+there's going to be content coming out
+14:07
+very soon on how we can be able to
+14:08
+improve our AI agents coding accuracy
+14:10
+which is coming soon in this week. And
+14:12
+of course, if you're looking to check
+14:13
+out other specroom development
+14:14
+frameworks that I did on this channel,
+14:16
+make sure to check out this playlist
+14:17
+right here, spec driven developments on
+14:19
+our channel. So with that being said,
+14:20
+that's pretty much it for this video.
+14:21
+And if you do find this video, please
+14:23
+make sure to like this video, consider
+14:25
+subscribe, and with that being said,
+14:26
+I'll see you in the next one.

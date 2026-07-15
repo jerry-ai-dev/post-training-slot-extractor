@@ -1,0 +1,9 @@
+report_dir: reports/generated
+implemented_dimensions:
+  - instruction
+  - field_extraction
+  - tool_call
+  - speed
+speed_thresholds:
+  first_token_ms_good: 800
+  total_ms_good: 1500

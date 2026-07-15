@@ -1,0 +1,43 @@
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.venv/
+venv/
+.worktrees/
+
+# Local environment
+.env
+.env.*
+!.env.example
+
+# Heavy / generated artifacts
+data/raw/*
+data/interim/*
+data/processed/*
+data/eval/*
+models/base/*
+models/adapters/*
+models/merged/*
+models/gguf/*
+models/imatrix/*
+experiments/runs/*
+experiments/baselines/*
+reports/generated/*
+
+# Local llama.cpp binaries (downloaded per-machine, never committed)
+deployment/llama_cpp/bin/*
+!deployment/llama_cpp/bin/.gitkeep
+
+# Keep directory placeholders
+!.gitkeep
+!data/**/.gitkeep
+!models/**/.gitkeep
+!experiments/**/.gitkeep
+!reports/**/.gitkeep
+
+# Logs
+*.log
+logs/
