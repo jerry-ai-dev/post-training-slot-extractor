@@ -65,7 +65,7 @@ Review:让AI评审，过程和写文档一样，让AI一遍评审，一遍思考
 ```text
 history:
   用户：我想明天下午两点找王芳做60分钟肩颈按摩
-  assistant：{"action":"tool_call","tool_name":"find_technicians","arguments":{"technician_name":"王芳","start_time":"2026-06-09 14:00","duration_minutes":60,"gender":null,"preferences":["肩颈"]}}
+  assistant.tool_calls：find_technicians({"technician_name":"王芳","start_time":"2026-06-09 14:00","duration_minutes":60,"gender_preference":null,"preferences":["肩颈"]})
   工具：{"mode":"specific","status":"available","requested_technician":"王芳","technician":{"name":"王芳","gender":"female"}}
 current_time: 2026-06-08 10:00
 ```
@@ -75,7 +75,8 @@ current_time: 2026-06-08 10:00
 ```json
 {
   "action": "final",
-  "gender": "female",
+  "gender_preference": null,
+  "technician_gender": "female",
   "start_time": "2026-06-09 14:00",
   "duration_minutes": 60,
   "preferences": ["肩颈"],
@@ -84,7 +85,9 @@ current_time: 2026-06-08 10:00
   "confirmation": false,
   "info_complete": true,
   "unrelated": false,
-  "missing_info": []
+  "missing_info": [],
+  "reply_type": "confirm_available",
+  "reply": "王芳老师明天14:00有空，需要我为您预约吗？"
 }
 ```
 
@@ -102,7 +105,7 @@ history:
 user_input: 我想明天下午两点找小王做60分钟肩颈按摩
 current_time: 2026-06-08 10:00
 available_tools:
-  - find_technicians(technician_name, start_time, duration_minutes, gender, preferences): 指定技师时只校验该技师是否存在及可用；未指定技师时按时间、性别和偏好搜索可用候选
+  - find_technicians(technician_name, start_time, duration_minutes, gender_preference, preferences): 指定技师时只校验该技师是否存在及可用；未指定技师时按时间、用户性别要求和偏好搜索可用候选
 ```
 
 预期输出示例：
@@ -115,7 +118,7 @@ available_tools:
     "technician_name": "小王",
     "start_time": "2026-06-09 14:00",
     "duration_minutes": 60,
-    "gender": null,
+    "gender_preference": null,
     "preferences": []
   }
 }
@@ -123,7 +126,7 @@ available_tools:
 
 对于这类样本，评估重点不是最终 JSON，而是中间过程是否正确：是否应该调用工具、工具名称是否正确、参数是否从上下文中正确提取。工具返回结果后，模型再进入“最终结果判断样本”的逻辑，基于工具返回的唯一结果生成待用户确认的 final JSON。
 
-`history` 是该抽槽模型的执行轨迹，不是上层客服对话文案。`role=assistant` 的 `content` 必须是本模型此前输出的合法 `final JSON` 或 `tool_call JSON`；`role=tool` 保存工具结果。上层系统根据 final JSON 生成的“请确认方案”等自然语言不得混入此 history。
+`history` 保存真实消息轨迹：用户消息和普通 `assistant.content` 都是自然语言，工具调用使用 `assistant.tool_calls`，工具结果使用与 `tool_call_id` 对应的 `tool` 消息。上一轮完整结构化状态由系统写入 `current_state`，不把 Final JSON 塞入普通 assistant History。
 
 #### 1.2.3 唯一规范化字段合同
 
@@ -131,7 +134,8 @@ available_tools:
 
 | 字段 | 唯一表示 |
 |---|---|
-| `gender` | `"female"`、`"male"` 或 `null` |
+| `gender_preference` | 用户当前有效的技师性别要求：`"female"`、`"male"` 或 `null`；只来自用户表达，并作为工具筛选条件 |
+| `technician_gender` | 工具已核实的具体技师性别：`"female"`、`"male"` 或 `null`；未核实、未找到或没有具体技师时为 `null` |
 | `start_time` | `"YYYY-MM-DD HH:MM"` 或 `null`；相对时间必须换算 |
 | `duration_minutes` | 正整数分钟或 `null`；“1小时”“60分钟”“60min”统一输出 `60` |
 | `preferences` | `array[string]`；未表达时为 `[]`，保留用户偏好的语义表达 |
@@ -200,13 +204,13 @@ available_tools:
 
 **一、模型负责（只靠 `history` + `user_input` + `current_time` 就能得到，不查任何外部数据）**
 
-- **字段抽取**：从多轮对话中抽出用户表达的预约要素，产出 `gender`、`duration_minutes`、`preferences`、`technician_name`；业务固定为按摩，不抽取 `project`。
+- **字段抽取**：从多轮对话中抽出用户表达的预约要素，产出 `gender_preference`、`duration_minutes`、`preferences`、`technician_name`；从工具结果中提取 `technician_gender`；业务固定为按摩，不抽取 `project`。
 - **时间标准化**：结合 `current_time` 把"明天下午三点""周末""三点半"等模糊表达翻译成 `YYYY-MM-DD HH:MM`，产出 `start_time`。
 - **意图判断**：判断本轮是否与预约无关、是否在回应推荐确认（"是/不/换一个"等多义短词），产出 `unrelated`、`confirmation`。
 - **缺口判断**：对照必填项判断信息是否齐全、还缺哪些，产出 `info_complete`、`missing_info`。
 - **动作决策**：在「追问澄清 / 调用工具 / 输出最终 JSON」之间选一个，作为本轮的核心策略输出，产出 `action`。
 
-> 工具调用的硬前提是 `start_time` 和 `duration_minutes` 已知。`gender`、`preferences` 是可选筛选条件；指定技师时只需额外提供 `technician_name`。
+> 工具调用的硬前提是 `start_time` 和 `duration_minutes` 已知。`gender_preference`、`preferences` 是可选筛选条件；`technician_gender` 不是查询参数。指定技师时只需额外提供 `technician_name`。
 
 **二、工具/数据库负责（模型无法凭空知道，必须发起工具调用去取，取回后才能继续）**
 
@@ -230,6 +234,8 @@ available_tools:
 **类型 2：需要业务事实 → 工具调用**
 缺技师是否存在、档期、候选等只能从 DB 取的外部事实。判定逻辑：要素已够但需先核实事实。关键决策：`action=tool_call`，调用 `find_technicians` 并从上下文抽取参数，不得自行编造技师或档期。
 
+状态更新统一采用**最小替换原则**：用户明确修改哪个条件，只修改该条件及其直接依赖字段，其余条件继承。更换技师时更新 `technician_name`，清空需要重新核实的 `technician_gender`，但时间、时长、偏好和 `gender_preference` 默认保持不变；只有用户同时明确修改时才一并更新。
+
 **类型 3：工具结果已返回 → 输出待确认结果**
 工具结果已回填。无论结果是可用、不可用、未找到还是无匹配，关键决策都是 `action=final,confirmation=false`，保留完整查询条件和结果，交给上层展示并请求用户确认。
 
@@ -239,9 +245,9 @@ available_tools:
 本轮是闲聊或其他与预约无关的内容。判定逻辑：意图不落在预约域内。关键决策：`unrelated=true`，交由上层路由。
 
 **类型 5：确认回应 → confirmation**
-`confirmation` 是布尔型的“查询结果确认标记”，表示**当前用户这一轮是否接受或知悉上一条 assistant final JSON 所描述的完整、已核实结果**，不是信息是否完整，也不是模型置信度。上层系统是否把该 JSON 渲染成自然语言，不进入本模型 history。
+`confirmation` 是布尔型的“查询结果确认标记”，表示**当前用户这一轮是否接受或知悉 `current_state` 所保存的完整、已核实结果**，不是信息是否完整，也不是模型置信度。History 最后一条普通 assistant 是该状态对应的自然语言展示，不是 Final JSON。
 
-- `confirmation=true` 必须同时满足：history 最后一条 assistant 是 `confirmation=false` 的完整 final JSON；该 final 与当前确认的时间、时长、偏好、技师和状态完全一致；结果 `info_complete=true`、`missing_info=[]`；工具查询已经完成；当前用户明确接受或知悉该结果且没有修改字段。
+- `confirmation=true` 必须同时满足：`current_state.confirmation=false` 且保存完整待确认结果；History 最后一条普通 assistant 是该结果对应的自然语言展示；状态与当前确认的时间、时长、偏好、技师和工具结果完全一致；结果 `info_complete=true`、`missing_info=[]`；当前用户明确接受或知悉且没有修改字段。
 - `confirmation=false`：其他所有情况，包括首次提出预约、继续补充字段、普通的“帮我预约”请求、锁定单个字段（如“就王芳”“就60分钟”）、拒绝方案、要求修改/换人、信息不完整、尚未核实技师或档期，以及当前没有待确认方案。
 - `confirmation` 不存在“未知”这一第三种取值；无法判断为肯定确认时统一输出 `false`。
 - `confirmation=true` 只表示用户确认意图。`available` 时授权上层执行预约但不表示已经成功落库；`unavailable/not_found/no_match` 时表示用户已知悉查询结果。
@@ -254,11 +260,11 @@ available_tools:
 >  我在做本节设计的时候，想过的一些问题：我的工具设计，我是设计多个工具，分别负责查技师是否存在，是否空闲，专长，还是合并成一个？（最终的决策是合并成一个，因为小模型害怕做选择，不要增加他的推理难度）
 >  这个对于技师的专长和用户的要求的匹配，是让模型自己拿到对应的值去匹配，还是说直接借助工具，内部做一个嵌入向量匹配？（最终决策直接借助工具，因为毕竟是小模型，尽量减少模型推理）
 
-**工具：`find_technicians(technician_name, start_time, duration_minutes, gender, preferences)`**
+**工具：`find_technicians(technician_name, start_time, duration_minutes, gender_preference, preferences)`**
 - **指定技师模式**：`technician_name != null`。工具只校验该技师是否存在及目标时段是否可用，返回 `available`、`unavailable` 或 `not_found`；不得返回替代技师。
 - **条件搜索模式**：`technician_name == null`。工具按时间、时长及可选的性别/偏好搜索，返回 `matched + candidates` 或 `no_match`。`matched` 必须只返回最终采用的一个 candidate，模型直接复制该技师形成待确认结果。
 - **触发场景**：`start_time` 和 `duration_minutes` 已知，且历史中尚无覆盖当前条件的有效工具结果。
-- **参数规则**：五个参数必须且只能全部出现；未指定技师填 `null`，未表达性别填 `null`，无偏好填 `[]`。
+- **参数规则**：五个参数必须且只能全部出现；未指定技师填 `null`，未表达性别要求时 `gender_preference=null`，无偏好填 `[]`。工具结果中的 `technician.gender` 写入 Final 的 `technician_gender`，不得反向变成查询偏好。
 - **结果状态映射**：指定技师可用或条件搜索命中 → `technician_status=available`；指定技师不可用 → `unavailable`；不存在 → `not_found`；搜索无结果 → `no_match`。所有工具结果先输出 `confirmation=false`，用户确认后保持结果不变并输出 `confirmation=true`。
 - **阶段二落地细节与流程图**：见 `docs/superpowers/phase-02.md`。
 
@@ -366,7 +372,7 @@ available_tools:
 | 内容组成 | 作用 | 粗略 token 范围 |
 | --- | --- | --- |
 | 系统提示词 + 任务规则 | 约束模型只做预约抽取、只输出 JSON、不编造事实 | `300 ~ 800` |
-| JSON Schema / 字段说明 | 说明 `gender`、`start_time`、`missing_info`、`action` 等字段含义 | `300 ~ 700` |
+| JSON Schema / 字段说明 | 说明 `gender_preference`、`technician_gender`、`start_time`、`missing_info`、`action` 等字段含义 | `300 ~ 700` |
 | 工具描述 | `find_technicians` 的能力、参数和触发条件 | `100 ~ 400` |
 | 多轮对话历史 | 用户和机器人的历史轮次，短预约一般 3~6 轮，复杂情况可能更多 | `300 ~ 1200` |
 | 当前输入 + 当前时间 | 本轮用户输入和 `current_time` | `50 ~ 150` |
@@ -434,7 +440,7 @@ available_tools:
 |---|---|---|---|
 | P1 | JSON 格式不稳定 | 输出被 Markdown 代码块包裹、字段漏写、布尔值写成中文、数组损坏、混入解释文本 | SFT 为主（收敛 Schema） |
 | P2 | 时间标准化不准 | "明天""周末下午""三点半"未结合 `current_time` 翻译成 `YYYY-MM-DD HH:MM` | SFT 为主（大量带 `current_time` 的范例） |
-| P3 | 字段抽取不准 | `gender`、`start_time`、`duration_minutes`、`preferences`、`technician_name` 抽错或遗漏 | SFT 为主 |
+| P3 | 字段抽取不准 | `gender_preference`、`technician_gender`、`start_time`、`duration_minutes`、`preferences`、`technician_name` 抽错或遗漏 | SFT 为主 |
 | P4 | 幻觉（编造事实） | 脑补工具结果外的技师或档期；该输出 `null` 时却乱填 | SFT 打基础 + DPO/RL 强化惩罚 |
 | P5 | 上下文意图理解错误 | 多轮中"好/不/换一个"等多义短词被误判为闲聊或误判 confirmation | SFT 为主 + DPO 处理难例边界 |
 | P6 | 工具调用判断不准 | 该追问时直接猜、该调用 `find_technicians` 时不调、工具参数抽错 | SFT 为主（覆盖五类任务）+ DPO 处理易混边界 |
@@ -673,7 +679,7 @@ GGUF Q4_K_M  →  llama.cpp / Ollama 本地 CPU 推理
 | SFT（Full/LoRA/QLoRA） | ✅ 一行配置 | ✅ SFTTrainer + PEFT | ⚠️ 全自己写 |
 | DPO | ✅ 内置（支持 LoRA/QLoRA） | ✅ DPOTrainer | ✗ 成本极高 |
 | Response-only loss | ✅ **默认开启**（`train_on_prompt=False`） | ⚠️ 手动配 collator | ⚠️ 自己写 loss mask |
-| 数据格式兼容 | ✅ alpaca/sharegpt + 偏好对，注册即用 | ⚠️ 灵活但要自己写 | ⚠️ 全自己定义 |
+| 数据格式兼容 | ✅ alpaca/sharegpt + 偏好对，注册即用；本项目选 ShareGPT | ⚠️ 灵活但要自己写 | ⚠️ 全自己定义 |
 | LoRA 合并 + 导出 | ✅ `export` 一条命令出 HF 权重 | ⚠️ 自写 merge 脚本 | ⚠️ 自己写 |
 | 多模型支持（Qwen/InternLM） | ✅ 换 `template` 即可 | ⚠️ 模板/特殊 token 要自己理 | ✗ |
 | 批量跑实验矩阵 | ✅ YAML + CLI 循环 | ✅ 写脚本读配置 + for 循环（同样可做） | ⚠️ 可做但骨架全自写 |
@@ -691,7 +697,7 @@ GGUF Q4_K_M  →  llama.cpp / Ollama 本地 CPU 推理
    - **DPO**：内置、支持 LoRA/QLoRA；TRL 要自己组 `DPOTrainer` 和参考模型。
    - **Response-only loss**：`train_on_prompt` 默认 `False`，正是 2.4.2 要的"仅对回复段计损"；TRL 要手动配 completion-only collator。
    - **多模型模板**：换 `template` 即可适配 Qwen3 / InternLM 的 chat template 与 special token；TRL 要自己理每个模型的模板和特殊符。
-   - **数据格式**：alpaca/sharegpt + 偏好对，注册 `dataset_info.json` 即用；TRL 要自己写数据适配。
+   - **数据格式**：框架兼容 alpaca/sharegpt + 偏好对；本项目统一选 ShareGPT/ShareGPT preference，注册 `dataset_info.json` 即用；TRL 要自己写数据适配。
    - **合并导出**：`export` 一条命令出标准 safetensors，直接进 2.5.3 的 `convert_hf_to_gguf`→imatrix→Q4_K_M；TRL 要自写 merge 脚本。
 
    换句话说，用 TRL+PEFT 不是"做不到"，而是要把上面这些**已经封装好的胶水代码**（训练循环、LoRA 注入、loss mask、DPO 损失、数据适配、merge/export）自己再写一遍并长期维护。本项目这些需求都标准，没这个必要。
@@ -718,7 +724,7 @@ LLaMA-Factory 是架在 TRL 之上的封装。一旦需求**跌出标准流程**
 
 补充两点工程落地注意：
 - **复现性要锁版本**：Qwen3/InternLM 等较新模型对 LLaMA-Factory / transformers 版本敏感，实验矩阵务必 pin 死版本号，否则"可复现"会打折——这是"复现实验成本"维度的具体落地措施。
-- **反向约束 2.7**：框架定 LLaMA-Factory 后，2.7 的 jsonl schema 按其 sharegpt / 偏好对格式设计（2.7 开头已说明它依赖 2.6，此处呼应）。
+- **反向约束 2.7**：框架定 LLaMA-Factory 后，2.7 的 jsonl schema 统一按 ShareGPT / ShareGPT preference 格式设计（2.7 开头已说明它依赖 2.6，此处呼应）。
 
 > 一句话：**框架只是"谁帮你写流程代码"。本项目需求全在标准流程内 → 让 LLaMA-Factory 写、你只配置；哪天要改训练逻辑（典型即 GRPO 自写奖励）→ 再下沉 TRL。这是按定制深度选型，不是说哪个更高级。**
 
@@ -783,7 +789,7 @@ LLaMA-Factory 是架在 TRL 之上的封装。一旦需求**跌出标准流程**
 | 层次 | 对应 2.1.2 任务类型 | 输入上下文 | 目标输出（label） |
 |---|---|---|---|
 | **中间过程样本** | 类型 1 追问、类型 2 工具调用 | `current_state` + 完整消息 `history` + `user_input` + `current_time` + 可用工具描述 | `action=final + info_complete=false + missing_info`（追问态）或 `action=tool_call`（`tool_name` + `arguments`） |
-| **最终结果样本** | 类型 3 输出最终预约、类型 4 无关路由、类型 5 确认回应 | `current_state` + 完整消息 `history` + `user_input` + `current_time` | 最终预约 JSON（`gender/start_time/duration_minutes/preferences/technician_name/technician_status/...`） |
+| **最终结果样本** | 类型 3 输出最终预约、类型 4 无关路由、类型 5 确认回应 | `current_state` + 完整消息 `history` + `user_input` + `current_time` | 最终预约 JSON（`gender_preference/technician_gender/start_time/duration_minutes/preferences/technician_name/technician_status/...`） |
 
 > 关键：这两层**不是两套训练目标，而是同一个模型在不同状态下的不同输出**。一条真实对话往往是"先追问 → 再 tool_call → 工具返回 → 输出最终 JSON"的链路，我们把每一个决策点切成一条独立训练样本（输入=该点之前的全部上下文，输出=该点应做的决策）。工具调用以 `assistant.tool_calls` 保存，工具返回以对应的 `tool` 消息保存；一条对话发生多次调用时，History 保留全部工具事件。
 
@@ -793,30 +799,46 @@ LLaMA-Factory 是架在 TRL 之上的封装。一旦需求**跌出标准流程**
 
 承接 2.6 选定 LLaMA-Factory，样本按其原生格式组织，通过 `dataset_info.json` 注册即用。SFT 与 DPO 两阶段格式不同：
 
-**（1）SFT 样本：alpaca / sharegpt 单样本**
+本项目固定 LLaMA-Factory `v0.9.5` 作为数据合同与训练配置基线；升级前必须重新验证 ShareGPT role、tools、preference columns 和 loss mask。
 
-原始数据集保存 `current_state` 与完整消息 History；训练适配层把固定规则和 `current_state` 渲染为 system，把用户、助手和工具事件按原顺序渲染为消息，再把目标决策 JSON 作为 assistant output。配合 2.4.2 的 **Response-only loss**（`train_on_prompt=False`），只对目标输出段计损。以 2.1.2 类型 2（工具调用）为例：
+**（1）SFT 样本：ShareGPT 单样本（本项目唯一训练格式）**
+
+原始数据集保存 `current_state` 与完整消息 History；训练适配层把固定规则、`current_time` 和 `current_state` 渲染到顶层 `system`，把 `available_tools` 渲染为顶层 `tools` JSON Schema 字符串，把用户、助手、历史工具调用和工具结果按原顺序渲染到 `conversations`，再把目标决策 JSON 作为最后一条 `gpt` 消息。`current_state` 不是消息角色，仍由调用方维护，每个决策点只在该样本的 `system` 中注入一次。配合 2.4.2 的 **Response-only loss**（`train_on_prompt=False`），屏蔽 system/user prompt；并设置 `mask_history=true`，只对最后一个目标决策计算 loss，避免把历史助手回复重复当作本样本标签。以 2.1.2 类型 2（工具调用）为例：
 
 ```json
 {
-  "instruction": "你是预约信息抽取助手，只输出 JSON，不得编造工具结果外的技师或档期……（与上线 prompt 一致的规则前缀）",
-  "input": "history: []\nuser_input: 我想明天下午两点找小王做60分钟肩颈按摩\ncurrent_time: 2026-06-08 10:00\navailable_tools:\n  - find_technicians(technician_name, start_time, duration_minutes, gender, preferences): ……",
-  "output": "{\"action\":\"tool_call\",\"tool_name\":\"find_technicians\",\"arguments\":{\"technician_name\":\"小王\",\"start_time\":\"2026-06-09 14:00\",\"duration_minutes\":60,\"gender\":null,\"preferences\":[\"肩颈\"]}}"
+  "system": "你是预约信息抽取助手……\n当前时间：2026-06-08 10:00\n当前状态：null",
+  "tools": "[{\"name\":\"find_technicians\",\"description\":\"查询指定技师或按条件搜索\",\"parameters\":{...}}]",
+  "conversations": [
+    {"from": "human", "value": "我想明天下午两点找小王做60分钟肩颈按摩"},
+    {"from": "gpt", "value": "{\"action\":\"tool_call\",\"tool_name\":\"find_technicians\",\"arguments\":{\"technician_name\":\"小王\",\"start_time\":\"2026-06-09 14:00\",\"duration_minutes\":60,\"gender_preference\":null,\"preferences\":[\"肩颈\"]}}"}
+  ]
 }
 ```
 
-最终结果样本同理，只是 output 换成最终预约 JSON。若输入由工具结果触发，消息前缀必须保留对应的 `assistant.tool_calls → tool` 事件，不再把工具结果拼入动态 system 文本。
+最终结果样本同理，只是最后一条 `gpt.value` 换成最终预约 JSON。若输入由工具结果触发，历史 `assistant.tool_calls → tool` 分别映射为 `from=function_call` 与 `from=observation`，不得压平成普通文本，也不得把工具结果拼入 system。`human/observation` 必须位于 conversations 奇数位，`gpt/function_call` 必须位于偶数位。
 
-**（2）DPO 样本：chosen / rejected 偏好对**
+这里的 `function_call` 只表示 history 中已经发生的工具事件。当前决策点即使标准答案为 `action=tool_call`，仍按本项目统一 JSON 输出合同写入最后一条 `from=gpt`，不改成原生 function-call label。
+
+训练与推理必须使用同一份结构化 `tools` schema：阶段四评估和阶段五 llama.cpp 部署不得退回“只在 system 中写自然语言工具说明”的旧方式，否则 chat template 产生的 token 分布与训练不一致。运行时适配须在阶段四本地空跑前完成。
+
+**（2）DPO 样本：ShareGPT chosen / rejected 偏好对**
 
 承接 2.4.3/2.4.4，DPO 针对 P4 幻觉与 P5–P7 易混边界。一个 prompt 配一个 `chosen`（标准答案）和一个 `rejected`（典型错误）。因多数痛点是**多分类边界**（如 P5 的 confirmation/unrelated/正常三类），一个 chosen 往往要派生多条覆盖不同错误模式的 rejected：
 
 ```json
 {
-  "instruction": "……（同上规则前缀）",
-  "input": "history:\n  user: 明天下午两点找王芳做60分钟\n  assistant: {\"action\":\"tool_call\",...}\n  tool: {\"mode\":\"specific\",\"status\":\"available\",...}\n  assistant: {\"action\":\"final\",\"technician_name\":\"王芳\",\"technician_status\":\"available\",\"confirmation\":false,...}\nuser_input: 那算了\ncurrent_time: 2026-06-08 10:00",
-  "chosen": "{\"confirmation\":false,\"unrelated\":false, ...}",
-  "rejected": "{\"confirmation\":false,\"unrelated\":true, ...}"
+  "system": "……（规则、current_time、current_state，与 SFT 相同）",
+  "tools": "……（与对应 SFT 完全相同的工具 JSON Schema 字符串）",
+  "conversations": [
+    {"from": "human", "value": "明天下午两点找王芳做60分钟"},
+    {"from": "function_call", "value": "{\"name\":\"find_technicians\",\"arguments\":{...}}"},
+    {"from": "observation", "value": "{\"mode\":\"specific\",\"status\":\"available\",...}"},
+    {"from": "gpt", "value": "王芳这个时间可以预约，是否确认？"},
+    {"from": "human", "value": "那算了"}
+  ],
+  "chosen": {"from": "gpt", "value": "{\"confirmation\":false,\"unrelated\":false,...}"},
+  "rejected": {"from": "gpt", "value": "{\"confirmation\":false,\"unrelated\":true,...}"}
 }
 ```
 
@@ -1006,12 +1028,13 @@ Slot-Extractor 在一轮里要么"信息还不全 → 输出一次工具调用�
 ```jsonc
 {
   "id": "tool-call-0007",
-  "layer": "tool_call",                 // tool_call / final，决定走哪套判分
+  "output_kind": "tool_call",            // tool_call / final，决定走哪套输出判分
+  "conversation_kind": "single_turn",    // single_turn / multi_turn，描述用户轮数
   "input": { "history": "...", "user_input": "安排小王吧", "current_time": "2026-06-08 10:00", "available_tools": [ ... ] },
   "expected": {                          // 标准答案（只给判分器，模型看不到）
     "action": "tool_call",
     "tool_name": "find_technicians",
-    "arguments": { "technician_name": "小王", "start_time": "2026-06-09 14:00", "duration_minutes": null, "gender": null, "preferences": [] }
+    "arguments": { "technician_name": "小王", "start_time": "2026-06-09 14:00", "duration_minutes": null, "gender_preference": null, "preferences": [] }
   },
   "assertions": [                        // 逐项检查表，定位错在哪一项、给哪个角度扣分
     "tool_name == find_technicians",     // → 工具调用准确性
@@ -1027,7 +1050,8 @@ Slot-Extractor 在一轮里要么"信息还不全 → 输出一次工具调用�
 ```jsonc
 {
   "id": "multiturn-0003",
-  "layer": "multi_turn",
+  "output_kind": "final",
+  "conversation_kind": "multi_turn",
   "input": {
     "history": "user: 约个精油按摩\nassistant: {\"action\":\"final\",\"start_time\":null,\"duration_minutes\":null,\"preferences\":[\"精油\"],\"technician_status\":\"not_checked\",\"missing_info\":[\"start_time\",\"duration_minutes\"],...}\nuser: 明天下午，具体时间没定\nassistant: {\"action\":\"final\",\"start_time\":null,\"duration_minutes\":null,\"preferences\":[\"精油\"],\"technician_status\":\"not_checked\",\"missing_info\":[\"start_time\",\"duration_minutes\"],...}",
     "user_input": "改成后天下午两点，60分钟",
@@ -1076,7 +1100,7 @@ Slot-Extractor 在一轮里要么"信息还不全 → 输出一次工具调用�
 | 多轮鲁棒性 | 多轮改口/相对时间，本质还是"最终字段 == 期望值"，走字段抽取同一套比对 |
 | 幻觉率 | 按输出状态检查技师来源：工具调用参数与 `not_checked` 必须来自用户消息，`available` 必须来自最近工具结果，其余失败/待选状态不得保留技师名 |
 | 意图判定准确性 | `action` / `unrelated` / `confirmation` 按**多分类**与 `expected` 比对 |
-| 克制与约束遵守 | 反例样本里"不该调"时是否输出了 `tool_call`（不该调却调=失败）；最终时间是否落在**营业时间**区间内；信息不全时是否按 `expected` 该追问/该 `null` 而不是硬填 |
+| 克制与约束遵守 | 反例样本里"不该调"时是否输出了 `tool_call`（不该调却调=失败）；开始时间是否落在允许开始服务的 `[open, close)` 区间内（`close` 为最晚开始时间的排他上界，不约束服务结束时刻）；信息不全时是否按 `expected` 该追问/该 `null` 而不是硬填 |
 
 **通道 B · 规则 / 工具调用检查（静态为主 + 关键工具执行兜底）**
 静态与执行两档位搭配，覆盖"工具调用准确性"角度：
@@ -1096,7 +1120,7 @@ Slot-Extractor 在一轮里要么"信息还不全 → 输出一次工具调用�
 质量角度
   指令 / 规则遵循        96.2%      (JSON合法 + schema合规 + 越界字段=0)
   工具调用准确性         91.4%      (action+tool_name+参数 全中才算对)
-  字段抽取准确性         93.7%      (start_time 88.1% | duration_minutes 95.0% | gender 97.2% ...)
+  字段抽取准确性         93.7%      (start_time 88.1% | duration_minutes 95.0% | gender_preference 97.2% ...)
   幻觉率 (↓越低越好)      2.1%
   意图判定准确性         97.8%      (unrelated / confirmation 多分类)
   克制与约束遵守         94.0%      (不该调时克制 + 营业时间约束 + 不硬猜)
@@ -1247,7 +1271,7 @@ Slot-Extractor 在一轮里要么"信息还不全 → 输出一次工具调用�
 
 - **SFT 数据**：以「强模型生成 + 抽检」为唯一主力来源，覆盖五类任务的两层样本（中间过程 + 最终结果），首版约 1.5k 条，做类别均衡配比并保证每类难例占比。
 - **DPO 偏好对**：首版约 300–500 对，`chosen`=标准答案、`rejected`=程序化定向扰动，火力向幻觉与易混边界倾斜。
-- **格式适配与注册**：按选定的 LLaMA-Factory 组织成 sharegpt/alpaca（SFT）与偏好对（DPO），注册 `dataset_info.json`；配 Response-only loss 的模板。
+- **格式适配与注册**：统一组织成 ShareGPT SFT 与 ShareGPT preference（DPO），注册 `dataset_info.json`；使用模型原生 chat template，并配置 `train_on_prompt=false`、`mask_history=true`，只训练当前决策点的目标回复。
 - **质量校验与版本管理**：入库前统一过 JSON 可解析 / schema / 时间格式 / 越界检测校验，打数据集版本号（`v0.1`），保证可追溯可复现。
 
 > **交付线（DoD）**：`train.jsonl` / `val.jsonl` + DPO 偏好对，通过全部质量校验、完成版本登记，且与冻结评估集零重叠。

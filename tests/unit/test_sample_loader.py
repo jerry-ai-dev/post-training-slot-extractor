@@ -14,7 +14,8 @@ from slot_extractor.schemas.sample import (
 def _base_record() -> dict:
     return {
         "id": "case-1",
-        "layer": "final",
+        "output_kind": "final",
+        "conversation_kind": "single_turn",
         "input": {
             "history": [],
             "current_state": None,
@@ -44,7 +45,8 @@ def test_load_samples_parses_reply_aware_jsonl(tmp_path: Path) -> None:
     assert samples == [
         Sample(
             id="case-1",
-            layer="final",
+            output_kind="final",
+            conversation_kind="single_turn",
             input=record["input"],
             expected={"action": "final"},
             reply_expectations=ReplyExpectations(
@@ -62,7 +64,8 @@ def test_load_samples_parses_reply_aware_jsonl(tmp_path: Path) -> None:
 def test_load_samples_rejects_missing_required_field(tmp_path: Path) -> None:
     path = tmp_path / "cases.jsonl"
     path.write_text(
-        '{"id":"case-1","layer":"final","input":{},"assertions":[],"tags":[]}\n',
+        '{"id":"case-1","output_kind":"final","conversation_kind":"single_turn",'
+        '"input":{},"assertions":[],"tags":[]}\n',
         encoding="utf-8",
     )
 
@@ -105,7 +108,8 @@ def test_sample_accepts_tool_result_history_without_user_input() -> None:
     record["step"] = 2
     record["input"]["user_input"] = None
     record["input"]["current_state"] = {
-        "gender": None,
+        "gender_preference": None,
+        "technician_gender": None,
         "start_time": "2026-06-09 14:00",
         "duration_minutes": 60,
         "preferences": [],
@@ -128,7 +132,7 @@ def test_sample_accepts_tool_result_history_without_user_input() -> None:
                     "type": "function",
                     "function": {
                         "name": "find_technicians",
-                        "arguments": '{"technician_name":"王芳","start_time":"2026-06-09 14:00","duration_minutes":60,"gender":null,"preferences":[]}',
+                        "arguments": '{"technician_name":"王芳","start_time":"2026-06-09 14:00","duration_minutes":60,"gender_preference":null,"preferences":[]}',
                     },
                 }
             ],
@@ -177,7 +181,7 @@ def test_sample_rejects_history_ending_with_user_when_user_input_exists() -> Non
 
 def test_tool_call_sample_rejects_reply_expectations() -> None:
     record = _base_record()
-    record["layer"] = "tool_call"
+    record["output_kind"] = "tool_call"
 
     with pytest.raises(ValueError, match="tool_call samples must not define reply_expectations"):
         sample_from_record(record)

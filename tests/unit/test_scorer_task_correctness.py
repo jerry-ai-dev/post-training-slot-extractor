@@ -18,7 +18,8 @@ def _result(output: dict) -> GenerationResult:
 def _final_sample(expected: dict, expectations: ReplyExpectations) -> Sample:
     return Sample(
         id="final-case",
-        layer="final",
+        output_kind="final",
+        conversation_kind="single_turn",
         input={"current_time": "2026-06-08 10:00"},
         expected=expected,
         assertions=[],
@@ -30,7 +31,8 @@ def _final_sample(expected: dict, expectations: ReplyExpectations) -> Sample:
 def _expected_final() -> dict:
     return {
         "action": "final",
-        "gender": "female",
+        "gender_preference": None,
+        "technician_gender": "female",
         "start_time": "2026-06-09 14:00",
         "duration_minutes": 60,
         "preferences": ["肩颈"],
@@ -48,7 +50,7 @@ def _expected_final() -> dict:
 def test_final_task_score_combines_structured_and_reply_with_70_30_weights() -> None:
     expected = _expected_final()
     actual = dict(expected)
-    actual["gender"] = None
+    actual["technician_gender"] = None
     score = TaskCorrectnessScorer().score(
         _final_sample(
             expected,
@@ -63,10 +65,10 @@ def test_final_task_score_combines_structured_and_reply_with_70_30_weights() -> 
     )
 
     detail = json.loads(score.detail)
-    assert detail["structured_score"] == 10 / 11
+    assert detail["structured_score"] == 11 / 12
     assert detail["reply_score"] == 1.0
-    assert score.score == 0.7 * (10 / 11) + 0.3
-    assert detail["errors"] == ["wrong_field:gender"]
+    assert score.score == 0.7 * (11 / 12) + 0.3
+    assert detail["errors"] == ["wrong_field:technician_gender"]
 
 
 def test_final_task_score_accepts_semantic_preference_alias() -> None:
@@ -119,19 +121,27 @@ def test_tool_task_score_checks_action_tool_and_all_arguments() -> None:
             "technician_name": "王芳",
             "start_time": "2026-06-09 14:00",
             "duration_minutes": 60,
-            "gender": None,
+            "gender_preference": None,
             "preferences": ["肩颈"],
         },
     }
     actual = {
         "action": "tool_call",
         "tool_name": "find_technicians",
-        "arguments": {**expected["arguments"], "gender": "male"},
+        "arguments": {**expected["arguments"], "gender_preference": "male"},
     }
-    sample = Sample("tool", "tool_call", {}, expected, [], [])
+    sample = Sample(
+        id="tool",
+        output_kind="tool_call",
+        conversation_kind="single_turn",
+        input={},
+        expected=expected,
+        assertions=[],
+        tags=[],
+    )
 
     score = TaskCorrectnessScorer().score(sample, _result(actual))
 
     detail = json.loads(score.detail)
     assert score.score == 6 / 7
-    assert detail["errors"] == ["wrong_argument:gender"]
+    assert detail["errors"] == ["wrong_argument:gender_preference"]

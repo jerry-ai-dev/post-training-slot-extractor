@@ -4,10 +4,11 @@ from slot_extractor.schemas.dataset_contract import validate_sample_against_cont
 from slot_extractor.schemas.sample import ReplyExpectations, Sample
 
 CONTRACT = {
-    "version": "2.1",
+    "version": "2.3",
     "business_hours": {"open": "09:00", "close": "21:00"},
     "fields": {
-        "gender": {"allowed_values": ["female", "male", None]},
+        "gender_preference": {"allowed_values": ["female", "male", None]},
+        "technician_gender": {"allowed_values": ["female", "male", None]},
         "technician_status": {
             "allowed_values": [
                 "not_checked",
@@ -64,7 +65,7 @@ CONTRACT = {
                 "technician_name",
                 "start_time",
                 "duration_minutes",
-                "gender",
+                "gender_preference",
                 "preferences",
             ]
         }
@@ -92,7 +93,8 @@ def _expectations(
 def _final(**overrides: object) -> dict:
     value = {
         "action": "final",
-        "gender": "female",
+        "gender_preference": None,
+        "technician_gender": "female",
         "start_time": "2026-06-09 14:00",
         "duration_minutes": 60,
         "preferences": [],
@@ -111,7 +113,8 @@ def _final(**overrides: object) -> dict:
 
 def _state(**overrides: object) -> dict:
     value = {
-        "gender": None,
+        "gender_preference": None,
+        "technician_gender": None,
         "start_time": "2026-06-09 14:00",
         "duration_minutes": 60,
         "preferences": [],
@@ -132,7 +135,7 @@ def _tool_history(status: str = "available") -> list[dict]:
             "technician_name": "王芳",
             "start_time": "2026-06-09 14:00",
             "duration_minutes": 60,
-            "gender": None,
+            "gender_preference": None,
             "preferences": [],
     }
     result = {
@@ -183,7 +186,14 @@ def _sample(
 ) -> Sample:
     return Sample(
         id="case",
-        layer="tool_call" if expected["action"] == "tool_call" else "final",
+        output_kind="tool_call" if expected["action"] == "tool_call" else "final",
+        conversation_kind=(
+            "multi_turn"
+            if sum(turn.get("role") == "user" for turn in (history or []))
+            + (user_input is not None)
+            >= 2
+            else "single_turn"
+        ),
         input={
             "history": history or [],
             "current_state": current_state,
@@ -208,6 +218,16 @@ def test_available_final_accepts_matching_tool_history() -> None:
     assert validate_sample_against_contract(sample, CONTRACT) == []
 
 
+def test_tool_result_final_accepts_null_current_state() -> None:
+    sample = _sample(
+        _final(),
+        current_state=None,
+        history=_tool_history(),
+        expectations=_expectations(),
+    )
+    assert validate_sample_against_contract(sample, CONTRACT) == []
+
+
 def test_available_final_without_tool_history_is_rejected() -> None:
     errors = validate_sample_against_contract(
         _sample(_final(), current_state=_state(), expectations=_expectations()),
@@ -224,7 +244,7 @@ def test_paused_plan_uses_pending_current_state_without_latest_tool_result() -> 
     sample = _sample(
         expected,
         current_state=_state(
-            gender="female",
+            technician_gender="female",
             technician_status="available",
             last_reply_type="confirm_available",
         ),
@@ -265,7 +285,8 @@ def test_confirmation_requires_matching_pending_state() -> None:
 
 def test_missing_time_requires_ask_start_time_reply_type() -> None:
     expected = _final(
-        gender=None,
+        gender_preference=None,
+        technician_gender=None,
         start_time=None,
         technician_name=None,
         technician_status="not_checked",
@@ -290,7 +311,8 @@ def test_missing_time_requires_ask_start_time_reply_type() -> None:
 
 def test_handoff_requires_null_reply() -> None:
     expected = _final(
-        gender=None,
+        gender_preference=None,
+        technician_gender=None,
         start_time=None,
         duration_minutes=None,
         technician_name=None,
@@ -317,7 +339,7 @@ def test_tool_call_rejects_unknown_duration() -> None:
             "technician_name": "王芳",
             "start_time": "2026-06-09 14:00",
             "duration_minutes": None,
-            "gender": None,
+            "gender_preference": None,
             "preferences": [],
         },
     }

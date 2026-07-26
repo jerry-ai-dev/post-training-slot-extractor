@@ -15,7 +15,8 @@ from slot_extractor.schemas.sample import Sample
 
 _FINAL_EXACT_FIELDS = (
     "action",
-    "gender",
+    "gender_preference",
+    "technician_gender",
     "start_time",
     "duration_minutes",
     "technician_name",
@@ -29,7 +30,7 @@ _TOOL_EXACT_ARGUMENTS = (
     "technician_name",
     "start_time",
     "duration_minutes",
-    "gender",
+    "gender_preference",
 )
 
 
@@ -123,7 +124,9 @@ class TaskCorrectnessScorer:
         preference_score = _preference_list_score(
             expected_args.get("preferences"), actual_args.get("preferences")
         )
-        score = (sum(passed for _, passed in checks) + preference_score) / 7
+        score = (sum(passed for _, passed in checks) + preference_score) / (
+            len(checks) + 1
+        )
         errors = [name for name, passed in checks if not passed]
         if preference_score != 1.0:
             errors.append("wrong_argument:preferences")

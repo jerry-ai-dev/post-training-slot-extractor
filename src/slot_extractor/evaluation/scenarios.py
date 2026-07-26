@@ -17,7 +17,7 @@ def scenario_labels(sample: Sample) -> set[str]:
         if isinstance(turn, dict)
     ):
         labels.add("tool_result")
-    if sample.layer == "multi_turn":
+    if sample.conversation_kind == "multi_turn":
         labels.add("multi_turn")
     if expected.get("unrelated") is True:
         labels.add("unrelated")

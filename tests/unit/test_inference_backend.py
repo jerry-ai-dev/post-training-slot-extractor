@@ -3,6 +3,7 @@ from pathlib import Path
 
 import httpx
 
+from slot_extractor.inference.base import GenerationParams
 from slot_extractor.inference.factory import build_backend_from_config
 
 
@@ -140,9 +141,7 @@ max_tokens: 256
                 "output": [
                     {
                         "type": "message",
-                        "content": [
-                            {"type": "output_text", "text": '{"action":"final"}'}
-                        ],
+                        "content": [{"type": "output_text", "text": '{"action":"final"}'}],
                     }
                 ],
                 "usage": {"output_tokens": 4},
@@ -173,6 +172,90 @@ max_tokens: 256
     assert captured["url"] == "http://example.test/v1/responses"
     assert captured["json"]["input"] == [
         {"role": "system", "content": "只输出 JSON"},
-        {"type": "function_call", "call_id": "call-1", "name": "find_technicians", "arguments": "{}"},
+        {
+            "type": "function_call",
+            "call_id": "call-1",
+            "name": "find_technicians",
+            "arguments": "{}",
+        },
         {"type": "function_call_output", "call_id": "call-1", "output": '{"status":"ok"}'},
     ]
+    assert "text" not in captured["json"]
+
+
+def test_responses_backend_sends_strict_json_schema(tmp_path: Path, monkeypatch) -> None:
+    config = tmp_path / "responses.yaml"
+    config.write_text(
+        """
+backend: openai_responses
+model: gpt-test
+base_url_env: TEST_OPENAI_BASE_URL
+api_key_env: TEST_OPENAI_API_KEY
+""",
+        encoding="utf-8",
+    )
+    monkeypatch.setenv("TEST_OPENAI_BASE_URL", "http://example.test/v1")
+    monkeypatch.setenv("TEST_OPENAI_API_KEY", "secret")
+    captured: dict = {}
+
+    def fake_post(url, *, headers, json, timeout):
+        captured["json"] = json
+        return httpx.Response(
+            200,
+            request=httpx.Request("POST", url),
+            json={"output_text": '{"ok":true}', "usage": {"output_tokens": 2}},
+        )
+
+    monkeypatch.setattr(httpx, "post", fake_post)
+    schema = {
+        "type": "object",
+        "properties": {"ok": {"type": "boolean"}},
+        "required": ["ok"],
+        "additionalProperties": False,
+    }
+    backend = build_backend_from_config(config)
+    backend.generate(
+        [{"role": "user", "content": "json"}],
+        GenerationParams(
+            response_schema=schema,
+            response_schema_name="phase03_raw",
+        ),
+    )
+    assert captured["json"]["text"]["format"] == {
+        "type": "json_schema",
+        "name": "phase03_raw",
+        "strict": True,
+        "schema": schema,
+    }
+
+
+def test_responses_backend_retries_transient_transport_error(tmp_path: Path, monkeypatch) -> None:
+    config = tmp_path / "responses.yaml"
+    config.write_text(
+        """
+backend: openai_responses
+model: gpt-test
+base_url_env: TEST_OPENAI_BASE_URL
+api_key_env: TEST_OPENAI_API_KEY
+""",
+        encoding="utf-8",
+    )
+    monkeypatch.setenv("TEST_OPENAI_BASE_URL", "http://example.test/v1")
+    monkeypatch.setenv("TEST_OPENAI_API_KEY", "secret")
+    calls = 0
+
+    def fake_post(url, *, headers, json, timeout):
+        nonlocal calls
+        calls += 1
+        if calls == 1:
+            raise httpx.ReadError("connection reset")
+        return httpx.Response(
+            200,
+            request=httpx.Request("POST", url),
+            json={"output_text": '{"ok":true}', "usage": {"output_tokens": 2}},
+        )
+
+    monkeypatch.setattr(httpx, "post", fake_post)
+    result = build_backend_from_config(config).generate([{"role": "user", "content": "json"}])
+    assert result.text == '{"ok":true}'
+    assert calls == 2

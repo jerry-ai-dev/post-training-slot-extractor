@@ -17,7 +17,8 @@ class _FakeEmbedder:
 def _sample(preferences: list[str]) -> Sample:
     return Sample(
         id="preference-case",
-        layer="final",
+        output_kind="final",
+        conversation_kind="single_turn",
         input={},
         expected={"action": "final", "preferences": preferences},
         assertions=[],
@@ -30,7 +31,8 @@ def _result(preferences: list[str]) -> GenerationResult:
 
     output = {
         "action": "final",
-        "gender": None,
+        "gender_preference": None,
+        "technician_gender": None,
         "start_time": None,
         "duration_minutes": None,
         "preferences": preferences,

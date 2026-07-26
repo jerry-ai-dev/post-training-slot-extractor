@@ -1,0 +1,4 @@
+dataset: phase03_sft_v0_1
+train_on_prompt: false
+mask_history: true
+template: qwen3

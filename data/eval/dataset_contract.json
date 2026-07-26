@@ -1,11 +1,14 @@
 {
-  "version": "2.1",
+  "version": "2.3",
   "business_hours": {
     "open": "09:00",
     "close": "21:00"
   },
   "fields": {
-    "gender": {
+    "gender_preference": {
+      "allowed_values": ["female", "male", null]
+    },
+    "technician_gender": {
       "allowed_values": ["female", "male", null]
     },
     "technician_status": {
@@ -78,7 +81,7 @@
         "technician_name",
         "start_time",
         "duration_minutes",
-        "gender",
+        "gender_preference",
         "preferences"
       ]
     }

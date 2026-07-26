@@ -12,6 +12,7 @@ dependencies = [
 
 [project.scripts]
 slot-eval = "scripts.eval.run_eval:main"
+slot-build-dataset = "scripts.data.build_dataset:main"
 
 [dependency-groups]
 dev = [

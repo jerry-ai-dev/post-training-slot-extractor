@@ -22,7 +22,8 @@ _INPUT_FIELDS = {
     "available_tools",
 }
 _STATE_FIELDS = {
-    "gender",
+    "gender_preference",
+    "technician_gender",
     "start_time",
     "duration_minutes",
     "preferences",
@@ -35,7 +36,8 @@ _STATE_FIELDS = {
     "last_reply_type",
 }
 _PLAN_FIELDS = (
-    "gender",
+    "gender_preference",
+    "technician_gender",
     "start_time",
     "duration_minutes",
     "preferences",
@@ -88,8 +90,9 @@ def _validate_values(
     prefix: str = "",
 ) -> list[str]:
     errors: list[str] = []
-    if values.get("gender") not in contract["fields"]["gender"]["allowed_values"]:
-        errors.append(f"{sample_id}: {prefix}gender has unsupported value")
+    for field in ("gender_preference", "technician_gender"):
+        if field in values and values.get(field) not in contract["fields"][field]["allowed_values"]:
+            errors.append(f"{sample_id}: {prefix}{field} has unsupported value")
     duration = values.get("duration_minutes")
     if duration is not None and (
         isinstance(duration, bool) or not isinstance(duration, int) or duration <= 0
@@ -207,15 +210,30 @@ def _validate_tool_result_state(sample: Sample) -> list[str]:
         return []
     exchange = _latest_tool_exchange(sample)
     state = sample.input.get("current_state")
-    if not isinstance(exchange, dict) or not isinstance(state, dict):
-        return [f"{sample.id}: trailing tool result requires current_state"]
+    if not isinstance(exchange, dict):
+        return [f"{sample.id}: trailing tool result requires a matching tool call"]
+    if state is None:
+        return []
+    if not isinstance(state, dict):
+        return [f"{sample.id}: current_state must be an object or null"]
     arguments = exchange.get("arguments")
     if not isinstance(arguments, dict):
         return [f"{sample.id}: trailing tool result requires tool arguments"]
     errors: list[str] = []
-    for field in ("gender", "start_time", "duration_minutes", "preferences", "technician_name"):
+    for field in (
+        "gender_preference",
+        "start_time",
+        "duration_minutes",
+        "preferences",
+        "technician_name",
+    ):
         if state.get(field) != arguments.get(field):
             errors.append(f"{sample.id}: current_state.{field} must match latest tool arguments")
+    if state.get("technician_gender") is not None:
+        errors.append(
+            f"{sample.id}: current_state.technician_gender must be null "
+            "before processing tool result"
+        )
     expected_meta = {
         "technician_status": "not_checked",
         "confirmation": False,
@@ -288,7 +306,12 @@ def _tool_result_supports_final(expected: dict[str, Any], context: dict[str, Any
         return False
     if any(
         expected.get(field) != arguments.get(field)
-        for field in ("start_time", "duration_minutes", "preferences")
+        for field in (
+            "gender_preference",
+            "start_time",
+            "duration_minutes",
+            "preferences",
+        )
     ):
         return False
     status = expected.get("technician_status")
@@ -304,21 +327,17 @@ def _tool_result_supports_final(expected: dict[str, Any], context: dict[str, Any
         if status == "available":
             return isinstance(technician, dict) and (
                 technician.get("name") == expected.get("technician_name")
-                and technician.get("gender") == expected.get("gender")
+                and technician.get("gender") == expected.get("technician_gender")
             )
         if status == "unavailable":
-            expected_gender = (
-                technician.get("gender")
-                if isinstance(technician, dict)
-                else arguments.get("gender")
-            )
-            return expected.get("gender") == expected_gender
-        return status == "not_found" and expected.get("gender") == arguments.get("gender")
+            expected_gender = technician.get("gender") if isinstance(technician, dict) else None
+            return expected.get("technician_gender") == expected_gender
+        return status == "not_found" and expected.get("technician_gender") is None
     if mode == "search" and result_status == "no_match":
         return (
             status == "no_match"
             and expected.get("technician_name") is None
-            and expected.get("gender") == arguments.get("gender")
+            and expected.get("technician_gender") is None
         )
     if mode == "search" and result_status == "matched":
         candidates = result.get("candidates")
@@ -327,7 +346,7 @@ def _tool_result_supports_final(expected: dict[str, Any], context: dict[str, Any
         candidate = candidates[0]
         return isinstance(candidate, dict) and status == "available" and (
             candidate.get("name") == expected.get("technician_name")
-            and candidate.get("gender") == expected.get("gender")
+            and candidate.get("gender") == expected.get("technician_gender")
         )
     return False
 
@@ -466,10 +485,20 @@ def _validate_tool_call(sample: Sample, contract: dict[str, Any]) -> list[str]:
 
 def validate_sample_against_contract(sample: Sample, contract: dict[str, Any]) -> list[str]:
     errors = _validate_input(sample, contract)
-    expected_action = "tool_call" if sample.layer == "tool_call" else "final"
+    expected_action = sample.output_kind
     if sample.expected.get("action") != expected_action:
         errors.append(
-            f"{sample.id}: layer {sample.layer!r} requires action {expected_action!r}"
+            f"{sample.id}: output_kind {sample.output_kind!r} requires "
+            f"action {expected_action!r}"
+        )
+    user_turns = sum(
+        turn.get("role") == "user" for turn in sample.input.get("history", [])
+    ) + (sample.input.get("user_input") is not None)
+    expected_conversation_kind = "multi_turn" if user_turns >= 2 else "single_turn"
+    if sample.conversation_kind != expected_conversation_kind:
+        errors.append(
+            f"{sample.id}: conversation_kind {sample.conversation_kind!r} does not match "
+            f"{user_turns} user turn(s)"
         )
     if sample.expected.get("action") == "final":
         errors.extend(_validate_final(sample, contract))

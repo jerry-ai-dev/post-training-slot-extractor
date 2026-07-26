@@ -7,7 +7,8 @@ from typing import Any
 
 FINAL_FIELDS = {
     "action",
-    "gender",
+    "gender_preference",
+    "technician_gender",
     "start_time",
     "duration_minutes",
     "preferences",
@@ -26,7 +27,7 @@ TOOL_ARGUMENT_FIELDS = {
     "technician_name",
     "start_time",
     "duration_minutes",
-    "gender",
+    "gender_preference",
     "preferences",
 }
 MISSING_INFO_FIELDS = ("start_time", "duration_minutes")
@@ -82,8 +83,9 @@ def validate_final_output(data: dict[str, Any]) -> None:
     _ensure_exact_fields(data, FINAL_FIELDS)
     if data["action"] != "final":
         raise OutputValidationError("final output must set action='final'")
-    if data["gender"] not in {"female", "male", None}:
-        raise OutputValidationError("gender must be 'female', 'male', or null")
+    for field in ("gender_preference", "technician_gender"):
+        if data[field] not in {"female", "male", None}:
+            raise OutputValidationError(f"{field} must be 'female', 'male', or null")
     if data["start_time"] is not None and (
         not isinstance(data["start_time"], str) or not TIME_PATTERN.fullmatch(data["start_time"])
     ):
@@ -159,8 +161,10 @@ def validate_tool_call_output(data: dict[str, Any]) -> None:
     duration = arguments["duration_minutes"]
     if isinstance(duration, bool) or not isinstance(duration, int) or duration <= 0:
         raise OutputValidationError("tool duration_minutes must be a positive integer")
-    if arguments["gender"] not in {"female", "male", None}:
-        raise OutputValidationError("tool gender must be 'female', 'male', or null")
+    if arguments["gender_preference"] not in {"female", "male", None}:
+        raise OutputValidationError(
+            "tool gender_preference must be 'female', 'male', or null"
+        )
     preferences = arguments["preferences"]
     if not isinstance(preferences, list) or not all(
         isinstance(item, str) and bool(item.strip()) for item in preferences

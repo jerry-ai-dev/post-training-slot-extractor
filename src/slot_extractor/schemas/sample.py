@@ -8,7 +8,8 @@ from typing import Any, Literal
 
 from slot_extractor.utils.jsonl import read_jsonl
 
-Layer = Literal["final", "tool_call", "multi_turn"]
+OutputKind = Literal["final", "tool_call"]
+ConversationKind = Literal["single_turn", "multi_turn"]
 
 
 @dataclass(frozen=True)
@@ -22,7 +23,8 @@ class ReplyExpectations:
 @dataclass(frozen=True)
 class Sample:
     id: str
-    layer: Layer
+    output_kind: OutputKind
+    conversation_kind: ConversationKind
     input: dict[str, Any]
     expected: dict[str, Any]
     assertions: list[str]
@@ -75,7 +77,7 @@ def _validate_tool_calls(sample_id: str, index: int, value: Any) -> set[str]:
     return {call["id"]}
 
 
-def _validate_history(sample_id: str, input_obj: dict[str, Any]) -> None:
+def validate_history(sample_id: str, input_obj: dict[str, Any]) -> None:
     """验证用户、助手与工具事件组成的完整消息历史。"""
     history = input_obj.get("history", [])
     if not isinstance(history, list):
@@ -152,7 +154,7 @@ def _validate_history(sample_id: str, input_obj: dict[str, Any]) -> None:
         raise ValueError(f"{sample_id} history contains an unresolved tool call")
 
 
-def _validate_context(sample_id: str, input_obj: dict[str, Any]) -> None:
+def validate_context(sample_id: str, input_obj: dict[str, Any]) -> None:
     current_state = input_obj.get("current_state")
     if current_state is not None and not isinstance(current_state, dict):
         raise ValueError(f"{sample_id} input.current_state must be an object or null")
@@ -169,10 +171,10 @@ def _parse_reply_expectations(
     sample_id: str,
     record: dict[str, Any],
     expected: dict[str, Any],
-    layer: Layer,
+    output_kind: OutputKind,
 ) -> ReplyExpectations | None:
     value = record.get("reply_expectations")
-    if layer == "tool_call" or expected.get("action") == "tool_call":
+    if output_kind == "tool_call" or expected.get("action") == "tool_call":
         if value is not None:
             raise ValueError(f"{sample_id} tool_call samples must not define reply_expectations")
         return None
@@ -191,19 +193,27 @@ def sample_from_record(record: dict[str, Any]) -> Sample:
     if not isinstance(sample_id, str) or not sample_id:
         raise ValueError("sample missing non-empty field: id")
 
-    layer = record.get("layer")
-    if layer not in {"final", "tool_call", "multi_turn"}:
-        raise ValueError(f"{sample_id} has unsupported layer: {layer}")
+    output_kind = record.get("output_kind")
+    if output_kind not in {"final", "tool_call"}:
+        raise ValueError(f"{sample_id} has unsupported output_kind: {output_kind}")
+    conversation_kind = record.get("conversation_kind")
+    if conversation_kind not in {"single_turn", "multi_turn"}:
+        raise ValueError(
+            f"{sample_id} has unsupported conversation_kind: {conversation_kind}"
+        )
 
     input_obj = _require_dict(record, "input")
     expected = _require_dict(record, "expected")
-    _validate_context(sample_id, input_obj)
-    _validate_history(sample_id, input_obj)
-    reply_expectations = _parse_reply_expectations(sample_id, record, expected, layer)
+    validate_context(sample_id, input_obj)
+    validate_history(sample_id, input_obj)
+    reply_expectations = _parse_reply_expectations(
+        sample_id, record, expected, output_kind
+    )
 
     return Sample(
         id=sample_id,
-        layer=layer,
+        output_kind=output_kind,
+        conversation_kind=conversation_kind,
         input=input_obj,
         expected=expected,
         reply_expectations=reply_expectations,

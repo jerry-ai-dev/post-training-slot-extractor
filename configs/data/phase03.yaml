@@ -1,0 +1,58 @@
+version: v0.1
+seed: 42
+formatting: sharegpt
+output_root: data
+generation_concurrency: 5
+checkpoint_name: .generation_checkpoint_500.jsonl
+counts:
+  追问: 107
+  工具调用: 107
+  最终 JSON: 107
+  确认: 89
+  无关: 90
+scenarios:
+  追问:
+    - ask_missing_time
+    - ask_missing_duration
+    - ask_missing_both
+    - ask_multi_change_time
+    - ask_multi_change_duration
+  工具调用:
+    - tool_general
+    - tool_specific
+    - tool_replace_technician
+    - tool_retry_unavailable
+    - tool_retry_no_match
+  最终 JSON:
+    - final_available
+    - final_unavailable
+    - final_not_found
+    - final_no_match
+    - final_available_preferences
+  确认:
+    - confirm_accept
+    - confirm_reject
+    - acknowledge_unavailable
+    - acknowledge_not_found
+    - acknowledge_no_match
+  无关:
+    - unrelated_product
+    - unrelated_price
+    - unrelated_privacy
+    - unrelated_policy
+    - unrelated_chitchat
+dpo_target_counts:
+  P4: 60
+  P6: 30
+  P5: 30
+  P7: 23
+  P2P3: 7
+hard_case_thresholds:
+  追问: 0.50
+  工具调用: 0.60
+  最终 JSON: 0.50
+  确认: 0.60
+  无关: 0.50
+eval_path: data/eval/test.jsonl
+mock_inference_config: configs/inference/mock_phase03.yaml
+generate_inference_config: configs/inference/openai_responses_gpt_5.6_sol.yaml

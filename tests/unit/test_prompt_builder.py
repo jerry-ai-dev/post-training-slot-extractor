@@ -14,7 +14,8 @@ def _sample(**input_updates: object) -> Sample:
     input_obj.update(input_updates)
     return Sample(
         id="case-1",
-        layer="final",
+        output_kind="final",
+        conversation_kind="single_turn",
         input=input_obj,
         expected={"action": "final"},
         assertions=[],
@@ -29,7 +30,8 @@ def test_build_messages_has_system_then_natural_history_then_user() -> None:
             {"role": "assistant", "content": "请问您想什么时候过来，按摩多长时间呢？"},
         ],
         current_state={
-            "gender": None,
+            "gender_preference": None,
+            "technician_gender": None,
             "start_time": None,
             "duration_minutes": None,
             "preferences": ["精油"],
@@ -109,7 +111,7 @@ def test_build_messages_renders_tool_contract_only_for_active_tools() -> None:
     final_system = PromptBuilder().build_messages(without_tools)[0]["content"]
 
     assert (
-        "find_technicians(technician_name, start_time, duration_minutes, gender, preferences)"
+        "find_technicians(technician_name, start_time, duration_minutes, gender_preference, preferences)"
         in tool_system
     )
     assert "tool_call 顶层仅含 action、tool_name、arguments" in tool_system
@@ -121,7 +123,7 @@ def test_build_messages_renders_tool_contract_only_for_active_tools() -> None:
 def test_system_prompt_defines_reply_aware_final_contract() -> None:
     system = PromptBuilder().build_messages(_sample())[0]["content"]
 
-    assert "final 必须且只能使用以下 13 个字段" in system
+    assert "final 必须且只能使用以下 14 个字段" in system
     assert '"reply_type":"ask_start_time"' in system
     assert '"reply":"请问您想什么时候过来呢？"' in system
     assert "handoff 时 reply=null" in system
@@ -151,7 +153,7 @@ def test_system_prompt_defines_state_inheritance_and_reply_types() -> None:
     assert "booking_authorized" in system
     assert "相对时间结合当前时间换算" in system
     assert "明天=当前日期+1天" not in system
-    assert "更换指定技师时" in system
+    assert "更换技师或更改查询条件后" in system
     assert "只表示该字段暂未确定，不等于暂停预约" in system
 
 
@@ -168,9 +170,9 @@ def test_system_prompt_keeps_tool_result_evidence_boundaries() -> None:
 def test_system_distinguishes_gender_filter_from_tool_derived_gender() -> None:
     system = PromptBuilder().build_messages(_sample())[0]["content"]
 
-    assert "tool_call.arguments.gender 只表示用户当前明确要求" in system
-    assert "不得自动变成下一次查询的 gender 条件" in system
-    assert "Final 必须复制其 name 和 gender" in system
+    assert "tool_call.arguments.gender_preference 只表示用户当前有效" in system
+    assert "不得自动变成下一次查询的 gender_preference" in system
+    assert "结果 gender 写入 technician_gender" in system
 
 
 def test_system_prompt_remains_compact() -> None:

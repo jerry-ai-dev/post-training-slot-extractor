@@ -57,7 +57,7 @@ def test_every_assertion_is_parseable_against_expected() -> None:
 
 def test_dataset_satisfies_contract() -> None:
     contract = load_dataset_contract(CONTRACT)
-    assert contract["version"] == "2.1"
+    assert contract["version"] == "2.3"
     validate_dataset_against_contract(_samples(), contract)
 
 
@@ -171,7 +171,13 @@ def test_checked_current_state_has_tool_history_evidence() -> None:
 
 
 def test_tool_result_turn_state_matches_latest_call_arguments() -> None:
-    fields = ("gender", "start_time", "duration_minutes", "preferences", "technician_name")
+    fields = (
+        "gender_preference",
+        "start_time",
+        "duration_minutes",
+        "preferences",
+        "technician_name",
+    )
     for sample in _samples():
         if not sample.input["history"] or sample.input["history"][-1]["role"] != "tool":
             continue
@@ -180,6 +186,7 @@ def test_tool_result_turn_state_matches_latest_call_arguments() -> None:
         assert state is not None, sample.id
         for field in fields:
             assert state[field] == latest["arguments"][field], sample.id
+        assert state["technician_gender"] is None, sample.id
         assert state["technician_status"] == "not_checked", sample.id
         assert state["info_complete"] is True, sample.id
         assert state["missing_info"] == [], sample.id
@@ -224,7 +231,8 @@ def test_time_and_preference_change_uses_second_query_result() -> None:
 
 def test_confirmation_uses_matching_pending_current_state() -> None:
     fields = (
-        "gender",
+        "gender_preference",
+        "technician_gender",
         "start_time",
         "duration_minutes",
         "preferences",

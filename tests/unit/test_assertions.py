@@ -11,7 +11,8 @@ from slot_extractor.schemas.sample import Sample
 def _sample(expected=None, input_obj=None) -> Sample:
     return Sample(
         id="c1",
-        layer="final",
+        output_kind="final",
+        conversation_kind="single_turn",
         input=input_obj or {},
         expected=expected or {},
         assertions=[],
@@ -43,7 +44,8 @@ def test_tool_name_assertion_maps_to_tool_call_dimension() -> None:
 def test_named_predicate_no_field_outside_schema() -> None:
     good = {
         "action": "final",
-        "gender": None,
+        "gender_preference": None,
+        "technician_gender": None,
         "start_time": None,
         "duration_minutes": None,
         "preferences": [],

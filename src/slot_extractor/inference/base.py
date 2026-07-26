@@ -11,6 +11,8 @@ from slot_extractor.schemas.results import GenerationResult
 class GenerationParams:
     temperature: float = 0.0
     max_tokens: int = 256
+    response_schema: dict[str, Any] | None = None
+    response_schema_name: str = "response"
 
 
 class Backend(Protocol):

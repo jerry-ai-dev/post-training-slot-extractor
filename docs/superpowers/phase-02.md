@@ -83,7 +83,7 @@ Tool Call 必须严格包含：
     "technician_name": null,
     "start_time": "2026-06-09 14:00",
     "duration_minutes": 60,
-    "gender": null,
+    "gender_preference": null,
     "preferences": ["肩颈"]
   }
 }
@@ -93,7 +93,7 @@ Tool Call 必须严格包含：
 
 ### 4.2 Final
 
-Final 必须严格包含 13 个字段：`action`、`gender`、`start_time`、`duration_minutes`、`preferences`、`technician_name`、`technician_status`、`confirmation`、`info_complete`、`unrelated`、`missing_info`、`reply_type` 和 `reply`。
+Final 必须严格包含 14 个字段：`action`、`gender_preference`、`technician_gender`、`start_time`、`duration_minutes`、`preferences`、`technician_name`、`technician_status`、`confirmation`、`info_complete`、`unrelated`、`missing_info`、`reply_type` 和 `reply`。`gender_preference` 表示用户要求，`technician_gender` 表示工具核实的具体技师性别。
 
 `reply_type` 表示回复承担的业务动作，`reply` 必须与结构化状态和工具事实一致。无关输入使用完整的 Final 合同转人工，不省略字段。
 

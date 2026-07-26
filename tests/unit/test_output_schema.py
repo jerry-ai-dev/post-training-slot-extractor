@@ -9,7 +9,8 @@ from slot_extractor.schemas.output import (
 
 VALID_FINAL = {
     "action": "final",
-    "gender": "female",
+    "gender_preference": None,
+    "technician_gender": "female",
     "start_time": "2026-06-09 14:00",
     "duration_minutes": 60,
     "preferences": ["肩颈"],
@@ -37,7 +38,8 @@ def test_validate_final_output_accepts_null_unknowns() -> None:
     validate_final_output(
         {
             **VALID_FINAL,
-            "gender": None,
+            "gender_preference": None,
+            "technician_gender": None,
             "start_time": None,
             "duration_minutes": None,
             "preferences": [],
@@ -61,7 +63,8 @@ def test_validate_final_output_allows_null_reply_for_handoff() -> None:
     validate_final_output(
         {
             **VALID_FINAL,
-            "gender": None,
+            "gender_preference": None,
+            "technician_gender": None,
             "start_time": None,
             "duration_minutes": None,
             "preferences": [],
@@ -97,7 +100,7 @@ def test_validate_tool_call_output_rejects_reply_fields() -> None:
                     "technician_name": None,
                     "start_time": "2026-06-09 14:00",
                     "duration_minutes": 60,
-                    "gender": None,
+                    "gender_preference": None,
                     "preferences": [],
                 },
                 "reply_type": None,
@@ -111,7 +114,8 @@ def test_validate_tool_call_output_rejects_reply_fields() -> None:
     [
         ({"duration_minutes": "60分钟"}, "duration_minutes"),
         ({"duration_minutes": 0}, "duration_minutes"),
-        ({"gender": "女"}, "gender"),
+        ({"gender_preference": "女"}, "gender_preference"),
+        ({"technician_gender": "女"}, "technician_gender"),
         ({"start_time": "明天下午两点"}, "start_time"),
         ({"preferences": "肩颈"}, "preferences"),
         ({"preferences": ["肩颈", 1]}, "preferences"),
@@ -141,7 +145,7 @@ def test_validate_tool_call_output_accepts_typed_arguments() -> None:
                 "technician_name": None,
                 "start_time": "2026-06-09 14:00",
                 "duration_minutes": 60,
-                "gender": None,
+                "gender_preference": None,
                 "preferences": ["肩颈"],
             },
         }

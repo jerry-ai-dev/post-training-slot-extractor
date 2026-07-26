@@ -21,10 +21,16 @@ class PromptBuilder:
       [system(规则+schema+工具+时间+状态)] + history + 可选 user
     """
 
-    def build_messages(self, sample: Sample) -> list[Message]:
+    def build_messages(
+        self, sample: Sample, *, include_tool_descriptions: bool = True
+    ) -> list[Message]:
         available_tools = sample.input.get("available_tools")
-        tool_descriptions = render_tool_descriptions(
-            available_tools if isinstance(available_tools, list) else None
+        tool_descriptions = (
+            render_tool_descriptions(
+                available_tools if isinstance(available_tools, list) else None
+            )
+            if include_tool_descriptions
+            else ""
         )
         tool_block = (
             f"{TOOL_SCHEMA_HINT}\n{tool_descriptions}\n" if tool_descriptions else ""

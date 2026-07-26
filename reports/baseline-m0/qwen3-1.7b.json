@@ -1,7 +1,7 @@
 {
   "model": "qwen3-1.7b",
   "backend_config": "configs/inference/llama_server_qwen3_1.7b.yaml",
-  "cases_path": "C:\\Users\\zhiruiyang\\Desktop\\后训练项目\\data\\eval\\test.jsonl",
+  "cases_path": "data/eval/test.jsonl",
   "n": 51,
   "aggregate_dimensions": {
     "protocol": {

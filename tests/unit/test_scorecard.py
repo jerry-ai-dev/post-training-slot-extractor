@@ -9,7 +9,8 @@ def test_scorecard_aggregates_dimensions_and_renders_na() -> None:
         [
             CaseResult(
                 sample_id="case-1",
-                layer="final",
+                output_kind="final",
+                conversation_kind="single_turn",
                 model_output="{}",
                 dimensions={
                     "protocol": DimensionScore("protocol", 1.0, True, "ok"),

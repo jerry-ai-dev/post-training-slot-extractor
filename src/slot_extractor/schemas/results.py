@@ -28,7 +28,8 @@ class DimensionScore:
 @dataclass(frozen=True)
 class CaseResult:
     sample_id: str
-    layer: str
+    output_kind: str
+    conversation_kind: str
     model_output: str
     dimensions: dict[str, DimensionScore]
     total_ms: float | None = None

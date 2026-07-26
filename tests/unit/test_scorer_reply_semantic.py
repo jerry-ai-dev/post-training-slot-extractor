@@ -8,7 +8,8 @@ from slot_extractor.schemas.sample import ReplyExpectations, Sample
 def _sample() -> Sample:
     return Sample(
         id="reply-semantic",
-        layer="final",
+        output_kind="final",
+        conversation_kind="single_turn",
         input={},
         expected={"action": "final", "reply_type": "confirm_available"},
         assertions=[],

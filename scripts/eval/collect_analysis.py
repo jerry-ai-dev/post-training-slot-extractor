@@ -60,7 +60,8 @@ def main(argv: list[str] | None = None) -> int:
         case_results.append(
             CaseResult(
                 sample_id=sample.id,
-                layer=sample.layer,
+                output_kind=sample.output_kind,
+                conversation_kind=sample.conversation_kind,
                 model_output=gen.text,
                 dimensions={},
                 total_ms=gen.total_ms,
@@ -71,7 +72,8 @@ def main(argv: list[str] | None = None) -> int:
         records.append(
             {
                 "id": sample.id,
-                "layer": sample.layer,
+                "output_kind": sample.output_kind,
+                "conversation_kind": sample.conversation_kind,
                 "tags": sample.tags,
                 "input": {
                     "history": sample.input.get("history"),
@@ -107,7 +109,8 @@ def main(argv: list[str] | None = None) -> int:
         scored_cases.append(
             CaseResult(
                 sample_id=cr.sample_id,
-                layer=cr.layer,
+                output_kind=cr.output_kind,
+                conversation_kind=cr.conversation_kind,
                 model_output=cr.model_output,
                 dimensions=cr_dims,
                 total_ms=cr.total_ms,

@@ -66,7 +66,11 @@ def _response_text(payload: dict[str, Any]) -> str:
             if content.get("type") == "output_text" and isinstance(text, str):
                 texts.append(text)
     if not texts:
-        raise ValueError("Responses API payload contains no output text")
+        raise ValueError(
+            "Responses API payload contains no output text: "
+            f"status={payload.get('status')}, "
+            f"incomplete_details={payload.get('incomplete_details')}"
+        )
     return "".join(texts)
 
 
@@ -90,14 +94,32 @@ class OpenAIResponsesBackend:
         }
         if self._temperature is not None:
             request_payload["temperature"] = self._temperature
+        if generation_params.response_schema is not None:
+            request_payload["text"] = {
+                "format": {
+                    "type": "json_schema",
+                    "name": generation_params.response_schema_name,
+                    "strict": True,
+                    "schema": generation_params.response_schema,
+                }
+            }
 
         started = time.perf_counter()
-        response = httpx.post(
-            f"{self._base_url}/responses",
-            headers={"Authorization": f"Bearer {self._api_key}"},
-            json=request_payload,
-            timeout=self._timeout_s,
-        )
+        response: httpx.Response | None = None
+        for attempt in range(3):
+            try:
+                response = httpx.post(
+                    f"{self._base_url}/responses",
+                    headers={"Authorization": f"Bearer {self._api_key}"},
+                    json=request_payload,
+                    timeout=self._timeout_s,
+                )
+                break
+            except httpx.TransportError:
+                if attempt == 2:
+                    raise
+        if response is None:  # pragma: no cover - loop either returns or raises
+            raise RuntimeError("Responses API request produced no response")
         total_ms = (time.perf_counter() - started) * 1000
         response.raise_for_status()
         payload = response.json()

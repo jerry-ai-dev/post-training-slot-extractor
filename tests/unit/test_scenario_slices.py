@@ -14,7 +14,8 @@ def _sample(**updates: object) -> Sample:
     input_obj.update(updates.pop("input", {}))
     return Sample(
         id=str(updates.pop("id", "case")),
-        layer=updates.pop("layer", "final"),
+        output_kind=updates.pop("output_kind", "final"),
+        conversation_kind=updates.pop("conversation_kind", "single_turn"),
         input=input_obj,
         expected=expected,
         assertions=[],
@@ -24,7 +25,7 @@ def _sample(**updates: object) -> Sample:
 
 def test_scenario_labels_are_non_scoring_slices() -> None:
     sample = _sample(
-        layer="multi_turn",
+        conversation_kind="multi_turn",
         input={
             "history": [
                 {"role": "user", "content": "预约"},

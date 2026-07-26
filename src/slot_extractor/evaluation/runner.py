@@ -41,7 +41,8 @@ def run_evaluation(
         case_results.append(
             CaseResult(
                 sample_id=sample.id,
-                layer=sample.layer,
+                output_kind=sample.output_kind,
+                conversation_kind=sample.conversation_kind,
                 model_output=generation.text,
                 dimensions=dimensions,
                 total_ms=generation.total_ms,

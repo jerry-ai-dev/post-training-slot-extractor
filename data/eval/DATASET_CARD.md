@@ -2,11 +2,16 @@
 
 ## 基本信息
 
-- 机器合同：v2.1
+- 机器合同：v2.3
 - 样本文件：`data/eval/test.jsonl`
 - 样本数量：51
 - 校验和：`data/eval/test.sha256`
 - 当前范围：预约信息收集、技师查询、结果展示、用户确认、拒绝或暂缓、无关输入流转
+
+每条样本使用两个互不混用的分类字段：
+
+- `output_kind`：目标输出结构，只允许 `final | tool_call`，并且必须与 `expected.action` 相同；
+- `conversation_kind`：对话轮数，只允许 `single_turn | multi_turn`。History 中 user 消息数加当前非 null `user_input` 达到 2 时为 `multi_turn`，否则为 `single_turn`；工具事件不单独计为用户轮次。
 
 当前评估任务定义为：
 
@@ -44,7 +49,7 @@
       "type": "function",
       "function": {
         "name": "find_technicians",
-        "arguments": "{\"technician_name\":\"王芳\",\"start_time\":\"2026-06-09 14:00\",\"duration_minutes\":60,\"gender\":null,\"preferences\":[]}"
+        "arguments": "{\"technician_name\":\"王芳\",\"start_time\":\"2026-06-09 14:00\",\"duration_minutes\":60,\"gender_preference\":null,\"preferences\":[]}"
       }
     }]
   },
@@ -62,11 +67,13 @@
 
 ### Current State
 
-`current_state` 是本轮开始前系统已保存的结构化状态。第一轮为 `null`；后续轮次为完整对象：
+`current_state` 是模型本次决策前由调用方提供的可选结构化状态，可以是完整对象或
+`null`。首轮通常为 `null`；后续若调用方已保存状态，则传入完整对象：
 
 ```json
 {
-  "gender": null,
+  "gender_preference": null,
+  "technician_gender": "female",
   "start_time": "2026-06-09 14:00",
   "duration_minutes": 60,
   "preferences": [],
@@ -86,10 +93,20 @@
 History 最后一条事件。后续用户轮继续保留已经发生的工具消息，同时通过
 `current_state` 提供最新规范化状态；旧工具结果不得证明修改后查询条件的可用性。
 
-工具结果轮的 `current_state` 必须先由最新 `assistant.tool_calls` 参数物化：姓名、
-时间、时长、性别和偏好与最新调用完全一致，`technician_status=not_checked`。
+工具结果轮通常先由最新 `assistant.tool_calls` 参数物化 `current_state`：姓名、时间、
+时长、`gender_preference` 和偏好与最新调用完全一致，`technician_gender=null`、
+`technician_status=not_checked`。若调用方传入 `current_state=null`，则从 History 中最近
+一组匹配的 `assistant.tool_calls → tool` 恢复查询参数和工具事实；不得因此编造字段。
 已经是 available/unavailable/not_found/no_match 的状态必须能在 History 中找到对应
 工具证据。用户修改任一查询条件后，expected 必须重新输出 Tool Call。
+
+字段更新遵循**最小替换原则**：用户明确修改哪个条件，只修改该条件及直接依赖字段。
+例如更换技师时，更新 `technician_name` 并清空待重新核实的 `technician_gender`；时间、
+时长、偏好和 `gender_preference` 默认保持不变，除非用户同时明确修改。
+
+合同中的营业时间 `[open, close)` 表示**允许开始服务的时间窗口**，`close` 是最晚开始
+时间的排他上界，不表示服务必须在该时刻前结束。因此 20:00 开始、持续 90 分钟在
+当前合同下合法；校验器只检查 `open <= start_time < close`。
 
 ## 输出协议
 
@@ -105,7 +122,7 @@ Tool Call 严格只有三个顶层字段：
     "technician_name": null,
     "start_time": "2026-06-09 14:00",
     "duration_minutes": 60,
-    "gender": null,
+    "gender_preference": null,
     "preferences": []
   }
 }
@@ -115,22 +132,23 @@ Tool Call 不包含 `reply_type` 或 `reply`，系统直接执行工具，不向
 
 ### 无关输入
 
-无关输入仍必须输出完整 Final 13 字段，固定为：
+无关输入仍必须输出完整 Final 14 字段，固定为：
 
 ```json
-{"action":"final","gender":null,"start_time":null,"duration_minutes":null,"preferences":[],"technician_name":null,"technician_status":"not_checked","confirmation":false,"info_complete":false,"unrelated":true,"missing_info":[],"reply_type":"handoff","reply":null}
+{"action":"final","gender_preference":null,"technician_gender":null,"start_time":null,"duration_minutes":null,"preferences":[],"technician_name":null,"technician_status":"not_checked","confirmation":false,"info_complete":false,"unrelated":true,"missing_info":[],"reply_type":"handoff","reply":null}
 ```
 
 `confirmation=false` 表示用户没有确认任何预约方案；`info_complete=false` 表示这不是可执行预约；`missing_info=[]` 表示无关请求不进入预约信息追问。
 
 ### Final
 
-Final 严格包含十三个字段：
+Final 严格包含十四个字段：
 
 ```json
 {
   "action": "final",
-  "gender": "female",
+  "gender_preference": null,
+  "technician_gender": "female",
   "start_time": "2026-06-09 14:00",
   "duration_minutes": 60,
   "preferences": ["肩颈"],
@@ -169,6 +187,7 @@ Final 严格包含十三个字段：
 
 - 当前明确修改覆盖旧值。
 - 未修改字段继承 `current_state`。
+- `gender_preference` 只来自用户要求；`technician_gender` 只来自工具返回的具体技师事实。
 - `start_time` 或 `duration_minutes` 缺失时禁止 Tool Call。
 - 修改姓名、时间、时长、性别或偏好后，旧工具结果失效。
 - `available/unavailable/not_found/no_match` 只能来自当前工具结果或已经保存的已核实状态。

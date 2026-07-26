@@ -1,7 +1,7 @@
 {
   "model": "gpt-5.6-sol",
   "backend_config": "configs/inference/openai_responses_gpt_5.6_sol.yaml",
-  "cases_path": "C:\\Users\\zhiruiyang\\Desktop\\后训练项目\\data\\eval\\test.jsonl",
+  "cases_path": "data/eval/test.jsonl",
   "n": 51,
   "aggregate_dimensions": {
     "protocol": {
