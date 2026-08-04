@@ -1,0 +1,45 @@
+{
+  "left_run_id": "qwen3-1.7b-sft",
+  "right_run_id": "qwen3-1.7b-dpo-b03",
+  "case_ids_sha256": "7c02bbd697a32e59ae56e2e14c03eda4a69ebbd25244bbefe515748373767cde",
+  "flipped_positive": [],
+  "flipped_negative": [
+    "confirm-reject-01",
+    "search-single-01-call"
+  ],
+  "net_effective_pass": -2,
+  "dimension_delta": {
+    "protocol": 0.0,
+    "task_correctness": -0.022617177347563966
+  },
+  "scenario_delta": {
+    "confirmation": 0.0,
+    "missing_information": -0.008458322702376342,
+    "multi_turn": -0.0053918748866335076,
+    "tool_call": -0.06666666666666665,
+    "tool_result": -0.0028648570520141137,
+    "unrelated": 0.0
+  },
+  "changes": [
+    {
+      "id": "confirm-reject-01",
+      "direction": "negative",
+      "left_output": "{\"action\":\"final\",\"gender_preference\":null,\"technician_gender\":\"female\",\"start_time\":\"2026-06-09 14:00\",\"duration_minutes\":60,\"preferences\":[],\"technician_name\":\"王芳\",\"technician_status\":\"available\",\"confirmation\":false,\"info_complete\":true,\"unrelated\":false,\"missing_info\":[],\"reply_type\":\"appointment_paused\",\"reply\":\"好的，先不预约。之后需要时再告诉我。\"}",
+      "right_output": "{\"action\":\"final\",\"gender_preference\":null,\"technician_gender\":\"female\",\"start_time\":\"2026-06-09 14:00\",\"duration_minutes\":60,\"preferences\":[],\"technician_name\":\"王芳\",\"technician_status\":\"available\",\"confirmation\":false,\"info_complete\":true,\"unrelated\":false,\"missing_info\":[],\"reply_type\":\"appointment_paused\",\"reply\":\"好的，先不安排。如需再调整，可以随时告诉我。\"}",
+      "left_failure_reasons": [],
+      "right_failure_reasons": [
+        "task_correctness"
+      ]
+    },
+    {
+      "id": "search-single-01-call",
+      "direction": "negative",
+      "left_output": "{\"action\":\"tool_call\",\"tool_name\":\"find_technicians\",\"arguments\":{\"technician_name\":null,\"start_time\":\"2026-06-10 10:00\",\"duration_minutes\":60,\"gender_preference\":null,\"preferences\":[\"足部按摩\"]}}",
+      "right_output": "{\"action\":\"final\",\"gender_preference\":null,\"technician_gender\":null,\"start_time\":\"2026-06-10 10:00\",\"duration_minutes\":60,\"preferences\":[\"足部按摩\"],\"technician_name\":null,\"technician_status\":\"not_checked\",\"confirmation\":false,\"info_complete\":true,\"unrelated\":false,\"missing_info\":[],\"reply_type\":\"ask_start_time\",\"reply\":\"好的，已记下后天上午十点、60分钟，想做足部按摩。请问您想指定哪位技师？\"}",
+      "left_failure_reasons": [],
+      "right_failure_reasons": [
+        "task_correctness"
+      ]
+    }
+  ]
+}
