@@ -1,0 +1,37 @@
+{
+  "winner": "qwen3-1.7b-sft",
+  "runs": {
+    "qwen3-0.6b-sft": {
+      "eligible": true,
+      "reasons": []
+    },
+    "qwen3-1.7b-sft": {
+      "eligible": true,
+      "reasons": []
+    },
+    "qwen3-0.6b-dpo-b01": {
+      "eligible": true,
+      "reasons": []
+    },
+    "qwen3-0.6b-dpo-b03": {
+      "eligible": true,
+      "reasons": []
+    },
+    "qwen3-1.7b-dpo-b01": {
+      "eligible": true,
+      "reasons": []
+    },
+    "qwen3-1.7b-dpo-b03": {
+      "eligible": true,
+      "reasons": []
+    }
+  },
+  "selection": {
+    "max_effective_pass": 29,
+    "contenders_within_one": [
+      "qwen3-1.7b-sft",
+      "qwen3-1.7b-dpo-b01"
+    ],
+    "tie_break": "task_correctness, parameter_billions, run_id"
+  }
+}

@@ -9,7 +9,24 @@
       "function_tag": "function_call",
       "observation_tag": "observation"
     },
-    "file_name": "sft/v0.1/train.jsonl",
+    "file_name": "../sft/v0.1/train.jsonl",
+    "columns": {
+      "messages": "conversations",
+      "system": "system",
+      "tools": "tools"
+    }
+  },
+  "phase03_sft_val_v0_1": {
+    "formatting": "sharegpt",
+    "tags": {
+      "role_tag": "from",
+      "content_tag": "value",
+      "user_tag": "human",
+      "assistant_tag": "gpt",
+      "function_tag": "function_call",
+      "observation_tag": "observation"
+    },
+    "file_name": "../sft/v0.1/val.jsonl",
     "columns": {
       "messages": "conversations",
       "system": "system",
@@ -26,7 +43,7 @@
       "function_tag": "function_call",
       "observation_tag": "observation"
     },
-    "file_name": "dpo/v0.1/train.jsonl",
+    "file_name": "../dpo/v0.1/train.jsonl",
     "ranking": true,
     "columns": {
       "messages": "conversations",
@@ -46,7 +63,7 @@
       "function_tag": "function_call",
       "observation_tag": "observation"
     },
-    "file_name": "dpo/v0.1/val.jsonl",
+    "file_name": "../dpo/v0.1/val.jsonl",
     "ranking": true,
     "columns": {
       "messages": "conversations",

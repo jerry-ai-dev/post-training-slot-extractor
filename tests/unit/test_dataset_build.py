@@ -41,10 +41,12 @@ def test_dataset_registration_uses_sharegpt_contract(tmp_path) -> None:
 
     info = json.loads(result.dataset_info.read_text(encoding="utf-8"))
     assert info["phase03_sft_v0_1"]["formatting"] == "sharegpt"
+    assert "phase03_sft_val_v0_1" in info
     assert info["phase03_dpo_v0_1"]["ranking"] is True
     assert info["phase03_dpo_v0_1"]["tags"]["function_tag"] == "function_call"
-    assert info["phase03_dpo_v0_1"]["file_name"] == "dpo/v0.1/train.jsonl"
-    assert info["phase03_dpo_val_v0_1"]["file_name"] == "dpo/v0.1/val.jsonl"
+    for registration in info.values():
+        path = (result.dataset_info.parent / registration["file_name"]).resolve()
+        assert path.is_file()
 
 
 def test_split_uses_ten_percent_validation_for_larger_categories(tmp_path) -> None:

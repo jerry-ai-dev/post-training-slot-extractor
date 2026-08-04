@@ -1,0 +1,69 @@
+{
+  "left_run_id": "qwen3-0.6b-sft",
+  "right_run_id": "qwen3-0.6b-dpo-b01",
+  "case_ids_sha256": "7c02bbd697a32e59ae56e2e14c03eda4a69ebbd25244bbefe515748373767cde",
+  "flipped_positive": [
+    "ask-0001"
+  ],
+  "flipped_negative": [
+    "ask-0002",
+    "multiturn-incomplete-03",
+    "multiturn-time-01-result"
+  ],
+  "net_effective_pass": -2,
+  "dimension_delta": {
+    "protocol": -0.019607843137254832,
+    "task_correctness": -0.02188203117412335
+  },
+  "scenario_delta": {
+    "confirmation": -0.044550438596491215,
+    "missing_information": -0.04348290853070258,
+    "multi_turn": -0.03864120280251804,
+    "tool_call": -0.02857142857142858,
+    "tool_result": -0.026838422707554432,
+    "unrelated": 0.0
+  },
+  "changes": [
+    {
+      "id": "ask-0001",
+      "direction": "positive",
+      "left_output": "{\"action\":\"final\",\"gender_preference\":null,\"technician_gender\":null,\"start_time\":null,\"duration_minutes\":null,\"preferences\":[\"肩颈按摩\"],\"technician_name\":null,\"technician_status\":\"not_checked\",\"confirmation\":false,\"info_complete\":false,\"unrelated\":false,\"missing_info\":[\"start_time\",\"duration_minutes\"],\"reply_type\":\"ask_start_time_and_duration\",\"reply\":\"好的，想预约明天下午具体几点开始？时长还缺，可以问清楚。\"}",
+      "right_output": "{\"action\":\"final\",\"gender_preference\":null,\"technician_gender\":null,\"start_time\":null,\"duration_minutes\":null,\"preferences\":[\"肩颈按摩\"],\"technician_name\":null,\"technician_status\":\"not_checked\",\"confirmation\":false,\"info_complete\":false,\"unrelated\":false,\"missing_info\":[\"start_time\",\"duration_minutes\"],\"reply_type\":\"ask_start_time_and_duration\",\"reply\":\"好的，想问明天下午具体几点开始，以及需要多长时间？\"}",
+      "left_failure_reasons": [
+        "task_correctness"
+      ],
+      "right_failure_reasons": []
+    },
+    {
+      "id": "ask-0002",
+      "direction": "negative",
+      "left_output": "{\"action\":\"final\",\"gender_preference\":null,\"technician_gender\":null,\"start_time\":null,\"duration_minutes\":60,\"preferences\":[],\"technician_name\":null,\"technician_status\":\"not_checked\",\"confirmation\":false,\"info_complete\":false,\"unrelated\":false,\"missing_info\":[\"start_time\"],\"reply_type\":\"ask_start_time\",\"reply\":\"好的，想预约60分钟。请问您想预约几点开始？\"}",
+      "right_output": "{\"action\":\"final\",\"gender_preference\":null,\"technician_gender\":null,\"start_time\":null,\"duration_minutes\":60,\"preferences\":[],\"technician_name\":null,\"technician_status\":\"not_checked\",\"confirmation\":false,\"info_complete\":false,\"unrelated\":false,\"missing_info\":[\"start_time\"],\"reply_type\":\"ask_start_time\",\"reply\":\"好的，想预约具体时间。\"}",
+      "left_failure_reasons": [],
+      "right_failure_reasons": [
+        "task_correctness"
+      ]
+    },
+    {
+      "id": "multiturn-incomplete-03",
+      "direction": "negative",
+      "left_output": "{\"action\":\"final\",\"gender_preference\":null,\"technician_gender\":null,\"start_time\":\"2026-06-10 16:00\",\"duration_minutes\":null,\"preferences\":[],\"technician_name\":\"王芳\",\"technician_status\":\"not_checked\",\"confirmation\":false,\"info_complete\":false,\"unrelated\":false,\"missing_info\":[\"duration_minutes\"],\"reply_type\":\"ask_duration\",\"reply\":\"好的，稍后再定。请问您想预约多长时间？\"}",
+      "right_output": "{\"action\":\"final\",\"gender_preference\":null,\"technician_gender\":null,\"start_time\":null,\"duration_minutes\":null,\"preferences\":[],\"technician_name\":null,\"technician_status\":\"not_checked\",\"confirmation\":false,\"info_complete\":false,\"unrelated\":false,\"missing_info\":[],\"reply_type\":\"ask_duration\",\"reply\":\"好的，稍后再定。请问您想预约多长时间？\"}",
+      "left_failure_reasons": [],
+      "right_failure_reasons": [
+        "task_correctness"
+      ]
+    },
+    {
+      "id": "multiturn-time-01-result",
+      "direction": "negative",
+      "left_output": "{\"action\":\"final\",\"gender_preference\":null,\"technician_gender\":\"female\",\"start_time\":\"2026-06-10 10:00\",\"duration_minutes\":60,\"preferences\":[\"精油\"],\"technician_name\":\"王芳\",\"technician_status\":\"available\",\"confirmation\":false,\"info_complete\":true,\"unrelated\":false,\"missing_info\":[],\"reply_type\":\"confirm_available\",\"reply\":\"王芳技师明天下午10点有空，可以为您提供60分钟精油按摩服务。请问要确认预约吗？\"}",
+      "right_output": "{\"action\":\"final\",\"gender_preference\":null,\"technician_gender\":\"female\",\"start_time\":\"2026-06-10 10:00\",\"duration_minutes\":60,\"preferences\":[\"精油\"],\"technician_name\":\"王芳\",\"technician_status\":\"matched\",\"confirmation\":false,\"info_complete\":true,\"unrelated\":false,\"missing_info\":[],\"reply_type\":\"confirm_available\",\"reply\":\"王芳技师明天下午10点有空，可以为您提供60分钟精油按摩服务。请问要确认预约吗？\"}",
+      "left_failure_reasons": [],
+      "right_failure_reasons": [
+        "protocol",
+        "task_correctness"
+      ]
+    }
+  ]
+}

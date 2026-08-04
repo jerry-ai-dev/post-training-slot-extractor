@@ -19,6 +19,7 @@ import json
 from dataclasses import asdict
 from pathlib import Path
 
+from scripts.eval.phase04_artifacts import write_phase04_artifacts
 from slot_extractor.evaluation.runner import default_scorers
 from slot_extractor.evaluation.scenarios import aggregate_scenario_slices
 from slot_extractor.evaluation.scorecard import aggregate_scorecard, summarize_timing
@@ -28,12 +29,23 @@ from slot_extractor.schemas.results import CaseResult
 from slot_extractor.schemas.sample import load_samples
 
 
-def main(argv: list[str] | None = None) -> int:
+def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Collect per-sample analysis log.")
     parser.add_argument("--backend-config", required=True)
     parser.add_argument("--cases", required=True)
-    parser.add_argument("--out", required=True)
+    parser.add_argument("--out")
+    parser.add_argument("--run-id")
+    parser.add_argument("--run-dir", type=Path)
+    parser.add_argument("--evaluation-backend")
+    parser.add_argument("--evaluation-device")
+    return parser
+
+
+def main(argv: list[str] | None = None) -> int:
+    parser = build_parser()
     args = parser.parse_args(argv)
+    if args.out is None and (args.run_id is None or args.run_dir is None):
+        parser.error("provide --out or both --run-id and --run-dir")
 
     samples = load_samples(Path(args.cases))
     backend = build_backend_from_config(Path(args.backend_config))
@@ -149,14 +161,31 @@ def main(argv: list[str] | None = None) -> int:
         "records": records,
     }
 
-    out_path = Path(args.out)
-    out_path.parent.mkdir(parents=True, exist_ok=True)
-    out_path.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
+    if args.out is not None:
+        out_path = Path(args.out)
+        out_path.parent.mkdir(parents=True, exist_ok=True)
+        out_path.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
+        print(f"Analysis JSON: {out_path}")
+    if args.run_id is not None and args.run_dir is not None:
+        predictions_path, scorecard_path = write_phase04_artifacts(
+            payload,
+            args.run_dir,
+            run_id=args.run_id,
+            evaluation_environment={
+                "backend": args.evaluation_backend,
+                "device": args.evaluation_device,
+                "latency_comparable_to_m0": False,
+            }
+            if args.evaluation_backend or args.evaluation_device
+            else None,
+        )
+        print(f"Predictions JSONL: {predictions_path}")
+        print(f"Scorecard JSON: {scorecard_path}")
 
     passed = sum(
         1 for r in records if r["dimensions"].get("protocol", {}).get("score") == 1.0
     )
-    print(f"{backend.model}: wrote {out_path} (n={len(records)}, protocol_pass={passed})")
+    print(f"{backend.model}: n={len(records)}, protocol_pass={passed}")
     return 0
 
 
