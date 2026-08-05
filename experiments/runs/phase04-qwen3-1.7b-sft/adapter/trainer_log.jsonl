@@ -1,0 +1,21 @@
+{"current_steps": 5, "total_steps": 87, "loss": 0.9738471031188964, "lr": 4.4444444444444447e-05, "epoch": 0.17777777777777778, "percentage": 5.75, "elapsed_time": "0:00:37", "remaining_time": "0:10:12"}
+{"current_steps": 10, "total_steps": 87, "loss": 0.5371048927307129, "lr": 0.0001, "epoch": 0.35555555555555557, "percentage": 11.49, "elapsed_time": "0:01:13", "remaining_time": "0:09:23"}
+{"current_steps": 15, "total_steps": 87, "loss": 0.27008178234100344, "lr": 9.898953260211338e-05, "epoch": 0.5333333333333333, "percentage": 17.24, "elapsed_time": "0:01:48", "remaining_time": "0:08:42"}
+{"current_steps": 20, "total_steps": 87, "loss": 0.18595410585403443, "lr": 9.599897218294122e-05, "epoch": 0.7111111111111111, "percentage": 22.99, "elapsed_time": "0:02:23", "remaining_time": "0:08:01"}
+{"current_steps": 25, "total_steps": 87, "loss": 0.18510178327560425, "lr": 9.114919329468282e-05, "epoch": 0.8888888888888888, "percentage": 28.74, "elapsed_time": "0:02:59", "remaining_time": "0:07:24"}
+{"current_steps": 29, "total_steps": 87, "eval_loss": 0.12253876030445099, "epoch": 1.0, "percentage": 33.33, "elapsed_time": "0:03:28", "remaining_time": "0:06:56"}
+{"current_steps": 30, "total_steps": 87, "loss": 0.20176475048065184, "lr": 8.463621767547998e-05, "epoch": 1.0355555555555556, "percentage": 34.48, "elapsed_time": "0:03:39", "remaining_time": "0:06:56"}
+{"current_steps": 35, "total_steps": 87, "loss": 0.1488582968711853, "lr": 7.672329130639005e-05, "epoch": 1.2133333333333334, "percentage": 40.23, "elapsed_time": "0:04:14", "remaining_time": "0:06:17"}
+{"current_steps": 40, "total_steps": 87, "loss": 0.12129737138748169, "lr": 6.773024435212678e-05, "epoch": 1.3911111111111112, "percentage": 45.98, "elapsed_time": "0:04:50", "remaining_time": "0:05:40"}
+{"current_steps": 45, "total_steps": 87, "loss": 0.11037701368331909, "lr": 5.8020564042888015e-05, "epoch": 1.568888888888889, "percentage": 51.72, "elapsed_time": "0:05:25", "remaining_time": "0:05:04"}
+{"current_steps": 50, "total_steps": 87, "loss": 0.10756322145462036, "lr": 4.798670299452926e-05, "epoch": 1.7466666666666666, "percentage": 57.47, "elapsed_time": "0:06:01", "remaining_time": "0:04:27"}
+{"current_steps": 55, "total_steps": 87, "loss": 0.10208648443222046, "lr": 3.803421678562213e-05, "epoch": 1.9244444444444444, "percentage": 63.22, "elapsed_time": "0:06:36", "remaining_time": "0:03:50"}
+{"current_steps": 58, "total_steps": 87, "eval_loss": 0.08965647965669632, "epoch": 2.0, "percentage": 66.67, "elapsed_time": "0:06:57", "remaining_time": "0:03:28"}
+{"current_steps": 60, "total_steps": 87, "loss": 0.07337328791618347, "lr": 2.8565371929847284e-05, "epoch": 2.071111111111111, "percentage": 68.97, "elapsed_time": "0:07:15", "remaining_time": "0:03:15"}
+{"current_steps": 65, "total_steps": 87, "loss": 0.088748300075531, "lr": 1.996288678810105e-05, "epoch": 2.2488888888888887, "percentage": 74.71, "elapsed_time": "0:07:51", "remaining_time": "0:02:39"}
+{"current_steps": 70, "total_steps": 87, "loss": 0.08005591630935668, "lr": 1.257446259144494e-05, "epoch": 2.4266666666666667, "percentage": 80.46, "elapsed_time": "0:08:27", "remaining_time": "0:02:03"}
+{"current_steps": 75, "total_steps": 87, "loss": 0.09112131595611572, "lr": 6.698729810778065e-06, "epoch": 2.6044444444444443, "percentage": 86.21, "elapsed_time": "0:09:02", "remaining_time": "0:01:26"}
+{"current_steps": 80, "total_steps": 87, "loss": 0.09181991219520569, "lr": 2.573177902642726e-06, "epoch": 2.7822222222222224, "percentage": 91.95, "elapsed_time": "0:09:38", "remaining_time": "0:00:50"}
+{"current_steps": 85, "total_steps": 87, "loss": 0.0834785282611847, "lr": 3.6455629509730136e-07, "epoch": 2.96, "percentage": 97.7, "elapsed_time": "0:10:13", "remaining_time": "0:00:14"}
+{"current_steps": 87, "total_steps": 87, "eval_loss": 0.08367149531841278, "epoch": 3.0, "percentage": 100.0, "elapsed_time": "0:10:28", "remaining_time": "0:00:00"}
+{"current_steps": 87, "total_steps": 87, "epoch": 3.0, "percentage": 100.0, "elapsed_time": "0:10:31", "remaining_time": "0:00:00"}

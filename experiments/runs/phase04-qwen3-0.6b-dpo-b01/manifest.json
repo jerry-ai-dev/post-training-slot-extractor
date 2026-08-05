@@ -1,0 +1,12 @@
+{
+  "run_id": "qwen3-0.6b-dpo-b01",
+  "status": "trained",
+  "collected_at": "2026-08-03T09:11:08.169464+00:00",
+  "git_commit": "d3444d86e67e261614ec9721949ede3f84103d0c",
+  "stage": "dpo",
+  "base_model": "Qwen/Qwen3-0.6B",
+  "base_revision": "main",
+  "adapter_path": "adapter",
+  "config_sha256": "290e2a90710bca8d80c5ec1bb4c77030d0a7454aa86f4252fbbc05a282666255",
+  "requirements_sha256": "65c767be9a78d4327f285438192799d98740d4e605735ff0114e9fd48e2ba448"
+}
