@@ -60,7 +60,16 @@ def _dataset_info(version: str) -> dict[str, Any]:
     return {
         f"phase03_sft_{token}": {
             **common,
-            "file_name": f"sft/{version}/train.jsonl",
+            "file_name": f"../sft/{version}/train.jsonl",
+            "columns": {
+                "messages": "conversations",
+                "system": "system",
+                "tools": "tools",
+            },
+        },
+        f"phase03_sft_val_{token}": {
+            **common,
+            "file_name": f"../sft/{version}/val.jsonl",
             "columns": {
                 "messages": "conversations",
                 "system": "system",
@@ -69,7 +78,7 @@ def _dataset_info(version: str) -> dict[str, Any]:
         },
         f"phase03_dpo_{token}": {
             **common,
-            "file_name": f"dpo/{version}/train.jsonl",
+            "file_name": f"../dpo/{version}/train.jsonl",
             "formatting": "sharegpt",
             "ranking": True,
             "columns": {
@@ -82,7 +91,7 @@ def _dataset_info(version: str) -> dict[str, Any]:
         },
         f"phase03_dpo_val_{token}": {
             **common,
-            "file_name": f"dpo/{version}/val.jsonl",
+            "file_name": f"../dpo/{version}/val.jsonl",
             "formatting": "sharegpt",
             "ranking": True,
             "columns": {

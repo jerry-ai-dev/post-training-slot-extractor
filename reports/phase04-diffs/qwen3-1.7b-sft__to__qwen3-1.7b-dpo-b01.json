@@ -1,0 +1,21 @@
+{
+  "left_run_id": "qwen3-1.7b-sft",
+  "right_run_id": "qwen3-1.7b-dpo-b01",
+  "case_ids_sha256": "7c02bbd697a32e59ae56e2e14c03eda4a69ebbd25244bbefe515748373767cde",
+  "flipped_positive": [],
+  "flipped_negative": [],
+  "net_effective_pass": 0,
+  "dimension_delta": {
+    "protocol": 0.0,
+    "task_correctness": -0.0014879015030863085
+  },
+  "scenario_delta": {
+    "confirmation": -6.410256410238624e-06,
+    "missing_information": -0.008458322702376342,
+    "multi_turn": -0.0026096655103919897,
+    "tool_call": 0.0,
+    "tool_result": 8.960283851111583e-06,
+    "unrelated": 0.0
+  },
+  "changes": []
+}

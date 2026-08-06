@@ -5,8 +5,11 @@ __pycache__/
 .ruff_cache/
 .mypy_cache/
 .venv/
+.venv-train/
 venv/
 .worktrees/
+.phase04-dryrun/
+configs/training/llamafactory/_rendered/
 
 # Local environment
 .env

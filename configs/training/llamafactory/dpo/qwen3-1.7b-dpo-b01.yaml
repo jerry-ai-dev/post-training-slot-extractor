@@ -1,0 +1,6 @@
+run_id: qwen3-1.7b-dpo-b01
+model_name_or_path: Qwen/Qwen3-1.7B
+adapter_name_or_path: models/adapters/qwen3-1.7b-sft
+pref_beta: 0.1
+output_dir: models/adapters/qwen3-1.7b-dpo-b01
+

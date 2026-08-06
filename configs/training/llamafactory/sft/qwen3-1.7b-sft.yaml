@@ -1,0 +1,4 @@
+run_id: qwen3-1.7b-sft
+model_name_or_path: Qwen/Qwen3-1.7B
+output_dir: models/adapters/qwen3-1.7b-sft
+

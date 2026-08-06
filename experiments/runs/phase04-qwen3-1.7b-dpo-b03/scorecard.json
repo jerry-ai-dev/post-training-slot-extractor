@@ -1,0 +1,87 @@
+{
+  "run_id": "qwen3-1.7b-dpo-b03",
+  "model": "qwen3-1.7b-dpo-b03",
+  "status": "evaluated",
+  "dataset": "data\\eval\\test.jsonl",
+  "backend_config": "experiments\\runs\\phase04-qwen3-1.7b-dpo-b03\\.local-eval\\backend.yaml",
+  "n": 51,
+  "aggregate_dimensions": {
+    "protocol": {
+      "score": 0.8823529411764706,
+      "passed": false,
+      "detail": "mean over 51 applicable case(s)"
+    },
+    "task_correctness": {
+      "score": 0.8979402278676815,
+      "passed": false,
+      "detail": "mean over 51 applicable case(s)"
+    },
+    "resource": {
+      "score": null,
+      "passed": null,
+      "detail": "n/a"
+    }
+  },
+  "effective_pass": {
+    "numerator": 27,
+    "denominator": 51,
+    "rate": 0.5294117647058824
+  },
+  "output_kinds": {
+    "final": {
+      "count": 36,
+      "dimensions": {
+        "protocol": 0.8611111111111112,
+        "task_correctness": 0.9308121482093742
+      }
+    },
+    "tool_call": {
+      "count": 15,
+      "dimensions": {
+        "protocol": 0.9333333333333333,
+        "task_correctness": 0.819047619047619
+      }
+    }
+  },
+  "scenario_slices": {
+    "confirmation": {
+      "count": 6,
+      "task_correctness": 0.8976438371569949
+    },
+    "missing_information": {
+      "count": 9,
+      "task_correctness": 0.8667229844071133
+    },
+    "multi_turn": {
+      "count": 28,
+      "task_correctness": 0.8893924761632387
+    },
+    "tool_call": {
+      "count": 15,
+      "task_correctness": 0.819047619047619
+    },
+    "tool_result": {
+      "count": 27,
+      "task_correctness": 0.9468841975191225
+    },
+    "unrelated": {
+      "count": 5,
+      "task_correctness": 1.0
+    }
+  },
+  "timing": {
+    "count": 51,
+    "total_ms_mean": 85479.88294117499,
+    "total_ms_p50": 86190.07840007544,
+    "total_ms_p95": 98246.41674989834,
+    "total_ms_max": 101804.71320007928,
+    "total_ms_min": 72066.63349992596,
+    "first_token_ms_mean": null,
+    "tokens_per_s_mean": 1.0430272676915988
+  },
+  "evaluation_environment": {
+    "backend": "llamafactory_huggingface",
+    "device": "cpu",
+    "latency_comparable_to_m0": false
+  }
+}
