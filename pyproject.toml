@@ -5,9 +5,13 @@ description = "Local fine-tuning and evaluation harness for appointment slot ext
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
+    "fastapi>=0.115.0",
     "httpx>=0.27.0",
+    "peft==0.18.1",
     "pyyaml>=6.0.1",
+    "sentencepiece>=0.2.2",
     "sentence-transformers>=5.0.0",
+    "uvicorn>=0.30.0",
 ]
 
 [project.scripts]
@@ -23,6 +27,7 @@ dev = [
 [tool.ruff]
 line-length = 100
 target-version = "py312"
+extend-exclude = [".claude", ".superpowers"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B"]
@@ -34,6 +39,7 @@ select = ["E", "F", "I", "UP", "B"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+addopts = "-m 'not local_backend'"
 markers = [
     "local_backend: requires a running local llama-server",
 ]

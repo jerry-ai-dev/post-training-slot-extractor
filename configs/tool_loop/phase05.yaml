@@ -1,0 +1,7 @@
+fixture: data/fixtures/technicians/phase05-v1.yaml
+registry: configs/quantization/phase05.yaml
+max_turns: 3
+event_protocol: ndjson-v1
+left_model_id: qwen3-0.6b-base-q4-k-m
+right_model_id: qwen3-0.6b-sft-q4-k-m
+mode: sequential

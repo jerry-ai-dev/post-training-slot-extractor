@@ -14,6 +14,7 @@ This project follows the spec workflow:
 ├── configs/                       # Runtime and experiment configuration
 │   ├── evaluation/                # Scoring thresholds, metric groups, report configs
 │   ├── inference/                 # Backend configs for remote LLM, local llama-server, etc.
+│   ├── quantization/              # Sole Phase 05 model registry and toolchain paths
 │   └── training/                  # LLaMA-Factory YAMLs and dataset registration
 │       └── llamafactory/
 │           ├── sft/
@@ -61,6 +62,7 @@ This project follows the spec workflow:
 │       ├── data/                  # Dataset builders, converters, validators
 │       ├── evaluation/            # JSON parsing, schema checks, metrics, scorecards
 │       ├── inference/             # Backend clients and shared inference harness
+│       ├── quantization/          # Registry, lineage, manifests, runner and pipeline
 │       ├── prompts/               # Shared prompt templates for train / eval / deploy
 │       ├── schemas/               # Output schema and assertion definitions
 │       └── utils/                 # Shared utilities
@@ -78,3 +80,7 @@ This project follows the spec workflow:
 - `project-log/` stores construction logs by implementation phase. Each phase directory has a Markdown log for goals, tasks, decisions, commands, outputs, problems, and next steps.
 - `models/` is intentionally ignored by git because it will contain large model artifacts.
 - `scripts/` should stay thin; reusable logic belongs in `src/slot_extractor/`.
+- `configs/quantization/phase05.yaml` is the only model-to-artifact path authority for
+  quantization, evaluation, serving, and the comparison app.
+- `scripts/quantize/run_phase05.py` is the operator entrypoint; generated manifests and model
+  artifacts stay under the ignored `models/` tree.

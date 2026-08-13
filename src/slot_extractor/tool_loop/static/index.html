@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>模型调度台 · 预约推理对比</title>
+  <link rel="stylesheet" href="/static/styles.css">
+  <link rel="stylesheet" href="/static/theme-light.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="/" aria-label="返回模型调度台首页">
+      <span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i></span>
+      <span><b>模型调度台</b><small>POST-TRAINING / 05</small></span>
+    </a>
+    <div class="topbar-meta"><span class="live-dot"></span>本地推理环境</div>
+  </header>
+
+  <main>
+    <section class="intro">
+      <div>
+        <p class="eyebrow">双模型 · 同事实 · 独立上下文</p>
+        <h1>把一次预约，<br><em>放到两条推理轨道上。</em></h1>
+      </div>
+      <p class="intro-copy">对照模型如何理解需求、调用技师工具并组织最终回复。每一侧保留独立对话历史，结果可完整导出复核。</p>
+    </section>
+
+    <div class="workspace">
+      <section class="controls" aria-labelledby="task-title">
+        <div class="section-heading"><span>01</span><div><h2 id="task-title">发起任务</h2><p>输入同一条用户需求</p></div></div>
+        <label class="field-label" for="user-input">预约内容</label>
+        <div class="prompt-wrap">
+          <textarea id="user-input" rows="5" placeholder="例：8 月 13 日下午 3 点，找王芳做 60 分钟肩颈护理"></textarea>
+          <span class="shortcut">Ctrl ↵</span>
+        </div>
+        <label class="field-label" for="comparison-mode">调度策略</label>
+        <select id="comparison-mode"><option value="sequential">顺序运行 · 数据可比</option><option value="parallel">并行运行 · 响应更快</option></select>
+        <small id="parallel-warning">并行模式的性能数据不可直接比较。</small>
+        <button id="run" class="primary"><span>运行双模型对比</span><b aria-hidden="true">→</b></button>
+        <div id="run-status" role="status" aria-live="polite">正在准备本地模型…</div>
+        <div class="control-actions">
+          <button id="clear-conversations" type="button">清空对话</button>
+          <div><button id="export-ndjson">NDJSON</button><button id="export-json">JSON</button></div>
+        </div>
+      </section>
+
+      <section class="comparison" aria-label="模型输出对比">
+        <div class="comparison-head">
+          <div><span class="section-index">02</span><h2>推理对照</h2></div>
+          <span class="fairness">隔离上下文</span>
+        </div>
+        <div class="grid">
+          <article class="model-card left-card">
+            <div class="model-head">
+              <div class="lane-label"><span>A</span><label for="left-model">基准轨道</label></div>
+              <select id="left-model" aria-label="选择左侧模型"></select>
+            </div>
+            <div id="left-status" class="side-status" role="status" aria-live="polite">等待推理</div>
+            <div id="left-conversation" class="conversation"><div class="empty-state"><span>A</span><p>模型输出将在这里逐条展开</p></div></div>
+          </article>
+          <article class="model-card right-card">
+            <div class="model-head">
+              <div class="lane-label"><span>B</span><label for="right-model">候选轨道</label></div>
+              <select id="right-model" aria-label="选择右侧模型"></select>
+            </div>
+            <div id="right-status" class="side-status" role="status" aria-live="polite">等待推理</div>
+            <div id="right-conversation" class="conversation"><div class="empty-state"><span>B</span><p>模型输出将在这里逐条展开</p></div></div>
+          </article>
+        </div>
+      </section>
+
+      <aside>
+        <div class="section-heading"><span>03</span><div><h2>事实基线</h2><p>两侧共享的 Mock 数据</p></div></div>
+        <div id="technician-library"><div class="skeleton"></div><div class="skeleton short"></div></div>
+        <p class="aside-note">技师信息对两侧模型完全一致，不进入各自对话历史。</p>
+      </aside>
+    </div>
+  </main>
+  <script src="/static/app.js"></script>
+</body>
+</html>

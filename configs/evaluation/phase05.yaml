@@ -1,0 +1,19 @@
+registry: configs/quantization/phase05.yaml
+manifests_root: models/quantization
+reports_root: reports/phase05
+quality_cases: data/eval/test.jsonl
+q4_model_ids:
+  - qwen3-0.6b-base-q4-k-m
+  - qwen3-0.6b-sft-q4-k-m
+  - qwen3-0.6b-dpo-b01-q4-k-m
+  - qwen3-0.6b-dpo-b03-q4-k-m
+  - qwen3-1.7b-base-q4-k-m
+  - qwen3-1.7b-sft-q4-k-m
+  - qwen3-1.7b-dpo-b01-q4-k-m
+  - qwen3-1.7b-dpo-b03-q4-k-m
+f16_anchor_ids: [qwen3-0.6b-sft-f16, qwen3-1.7b-sft-f16]
+workloads: [short, medium, 2k, 4k]
+include_8k: false
+warmup_requests: 1
+repetitions: 5
+execution: windows_cpu_sequential

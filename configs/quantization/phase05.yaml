@@ -1,0 +1,104 @@
+version: phase05-v1
+threads: 8
+work_root: models/quantization
+calibration_data: data/calibration/phase05-v1.txt
+toolchain:
+  resolve: huggingface-cli
+  merge: llamafactory-cli
+  convert_f16: deployment/llama_cpp/source/convert_hf_to_gguf.py
+  imatrix: deployment/llama_cpp/bin/llama-imatrix.exe
+  quantize: deployment/llama_cpp/bin/llama-quantize.exe
+  server: deployment/llama_cpp/bin/llama-server.exe
+models:
+  - &base06
+    model_id: qwen3-0.6b-base-q4-k-m
+    family: qwen3
+    size_b: 0.6
+    stage: base
+    variant: base
+    base_model: Qwen/Qwen3-0.6B
+    base_revision: main
+    artifact_kind: q4_k_m
+    artifact_path: models/gguf/qwen3-0.6b-base-q4-k-m.gguf
+    manifest_path: models/quantization/qwen3-0.6b-base-q4-k-m/manifest.json
+    is_anchor: false
+  - <<: *base06
+    model_id: qwen3-0.6b-sft-q4-k-m
+    stage: sft
+    variant: sft
+    adapter_run_id: qwen3-0.6b-sft
+    parent_model_id: qwen3-0.6b-base-q4-k-m
+    artifact_path: models/gguf/qwen3-0.6b-sft-q4-k-m.gguf
+    manifest_path: models/quantization/qwen3-0.6b-sft-q4-k-m/manifest.json
+  - <<: *base06
+    model_id: qwen3-0.6b-dpo-b01-q4-k-m
+    stage: dpo
+    variant: dpo-b01
+    adapter_run_id: qwen3-0.6b-dpo-b01
+    parent_model_id: qwen3-0.6b-sft-q4-k-m
+    artifact_path: models/gguf/qwen3-0.6b-dpo-b01-q4-k-m.gguf
+    manifest_path: models/quantization/qwen3-0.6b-dpo-b01-q4-k-m/manifest.json
+  - <<: *base06
+    model_id: qwen3-0.6b-dpo-b03-q4-k-m
+    stage: dpo
+    variant: dpo-b03
+    adapter_run_id: qwen3-0.6b-dpo-b03
+    parent_model_id: qwen3-0.6b-sft-q4-k-m
+    artifact_path: models/gguf/qwen3-0.6b-dpo-b03-q4-k-m.gguf
+    manifest_path: models/quantization/qwen3-0.6b-dpo-b03-q4-k-m/manifest.json
+  - &base17
+    model_id: qwen3-1.7b-base-q4-k-m
+    family: qwen3
+    size_b: 1.7
+    stage: base
+    variant: base
+    base_model: Qwen/Qwen3-1.7B
+    base_revision: main
+    artifact_kind: q4_k_m
+    artifact_path: models/gguf/qwen3-1.7b-base-q4-k-m.gguf
+    manifest_path: models/quantization/qwen3-1.7b-base-q4-k-m/manifest.json
+    is_anchor: false
+  - <<: *base17
+    model_id: qwen3-1.7b-sft-q4-k-m
+    stage: sft
+    variant: sft
+    adapter_run_id: qwen3-1.7b-sft
+    parent_model_id: qwen3-1.7b-base-q4-k-m
+    artifact_path: models/gguf/qwen3-1.7b-sft-q4-k-m.gguf
+    manifest_path: models/quantization/qwen3-1.7b-sft-q4-k-m/manifest.json
+  - <<: *base17
+    model_id: qwen3-1.7b-dpo-b01-q4-k-m
+    stage: dpo
+    variant: dpo-b01
+    adapter_run_id: qwen3-1.7b-dpo-b01
+    parent_model_id: qwen3-1.7b-sft-q4-k-m
+    artifact_path: models/gguf/qwen3-1.7b-dpo-b01-q4-k-m.gguf
+    manifest_path: models/quantization/qwen3-1.7b-dpo-b01-q4-k-m/manifest.json
+  - <<: *base17
+    model_id: qwen3-1.7b-dpo-b03-q4-k-m
+    stage: dpo
+    variant: dpo-b03
+    adapter_run_id: qwen3-1.7b-dpo-b03
+    parent_model_id: qwen3-1.7b-sft-q4-k-m
+    artifact_path: models/gguf/qwen3-1.7b-dpo-b03-q4-k-m.gguf
+    manifest_path: models/quantization/qwen3-1.7b-dpo-b03-q4-k-m/manifest.json
+  - <<: *base06
+    model_id: qwen3-0.6b-sft-f16
+    stage: sft
+    variant: sft-anchor
+    adapter_run_id: qwen3-0.6b-sft
+    parent_model_id: qwen3-0.6b-base-q4-k-m
+    artifact_kind: f16
+    artifact_path: models/merged/qwen3-0.6b-sft-f16/model-f16.gguf
+    manifest_path: models/merged/qwen3-0.6b-sft-f16/manifest.json
+    is_anchor: true
+  - <<: *base17
+    model_id: qwen3-1.7b-sft-f16
+    stage: sft
+    variant: sft-anchor
+    adapter_run_id: qwen3-1.7b-sft
+    parent_model_id: qwen3-1.7b-base-q4-k-m
+    artifact_kind: f16
+    artifact_path: models/merged/qwen3-1.7b-sft-f16/model-f16.gguf
+    manifest_path: models/merged/qwen3-1.7b-sft-f16/manifest.json
+    is_anchor: true

@@ -1,0 +1,16 @@
+version: phase05-v1
+date: 2026-08-12
+technicians:
+  - name: 王芳
+    gender: female
+    specialties: [肩颈, 精油, 足部]
+    availability:
+      - {start: "2026-08-13 09:00", end: "2026-08-13 12:00"}
+      - {start: "2026-08-13 14:00", end: "2026-08-13 18:00"}
+      - {start: "2026-08-14 10:00", end: "2026-08-14 17:00"}
+  - name: 李明
+    gender: male
+    specialties: [泰式, 足部, 精油]
+    availability:
+      - {start: "2026-08-13 10:00", end: "2026-08-13 14:00"}
+      - {start: "2026-08-14 13:00", end: "2026-08-14 20:00"}
