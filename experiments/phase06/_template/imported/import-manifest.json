@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "round_id": "ROUND_ID",
+  "imported_at": null,
+  "import_status": null,
+  "package_checksum_verified": false,
+  "expected_run_ids": [],
+  "received_run_ids": [],
+  "missing_run_ids": [],
+  "unexpected_run_ids": [],
+  "validation_errors": [],
+  "approved_deviations": []
+}

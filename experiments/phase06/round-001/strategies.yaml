@@ -1,0 +1,70 @@
+schema_version: 1
+round_id: round-001
+strategies:
+  - strategy_id: S001
+    title: 基于真实失败模式定向重构 SFT 数据
+    type: data_correction
+    addresses: [P001, P002, P003, P004]
+    hypotheses: [H001, H002, H003, H004]
+    changes:
+      - 使用 eval-v0.2 重新评分现有模型，去除已确认的评测误报。
+      - 将剩余失败逐条标记为状态继承、动作决策、工具参数、日期标准化、Schema 或回复语义错误。
+      - 创建新的 sft-v0.2，不覆盖 sft-v0.1。
+      - 定向增加多轮状态差分、工具调用边界、日期理解与严格结构化输出样本。
+      - 日期标签由程序生成和校验，但日期理解、提取和标准化仍由模型完成。
+    controls_held_constant:
+      - 基座模型版本
+      - 第一轮训练方法保持 SFT
+      - 主训练超参数在数据实验中保持一致
+      - 推理 Prompt、采样参数和评测后端保持一致
+    expected_effects:
+      - 提高多轮状态继承正确率
+      - 提高 Tool Call 参数准确率
+      - 降低非法 JSON 和 Schema 错误
+      - 提高相对日期、星期和跨日期边界的标准化准确率
+    risks:
+      - 直接复制评估样本会造成数据泄漏
+      - 定向样本比例过高可能损害原有简单场景
+      - 未人工复核的错误标签可能把评分器问题写入训练集
+    attribution_limits:
+      - 若同时调整多个数据类别，只能判断组合数据策略总体效果
+      - 若训练参数变化，将无法把结果单独归因于数据修改
+
+  - strategy_id: S002
+    title: 评估合同校准与临界失败复核
+    type: eval_revision
+    addresses: [P004, P005]
+    hypotheses: [H004, H005]
+    changes:
+      - 使用 eval-v0.2 的预约成功定义重新评估历史候选。
+      - 人工复核剩余任务分处于 0.90 至 0.95 的失败样本。
+      - 将真实业务错误与评分误报分开登记。
+    controls_held_constant:
+      - 51 条测试输入及其场景分布
+      - 模型权重和推理参数
+    expected_effects:
+      - 消除已确认的 booking_authorized 误报
+      - 避免错误评测标签进入新训练数据
+    risks:
+      - 评估合同变化后不得直接比较不同版本的总通过数
+    attribution_limits:
+      - eval-v0.1 与 eval-v0.2 之间需要共同样本差异说明
+
+  - strategy_id: S003
+    title: Round 001 只优化 SFT，DPO 延后
+    type: control_or_ablation
+    addresses: [P006]
+    hypotheses: [H006]
+    changes:
+      - Round 001 只训练和比较新的 SFT 候选，不运行新 DPO 训练。
+      - 仅将 SFT 后仍稳定存在且标签无争议的错误构造成 DPO 偏好对。
+      - 暂不把量化方案变化与数据变化放在同一个主对照中。
+    controls_held_constant:
+      - 新 SFT 的 F16 与 Q4 使用同一模型权重和评估合同
+    expected_effects:
+      - 分离数据修改、DPO 和量化的贡献
+      - 先确保日期理解、状态继承、工具调用和 Schema 等基础能力稳定
+    risks:
+      - 第一轮实验周期增加
+    attribution_limits:
+      - 当前尚不能判断新 DPO 的收益

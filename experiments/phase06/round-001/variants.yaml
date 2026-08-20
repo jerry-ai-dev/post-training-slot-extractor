@@ -1,0 +1,29 @@
+schema_version: 1
+round_id: round-001
+variants:
+  - variant_id: V001
+    title: 定向数据增强 SFT v0.2
+    strategies: [S001, S002, S003]
+    problems: [P001, P002, P003, P004]
+    control: false
+    based_on:
+      round_id: null
+      variant_id: null
+      run_ids: [qwen3-0.6b-sft, qwen3-1.7b-sft]
+    changes:
+      - 训练数据由 sft-v0.1 升级为 sft-v0.2。
+      - 去除 v0.1 中 21 条重复输入并回放其余 479 条。
+      - 新增 316 条日期、多轮状态、动作边界和确认场景样本。
+      - 评估合同升级为 eval-v0.2。
+    controls_held_constant:
+      - LoRA rank 16、alpha 32、dropout 0.05
+      - learning rate 1e-4、epoch 3、effective batch size 16
+      - Qwen3 template、no-think、cutoff length 2048
+    attribution_limits:
+      - 新增四类数据同时进入同一版本，只能归因于组合数据策略。
+    matrix:
+      models: [qwen3-0.6b, qwen3-1.7b]
+      stages: [sft]
+      quantizations: []
+    run_ids: [r001-qwen3-0.6b-sft, r001-qwen3-1.7b-sft]
+    rationale: 先稳定 SFT 基础能力，再根据残余难例开展后续 DPO。

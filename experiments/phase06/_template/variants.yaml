@@ -1,0 +1,22 @@
+schema_version: 1
+round_id: ROUND_ID
+variants:
+  - variant_id: V001
+    title: ""
+    strategies: [S001]
+    problems: [P001]
+    control: false
+    based_on:
+      round_id: null
+      variant_id: null
+      run_ids: []
+    changes: []
+    controls_held_constant: []
+    attribution_limits: []
+    matrix:
+      models: [] # qwen3-0.6b | qwen3-1.7b | qwen3-4b
+      stages: [] # sft | dpo | eval_only | quantize_only
+      quantizations: []
+    run_ids: []
+    rationale: ""
+

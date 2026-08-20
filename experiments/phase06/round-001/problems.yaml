@@ -1,0 +1,131 @@
+schema_version: 1
+round_id: round-001
+problems:
+  - problem_id: P001
+    title: 多轮状态继承和局部修改不稳定
+    observation: 0.6B SFT Q4 的多轮样本仅通过 9/28，常在修改时间、技师或偏好时覆盖或丢失未修改字段。
+    severity: critical
+    affected_models: [qwen3-0.6b-sft-q4-k-m, qwen3-0.6b-sft-f16, qwen3-1.7b-sft-q4-k-m]
+    affected_scenarios: [多轮, 时间修改, 重选技师, 偏好修改, 工具重查]
+    evidence:
+      - type: artifact
+        ref: reports/phase05/qwen3-0.6b-sft-q4-k-m/quality.json
+        finding: multi_turn 有效通过 9/28，平均任务正确性约 0.725。
+      - type: sample
+        ref: multiturn-time-01-call
+        finding: 期望 2026-06-10 10:00，0.6B SFT Q4 输出 2026-07-05 10:00。
+      - type: sample
+        ref: plan-modify-time-pref-01-requery
+        finding: 同时修改时间和偏好时未正确保留技师并更新字段。
+    hypotheses:
+      - hypothesis_id: H001
+        statement: 训练数据虽含多轮样本，但对状态差分、字段依赖和组合修改的覆盖不足，0.6B 未形成稳定状态机。
+        confidence: high
+        unknowns: [各类状态转换在原始训练数据中的精确覆盖和语言多样性]
+    status: open
+
+  - problem_id: P002
+    title: 工具调用决策和参数构造错误
+    observation: 0.6B SFT Q4 的 15 条工具调用仅通过 4 条，错误集中于 start_time、preferences、technician_name 及是否应调用工具。
+    severity: critical
+    affected_models: [qwen3-0.6b-sft-q4-k-m, qwen3-0.6b-sft-f16, qwen3-0.6b-dpo-b01-q4-k-m, qwen3-0.6b-dpo-b03-q4-k-m, qwen3-1.7b-sft-q4-k-m]
+    affected_scenarios: [工具调用, 指定技师, 条件搜索, 重查]
+    evidence:
+      - type: metric
+        ref: reports/phase05/qwen3-0.6b-sft-q4-k-m/quality.json
+        finding: 9 条失败样本至少包含一个 wrong_argument；工具调用平均任务正确性约 0.686。
+      - type: sample
+        ref: specific-unavailable-01-call
+        finding: 期望 technician_name=李明、preferences=[]，模型输出 technician_name=null、preferences=[按摩]。
+      - type: sample
+        ref: multiturn-pref-01-call
+        finding: 应调用 find_technicians，模型却输出 Final 并追问并非必填的 technician_name。
+    hypotheses:
+      - hypothesis_id: H002
+        statement: 小模型把自然语言槽位抽取、历史状态合并、动作决策和严格工具 Schema 同时完成时负担过高，且工具调用训练样本占比不足。
+        confidence: high
+        unknowns: [增加工具调用样本与简化 Prompt 各自的独立贡献]
+    status: open
+
+  - problem_id: P003
+    title: JSON 与输出 Schema 稳定性不足
+    observation: 0.6B SFT Q4 有 11/51 条协议失败，包括非法 JSON、非法枚举、非法 missing_info、非正整数时长和错误时间格式。
+    severity: high
+    affected_models: [qwen3-0.6b-sft-q4-k-m, qwen3-0.6b-sft-f16, qwen3-0.6b-dpo-b01-q4-k-m, qwen3-0.6b-dpo-b03-q4-k-m]
+    affected_scenarios: [结构化输出, 工具调用, 多轮]
+    evidence:
+      - type: metric
+        ref: reports/phase05/qwen3-0.6b-sft-q4-k-m/quality.json
+        finding: 协议通过率 78.4%，其中 5 条为不可解析输出，其余为 Schema 约束错误。
+      - type: comparison
+        ref: reports/phase05/report.md
+        finding: 1.7B SFT Q4 协议通过率 94.1%，说明模型容量是重要因素，但同一训练方案仍未完全解决协议错误。
+    hypotheses:
+      - hypothesis_id: H003
+        statement: 当前训练对严格区分 Tool Call 与 Final、非法字段反例和边界 Schema 的强化不足，容量较小的模型更容易发生格式漂移。
+        confidence: high
+        unknowns: [约束解码能否在不重新训练的情况下消除其中大部分错误]
+    status: open
+
+  - problem_id: P004
+    title: 回复语义与严格通过阈值形成临界失败
+    observation: 0.6B SFT Q4 原有 10 条失败样本协议正确且任务分位于 0.90 至 0.95；其中三条可用方案确认样本经业务确认属于评测误报，已在 eval contract v2.4 修正。
+    severity: high
+    affected_models: [qwen3-0.6b-sft-q4-k-m, qwen3-0.6b-sft-f16, qwen3-1.7b-sft-q4-k-m]
+    affected_scenarios: [确认, 追问, 工具结果回复]
+    evidence:
+      - type: sample
+        ref: specific-available-01-confirm
+        finding: 字段全部正确且用户确认后业务上即预约成功；原评测要求“正在办理预约”不符合业务定义，属于误报。
+      - type: metric
+        ref: reports/phase05/qwen3-0.6b-sft-q4-k-m/quality.json
+        finding: 22 条正式通过之外另有 10 条协议通过且得分在 0.90 至 0.95。
+    hypotheses:
+      - hypothesis_id: H004
+        statement: 临界失败混合了真实业务错误和评分误报；三条 booking_authorized 误报已经确认并修正，其余临界样本仍需逐条审核。
+        confidence: confirmed
+        unknowns: [剩余临界失败中业务真实错误与评分误伤的比例]
+    status: open
+
+  - problem_id: P005
+    title: 训练合同与评估合同存在 confirmation 冲突
+    observation: SFT 数据中 acknowledge_result 一律为 confirmation=false，但部分 Phase 05 评估样本要求 acknowledge_result 与 confirmation=true。
+    severity: critical
+    affected_models: [all]
+    affected_scenarios: [确认, unavailable, not_found, no_match]
+    evidence:
+      - type: dataset
+        ref: data/processed/sft/v0.1/train.jsonl
+        finding: 50 条 acknowledge_result 训练目标全部为 confirmation=false；验证集另有 3 条也全部为 false。
+      - type: dataset
+        ref: data/eval/test.jsonl
+        finding: specific-unavailable-01-confirm、specific-not-found-01-confirm、search-no-match-01-confirm 要求 acknowledge_result 且 confirmation=true。
+      - type: comparison
+        ref: reports/phase05
+        finding: 0.6B 与 1.7B 后训练模型均稳定输出 false 并因此被扣分，符合训练合同而不符合评估合同。
+    hypotheses:
+      - hypothesis_id: H005
+        statement: 这是数据合同缺陷，不应通过追加相互矛盾的训练样本解决，应先统一 confirmation 的业务语义并版本化评估集。
+        confidence: confirmed
+        unknowns: [confirmation 最终应仅表示预约授权，还是也表示用户已知悉失败结果]
+    status: resolved
+
+  - problem_id: P006
+    title: DPO 与量化均不是当前主要瓶颈
+    observation: 0.6B DPO Q4 分别通过 24/51 和 23/51，未稳定超过 SFT F16 的 25/51；SFT Q4 相比 F16 少 3 条。
+    severity: medium
+    affected_models: [qwen3-0.6b-sft-q4-k-m, qwen3-0.6b-sft-f16, qwen3-0.6b-dpo-b01-q4-k-m, qwen3-0.6b-dpo-b03-q4-k-m]
+    affected_scenarios: [DPO, Q4_K_M]
+    evidence:
+      - type: metric
+        ref: reports/phase05/report.md
+        finding: 0.6B SFT Q4=22/51、SFT F16=25/51、DPO-b01 Q4=24/51、DPO-b03 Q4=23/51。
+      - type: comparison
+        ref: reports/phase05
+        finding: 0.6B SFT F16 与 Q4 共同失败 25 条，仅 4 条是 F16 通过而 Q4 失败。
+    hypotheses:
+      - hypothesis_id: H006
+        statement: 量化造成有限附加损失；现有 DPO 偏好对未集中覆盖状态继承、工具参数与协议错误，因此收益不稳定。
+        confidence: high
+        unknowns: [修订 SFT 数据后 DPO 的边际收益]
+    status: open

@@ -1,0 +1,13 @@
+schema_version: 1
+round_id: ROUND_ID
+artifacts: []
+# - artifact_id: A001
+#   run_id: r001-v001-qwen3-0.6b-sft-s01
+#   kind: adapter | checkpoint | merged_model | gguf | report | predictions
+#   uri: relative/path-or-external-uri
+#   sha256: null
+#   size_bytes: null
+#   retention: permanent | selected | temporary
+#   rebuild_from: []
+#   note: ""
+

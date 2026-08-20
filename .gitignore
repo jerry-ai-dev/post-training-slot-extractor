@@ -9,6 +9,8 @@ __pycache__/
 venv/
 .worktrees/
 .phase04-dryrun/
+.claude/
+.superpowers/
 configs/training/llamafactory/_rendered/
 
 # Local environment
@@ -24,11 +26,16 @@ data/eval/*
 # 阶段三 v0.1 小样是可复现的管线验收产物，精确破例入库
 !data/raw/v0.1/
 !data/raw/v0.1/samples.jsonl
+!data/raw/v0.2/
+!data/raw/v0.2/samples.jsonl
 !data/processed/sft/
 data/processed/sft/*
 !data/processed/sft/v0.1/
 !data/processed/sft/v0.1/train.jsonl
 !data/processed/sft/v0.1/val.jsonl
+!data/processed/sft/v0.2/
+!data/processed/sft/v0.2/train.jsonl
+!data/processed/sft/v0.2/val.jsonl
 !data/processed/dpo/
 data/processed/dpo/*
 !data/processed/dpo/v0.1/
@@ -37,6 +44,10 @@ data/processed/dpo/*
 !data/processed/v0.1/
 !data/processed/v0.1/dataset_info.json
 !data/processed/v0.1/DATASET_CARD.md
+!data/processed/v0.2/
+!data/processed/v0.2/manifest.json
+!data/processed/v0.2/DATASET_CARD.md
+!data/processed/v0.2/dataset_info.json
 # 评估集破例入库（尺子需 git 版本化）
 !data/eval/test.jsonl
 !data/eval/DATASET_CARD.md

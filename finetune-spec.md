@@ -250,7 +250,7 @@ available_tools:
 - `confirmation=true` 必须同时满足：`current_state.confirmation=false` 且保存完整待确认结果；History 最后一条普通 assistant 是该结果对应的自然语言展示；状态与当前确认的时间、时长、偏好、技师和工具结果完全一致；结果 `info_complete=true`、`missing_info=[]`；当前用户明确接受或知悉且没有修改字段。
 - `confirmation=false`：其他所有情况，包括首次提出预约、继续补充字段、普通的“帮我预约”请求、锁定单个字段（如“就王芳”“就60分钟”）、拒绝方案、要求修改/换人、信息不完整、尚未核实技师或档期，以及当前没有待确认方案。
 - `confirmation` 不存在“未知”这一第三种取值；无法判断为肯定确认时统一输出 `false`。
-- `confirmation=true` 只表示用户确认意图。`available` 时授权上层执行预约但不表示已经成功落库；`unavailable/not_found/no_match` 时表示用户已知悉查询结果。
+- `confirmation=true` 只表示用户接受已核实可用的方案，在当前业务约定下即视为预约成功。用户知悉 `unavailable/not_found/no_match` 结果时仍为 `confirmation=false`。
 - `confirmation=true` 时必须同时满足 `info_complete=true` 且 `missing_info=[]`；反过来，信息完整并不自动代表用户已经确认。
 - `confirmation` 与 `unrelated` 不应同时为 `true`；“不了”“换一个”虽然不是肯定确认，但仍属于预约域，因此 `confirmation=false, unrelated=false`。
 

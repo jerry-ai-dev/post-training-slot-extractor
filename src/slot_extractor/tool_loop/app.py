@@ -1,5 +1,6 @@
 from collections.abc import Callable
 from contextlib import asynccontextmanager
+from datetime import datetime, timedelta, timezone
 from functools import cache
 from pathlib import Path
 from threading import Lock, RLock
@@ -27,6 +28,11 @@ from .ndjson import encode_event, encode_side_status
 from .orchestrator import ConversationOrchestrator
 
 STATIC = Path(__file__).parent / "static"
+SHANGHAI_TIMEZONE = timezone(timedelta(hours=8))
+
+
+def _shanghai_now() -> datetime:
+    return datetime.now(SHANGHAI_TIMEZONE)
 
 
 class TimedBackend:
@@ -147,8 +153,13 @@ def create_app(
     registry: ModelRegistry | None = None,
     backend_factory: Callable[[ModelSpec], Backend] | None = None,
     log_path: Path = Path("reports/phase05/app/app.jsonl"),
+    now_provider: Callable[[], datetime] | None = None,
 ) -> FastAPI:
-    store = store or FixtureStore.from_yaml(Path("data/fixtures/technicians/phase05-v1.yaml"))
+    now_provider = now_provider or _shanghai_now
+    store = store or FixtureStore.from_yaml(
+        Path("data/fixtures/technicians/phase05-v1.yaml"),
+        target_date=now_provider().date(),
+    )
     registry = registry or ModelRegistry.from_config(Path("configs/quantization/phase05.yaml"))
     executor = FindTechniciansExecutor(store)
     comparison_lock = Lock()
@@ -286,9 +297,9 @@ def create_app(
                         backend = model_slots.get(side, model_id)
                         timed_backend = TimedBackend(backend)
                         yield encode_side_status(side, "inferencing", comparable)
-                        result = ConversationOrchestrator(timed_backend, executor).run(
-                            request.user_input, history
-                        )
+                        result = ConversationOrchestrator(
+                            timed_backend, executor, now_provider=now_provider
+                        ).run(request.user_input, history)
                         for event in result.events:
                             yield encode_event(CompareEvent(side, event, comparable)) + "\n"
                         has_error = any(e.kind == "error" for e in result.events)

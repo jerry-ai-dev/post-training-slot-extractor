@@ -1,0 +1,22 @@
+schema_version: 1
+phase: phase06
+current_round: round-001
+rounds:
+  - round_id: round-001
+    parent_round: null
+    baseline: phase05
+    status: awaiting_remote_run
+    owner: zhiruiyang
+    created_at: 2026-08-20
+    closed_at: null
+    path: experiments/phase06/round-001
+    decision: null
+# 每个轮次登记示例：
+# - round_id: round-001
+#   parent_round: null
+#   status: draft
+#   owner: name
+#   created_at: 2026-08-20
+#   closed_at: null
+#   path: experiments/phase06/round-001
+#   decision: null

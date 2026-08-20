@@ -57,7 +57,7 @@ def test_every_assertion_is_parseable_against_expected() -> None:
 
 def test_dataset_satisfies_contract() -> None:
     contract = load_dataset_contract(CONTRACT)
-    assert contract["version"] == "2.3"
+    assert contract["version"] == "2.4"
     validate_dataset_against_contract(_samples(), contract)
 
 

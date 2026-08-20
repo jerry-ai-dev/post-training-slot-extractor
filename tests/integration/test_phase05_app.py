@@ -2,6 +2,7 @@ import json
 import threading
 import time
 from concurrent.futures import ThreadPoolExecutor
+from datetime import datetime
 from pathlib import Path
 
 from fastapi.testclient import TestClient
@@ -68,6 +69,78 @@ def test_models_technicians_and_compare_endpoints():
     events = [json.loads(line) for line in response.text.splitlines()]
     assert response.headers["content-type"].startswith("application/x-ndjson")
     assert {event["side"] for event in events} == {"left", "right"}
+
+
+def test_default_app_fixture_uses_same_injected_clock_as_orchestrator():
+    api = TestClient(
+        create_app(
+            registry=ModelRegistry.from_config(Path("configs/quantization/phase05.yaml")),
+            backend_factory=lambda spec: Backend(),
+            now_provider=lambda: datetime(2026, 8, 20, 10, 0),
+        )
+    )
+
+    payload = api.get("/api/technicians").json()
+    wang = next(item for item in payload["technicians"] if item["name"] == "王芳")
+    assert payload["date"] == "2026-08-20"
+    assert wang["availability"][0] == {
+        "start": "2026-08-20 09:00:00",
+        "end": "2026-08-20 12:00:00",
+    }
+
+
+def test_compare_completes_with_valid_final_on_fixture_coverage_miss():
+    class CoverageMissBackend:
+        model = "fake"
+
+        def generate(self, messages, params=None):
+            tool_call = {
+                "action": "tool_call",
+                "tool_name": "find_technicians",
+                "arguments": {
+                    "technician_name": "王芳",
+                    "start_time": "2030-01-01 17:00",
+                    "duration_minutes": 60,
+                    "gender_preference": None,
+                    "preferences": ["按摩"],
+                },
+            }
+            return GenerationResult(
+                json.dumps(tool_call, ensure_ascii=False), self.model, 0, 0, 1, 1, 1, {}
+            )
+
+    api = TestClient(
+        create_app(
+            FixtureStore.from_yaml(Path("data/fixtures/technicians/phase05-v1.yaml")),
+            ModelRegistry.from_config(Path("configs/quantization/phase05.yaml")),
+            lambda spec: CoverageMissBackend(),
+        )
+    )
+    response = api.post(
+        "/api/compare",
+        json={
+            "left_model_id": "qwen3-0.6b-base-q4-k-m",
+            "right_model_id": "qwen3-0.6b-sft-q4-k-m",
+            "mode": "sequential",
+            "user_input": "预约",
+            "left_history": [],
+            "right_history": [],
+        },
+    )
+    events = [json.loads(line) for line in response.text.splitlines()]
+
+    assert not any(event["type"] == "error" for event in events)
+    for side in ("left", "right"):
+        side_events = [event for event in events if event["side"] == side]
+        assert any(
+            event["type"] == "tool_result"
+            and event["payload"]["error_code"] == "unsupported_time"
+            for event in side_events
+        )
+        reply = next(event for event in side_events if event["type"] == "reply")
+        assert reply["payload"]["final"]["missing_info"] == []
+        assert reply["payload"]["final"]["technician_name"] == "王芳"
+        assert side_events[-1]["payload"]["status"] == "complete"
 
 
 def test_selected_models_are_loaded_once_and_reused_across_turns():

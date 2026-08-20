@@ -32,6 +32,10 @@ def test_detects_confirmation_request_paraphrases(text: str) -> None:
 
 def test_detects_premature_booking_success_claim() -> None:
     assert has_speech_act("已经帮您预约成功了", "claim_booking_success")
+    assert has_speech_act(
+        "好的，已确认预约王芳技师明天下午两点为您安排服务。",
+        "claim_booking_success",
+    )
 
 
 def test_detects_pause_acknowledgement() -> None:

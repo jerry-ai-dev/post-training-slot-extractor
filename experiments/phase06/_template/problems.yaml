@@ -1,0 +1,20 @@
+schema_version: 1
+round_id: ROUND_ID
+problems:
+  - problem_id: P001
+    title: ""
+    observation: ""
+    severity: null # low | medium | high | critical
+    affected_models: []
+    affected_scenarios: []
+    evidence: []
+    # - type: metric | sample | log | artifact | human_observation
+    #   ref: path-or-id
+    #   finding: ""
+    hypotheses:
+      - hypothesis_id: H001
+        statement: ""
+        confidence: null
+        unknowns: []
+    status: open # open | mitigated | resolved | accepted
+

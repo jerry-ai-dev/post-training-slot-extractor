@@ -127,7 +127,7 @@ def test_system_prompt_defines_reply_aware_final_contract() -> None:
     assert '"reply_type":"ask_start_time"' in system
     assert '"reply":"请问您想什么时候过来呢？"' in system
     assert "handoff 时 reply=null" in system
-    assert "未真正创建预约前不得声称预约成功" in system
+    assert "此时预约成功，回复应明确告知用户预约已确认" in system
 
 
 def test_system_prompt_defines_complete_unrelated_output() -> None:

@@ -1,0 +1,764 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Phase 05 - 模型量化与本地部署</title>
+  <style>
+    :root {
+      --bg: #f5f3ee;
+      --paper: #fffdf8;
+      --ink: #1f2937;
+      --muted: #6b7280;
+      --line: #e7decf;
+      --accent: #0f766e;
+      --accent-soft: #d1fae5;
+      --code-bg: #f7efe3;
+      --shadow: 0 10px 25px rgba(17, 24, 39, 0.08);
+      --radius: 16px;
+      --content-width: 840px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      background:
+        radial-gradient(1200px 600px at 10% -10%, #dbeafe 0%, rgba(219, 234, 254, 0) 70%),
+        radial-gradient(800px 500px at 90% -10%, #fce7f3 0%, rgba(252, 231, 243, 0) 65%),
+        var(--bg);
+      font-family: "Source Han Serif SC", "Noto Serif SC", "Songti SC", "STSong", serif;
+      line-height: 1.78;
+      letter-spacing: 0.01em;
+    }
+
+    .hero {
+      padding: 36px 24px 20px;
+      border-bottom: 1px solid var(--line);
+      background: linear-gradient(180deg, rgba(255, 253, 248, 0.92), rgba(255, 253, 248, 0.72));
+      backdrop-filter: blur(2px);
+    }
+
+    .hero-wrap {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .hero h1 {
+      margin: 0;
+      font-size: clamp(1.65rem, 2.6vw, 2.2rem);
+      line-height: 1.28;
+      letter-spacing: 0.015em;
+      color: #0f172a;
+    }
+
+    .hero p {
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-size: 0.98rem;
+    }
+
+    .layout {
+      max-width: 1200px;
+      margin: 20px auto 40px;
+      padding: 0 18px;
+      display: grid;
+      grid-template-columns: 280px minmax(0, 1fr);
+      gap: 22px;
+      align-items: start;
+    }
+
+    .toc {
+      position: sticky;
+      top: 16px;
+      max-height: calc(100vh - 32px);
+      overflow: auto;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(255, 253, 248, 0.96);
+      box-shadow: var(--shadow);
+      padding: 16px 14px;
+    }
+
+    .toc h2 {
+      margin: 0 0 10px;
+      font-size: 0.98rem;
+      color: #0f172a;
+      border: 0;
+      padding: 0;
+    }
+
+    .toc a {
+      color: #334155;
+      text-decoration: none;
+      display: block;
+      padding: 6px 8px;
+      border-radius: 10px;
+      margin: 2px 0;
+      font-size: 0.92rem;
+      line-height: 1.35;
+    }
+
+    .toc a.level-h3 {
+      margin-left: 12px;
+      font-size: 0.88rem;
+      color: #475569;
+    }
+
+    .toc a:hover,
+    .toc a.active {
+      background: var(--accent-soft);
+      color: #0f766e;
+    }
+
+    .content {
+      max-width: var(--content-width);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--paper);
+      box-shadow: var(--shadow);
+      padding: clamp(18px, 3vw, 34px);
+      overflow-wrap: anywhere;
+    }
+
+    h1, h2, h3 {
+      color: #0f172a;
+      scroll-margin-top: 24px;
+    }
+
+    h1 {
+      font-size: clamp(1.55rem, 2.2vw, 1.95rem);
+      margin-top: 0;
+      margin-bottom: 12px;
+      border-bottom: 2px solid var(--line);
+      padding-bottom: 10px;
+    }
+
+    h2 {
+      font-size: clamp(1.2rem, 1.7vw, 1.45rem);
+      margin-top: 2.2rem;
+      margin-bottom: 0.75rem;
+      border-bottom: 1px dashed var(--line);
+      padding-bottom: 0.35rem;
+    }
+
+    h3 {
+      font-size: clamp(1.02rem, 1.4vw, 1.18rem);
+      margin-top: 1.5rem;
+      margin-bottom: 0.55rem;
+    }
+
+    p {
+      margin: 0.55rem 0 0.95rem;
+    }
+
+    ul, ol {
+      padding-left: 1.25rem;
+      margin: 0.4rem 0 1rem;
+    }
+
+    li {
+      margin: 0.22rem 0;
+    }
+
+    blockquote {
+      margin: 1rem 0;
+      padding: 0.6rem 0.9rem;
+      border-left: 4px solid var(--accent);
+      background: #f0fdfa;
+      border-radius: 10px;
+      color: #134e4a;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1rem 0 1.2rem;
+      font-size: 0.94rem;
+      background: #fff;
+      border: 1px solid var(--line);
+    }
+
+    thead th {
+      background: #f8fafc;
+      color: #111827;
+      font-weight: 700;
+    }
+
+    th, td {
+      border: 1px solid var(--line);
+      padding: 0.54rem 0.62rem;
+      vertical-align: top;
+      text-align: left;
+    }
+
+    code {
+      font-family: "JetBrains Mono", "Cascadia Code", "Fira Code", monospace;
+      font-size: 0.9em;
+      background: var(--code-bg);
+      padding: 0.1em 0.35em;
+      border-radius: 6px;
+      color: #7c2d12;
+    }
+
+    pre {
+      background: #0b1220;
+      color: #e2e8f0;
+      border-radius: 12px;
+      padding: 12px 14px;
+      overflow: auto;
+      line-height: 1.55;
+      border: 1px solid #1f2937;
+      box-shadow: inset 0 0 0 1px rgba(148, 163, 184, 0.08);
+    }
+
+    pre code {
+      background: transparent;
+      color: inherit;
+      padding: 0;
+      border-radius: 0;
+    }
+
+    .footer {
+      max-width: 1200px;
+      margin: 0 auto 28px;
+      padding: 0 22px;
+      color: #64748b;
+      font-size: 0.88rem;
+    }
+
+    @media (max-width: 980px) {
+      .layout {
+        grid-template-columns: 1fr;
+      }
+
+      .toc {
+        position: static;
+        max-height: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <div class="hero-wrap">
+      <h1>Phase 05 - 模型量化与本地部署</h1>
+      <p>Phase 05 文档阅读版 · 已由 Markdown 渲染为 HTML</p>
+    </div>
+  </header>
+
+  <div class="layout">
+    <aside class="toc" aria-label="目录">
+      <h2>目录</h2>
+      <nav id="toc-nav"></nav>
+    </aside>
+
+    <main class="content" id="content">
+      <h1 id="phase-05-">Phase 05 - 模型量化与本地部署</h1>
+<h2 id="goal">Goal</h2>
+<p>将 Phase 04 产出的 LoRA adapters 与对应的 Qwen3 基座模型合并，转换并量化为适合本地 CPU 推理的 GGUF 模型；随后使用统一评估集验证量化前后的质量、时延和吞吐差异，并提供一个可交互的双模型对比 App，便于直观比较不同模型的工具调用与回复效果。</p>
+<h2 id="_1">开发方法</h2>
+<p>和之前阶段一致：先使用 Superpowers 编写设计文档和实施计划，再按照计划完成代码实现、测试与验证。相关设计和计划位于 <code>docs/superpowers/specs/</code> 与 <code>docs/superpowers/plans/</code>。</p>
+<h2 id="_2">运行方法</h2>
+<p>以下命令均在项目根目录执行。模型清单、基座模型、adapter 与产物路径统一定义在 <code>configs/quantization/phase05.yaml</code>；最终 adapters 位于 <code>models/adapters/</code>，构建代码位于 <code>scripts/quantize/</code>。</p>
+<h3 id="1-adapters">1. 合并 adapters 得到模型</h3>
+<p>构建脚本会根据模型注册表找到对应的 Qwen3 基座模型和 Phase 04 adapter，使用 PEFT 的 <code>merge_and_unload()</code> 完成合并，并将中间模型写入 <code>models/merged/</code>。通常无需单独执行合并命令，直接运行完整构建入口即可：</p>
+<pre><code class="language-powershell">uv run python -m scripts.quantize.build_phase05_real --model-id qwen3-1.7b-sft-q4-k-m
+</code></pre>
+<p>如需构建注册表中的全部量化目标，省略 <code>--model-id</code>。具体合并实现见 <code>scripts/quantize/build_phase05_real.py</code>。</p>
+<h3 id="2">2. 量化模型</h3>
+<p>同一构建入口会继续将合并后的 Hugging Face 模型转换为 F16 GGUF，使用 <code>data/calibration/phase05-v1.txt</code> 生成 imatrix，再通过 llama.cpp 量化为 <code>Q4_K_M</code>：</p>
+<pre><code class="language-powershell">uv run python -m scripts.quantize.build_phase05_real
+</code></pre>
+<p>量化结果位于 <code>models/gguf/</code>，F16 anchor、中间文件和 manifest 分别位于 <code>models/merged/</code> 与 <code>models/quantization/</code>。llama.cpp 的转换、imatrix 和量化工具路径见 <code>configs/quantization/phase05.yaml</code>。</p>
+<h3 id="3">3. 评估模型</h3>
+<p>本地评估入口会按顺序启动 llama-server，对注册表中的 Q4 模型和 F16 anchors 运行冻结质量集及 short、medium、2K、4K 性能负载：</p>
+<pre><code class="language-powershell">uv run python -m scripts.eval.run_phase05_local --config configs/evaluation/phase05.yaml --skip-complete
+</code></pre>
+<p>去掉 <code>--skip-complete</code> 可重新执行已有结果的模型；评估输出写入 <code>reports/phase05/</code>。评估实现位于 <code>scripts/eval/run_phase05_local.py</code>，评估配置位于 <code>configs/evaluation/phase05.yaml</code>。</p>
+<h3 id="4-app">4. 运行双模型对比 App</h3>
+<p>先确保 <code>deployment/llama_cpp/bin/llama-server.exe</code> 存在，并已按前述步骤生成要比较的 GGUF 模型。App 会读取注册表，并在选择模型时自动启动和管理左右两侧的 llama-server，无需手动分别部署：</p>
+<pre><code class="language-powershell">uv run python -m uvicorn slot_extractor.tool_loop.app:create_app --factory --host 127.0.0.1 --port 8000
+</code></pre>
+<p>随后打开 <code>http://127.0.0.1:8000</code>。App 配置位于 <code>configs/tool_loop/phase05.yaml</code>，后端实现位于 <code>src/slot_extractor/tool_loop/app.py</code>；如果 8000 端口被占用，可将命令中的端口改为 8001。</p>
+<h3 id="_3">阶段五完整流程与技术架构</h3>
+<h4 id="1">1. 模型合并与量化</h4>
+<pre><code class="language-text">Qwen3 Base（0.6B / 1.7B）
+        │
+        ├── Base 实验：跳过 Adapter 合并
+        │
+        └── SFT / DPO 实验 + 对应 LoRA Adapter
+                       │
+                       ▼
+              PEFT merge_and_unload()
+              PyTorch float16 · low_cpu_mem_usage
+                       │
+                       ▼
+              Hugging Face 合并模型
+                       │
+                       ▼
+       llama.cpp convert_hf_to_gguf.py --outtype f16
+                       │
+                       ▼
+                   F16 GGUF
+                       │
+          ┌────────────┴────────────┐
+          │                         │
+          ▼                         ▼
+  保留 2 个 SFT F16 Anchor     llama-imatrix
+  用于观察后端差异            校准文本：phase05-v1.txt
+                              threads=8 · ctx=512 · batch=128
+                                        │
+                                        ▼
+                              llama-quantize --imatrix
+                              方法：Q4_K_M · threads=8
+                                        │
+                                        ▼
+                              8 个 Q4_K_M GGUF 模型
+</code></pre>
+<p><code>Q4_K_M</code> 属于 llama.cpp 的 K-Quant 4-bit 混合精度量化方法。每个模型使用同一份领域校准文本，但分别生成自己的 imatrix。最终产物写入 Manifest，并记录 Base revision、Adapter、构建命令和 SHA256。</p>
+<h4 id="2_1">2. 本地评估</h4>
+<pre><code class="language-text">8 个 Q4_K_M 模型 + 2 个 SFT F16 Anchor
+                    │
+                    ▼
+       llama-server（Windows CPU · 8 threads）
+                    │
+          ┌─────────┴─────────┐
+          ▼                   ▼
+  冻结质量集             性能负载
+  51 cases / 模型        short / medium / 2K / 4K
+  temperature=0          1 次 warmup + 5 次 hot run
+          │                   │
+          ▼                   ▼
+  协议遵循、任务正确性    时延、P95、TTFT、吞吐、内存、体积
+          └─────────┬─────────┘
+                    ▼
+             reports/phase05/
+</code></pre>
+<h4 id="3-app">3. 双模型对比 App</h4>
+<pre><code class="language-text">浏览器双栏界面
+      │ 选择左右模型、发送预约请求
+      ▼
+Uvicorn + FastAPI
+      │
+      ▼
+LlamaServerManager
+      │ 自动启动、健康检查、复用和停止
+      ▼
+左右两个 llama-server
+      │
+      ▼
+独立 ConversationOrchestrator
+      │ 模型 → find_technicians Mock 工具 → 最终回复
+      ▼
+状态、Tool Trace 和回复返回双栏界面
+</code></pre>
+<p>网页与 API 由同一个 FastAPI 应用提供；用户选择模型后，应用才通过 <code>LlamaServerManager</code> 启动对应的推理后端，因此无需提前手动部署两个 llama-server。</p>
+<h3 id="_4">本小节重点理论知识</h3>
+<p>本小节不要求推导底层公式，但需要建立“Adapter 如何变成完整模型、完整模型如何变成可在 CPU 上运行的量化模型”这一条完整认识。</p>
+<h4 id="1_1">1. 模型合并</h4>
+<ul>
+<li><strong>主要工具库</strong>：Hugging Face <code>Transformers</code> 负责加载基座模型，<code>PEFT</code> 负责加载 LoRA Adapter，PyTorch 提供张量计算和数据类型支持；本项目使用 <code>PeftModel.from_pretrained()</code> 和 <code>merge_and_unload()</code>。</li>
+<li><strong>LoRA Adapter 的含义</strong>：Adapter 不保存完整模型，只保存训练得到的低秩增量参数；使用时必须与训练时对应的 Base Model、模型结构和 revision 匹配。</li>
+<li><strong>合并原理</strong>：LoRA 将权重更新表示为低秩矩阵乘积，合并时把这部分增量写回基座权重，得到不再依赖 PEFT Adapter 的完整模型权重。</li>
+<li><strong>大致方法</strong>：加载 Base Model → 挂载 Adapter → 执行 <code>merge_and_unload()</code> → 保存合并模型与 tokenizer → 进行推理一致性检查。</li>
+<li><strong>需要关注的问题</strong>：Base 与 Adapter 是否配套、加载和合并时的 dtype、峰值内存、权重分片、SFT/DPO Adapter 的正确 lineage，以及合并前后输出是否一致。</li>
+</ul>
+<h4 id="2_2">2. 模型量化</h4>
+<ul>
+<li><strong>量化的含义</strong>：把 F16/F32 权重压缩为更低位宽表示，以减少模型体积和内存带宽，并提高 CPU 推理速度；代价是引入近似误差，可能影响输出质量。</li>
+<li><strong>GGUF</strong>：llama.cpp 使用的模型文件格式，除权重外还保存模型结构、tokenizer 和运行所需元数据。GGUF 是文件格式，<code>Q4_K_M</code> 是其中权重采用的量化类型，两者不是同一概念。</li>
+</ul>
+<p>量化名称中混合了三个维度：<strong>位宽</strong>、<strong>算法家族</strong>和<strong>家族内部配置</strong>。它们的对应关系如下：</p>
+<pre><code class="language-text">llama.cpp 量化类型
+│
+├── 传统量化家族
+│   ├── Q4_0、Q4_1
+│   └── Q8_0
+│
+├── K-Quant 家族
+│   ├── Q2_K
+│   ├── Q3_K_S / Q3_K_M / Q3_K_L
+│   ├── Q4_K_S / Q4_K_M       ← 本项目选择
+│   ├── Q5_K_S / Q5_K_M
+│   └── Q6_K
+│
+└── IQ 家族
+    ├── IQ1_S / IQ1_M
+    ├── IQ2_XXS / IQ2_XS / IQ2_S / IQ2_M
+    ├── IQ3_XXS / IQ3_XS / IQ3_S / IQ3_M
+    └── IQ4_XS / IQ4_NL
+</code></pre>
+<p>因此，<strong>IQ 与 K-Quant 是并列的两个量化家族，不是上下级关系</strong>。同一个目标位宽可以存在不同家族的实现，例如 <code>Q4_K_M</code> 和 <code>IQ4_XS</code> 都属于约 4-bit 量化，但使用的表示方法不同。</p>
+<table>
+<thead>
+<tr>
+<th>名称部分</th>
+<th>表示什么</th>
+<th>示例</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Q4</code>、<code>Q5</code>、<code>IQ2</code>、<code>IQ3</code></td>
+<td>大致目标位宽；数字越小通常体积越小、质量风险越高</td>
+<td><code>Q4_K_M</code>、<code>IQ2_XS</code></td>
+</tr>
+<tr>
+<td><code>_K</code></td>
+<td>使用 K-Quant 的 K-block 分块量化方案</td>
+<td><code>Q4_K_M</code></td>
+</tr>
+<tr>
+<td><code>IQ</code></td>
+<td>使用 IQ 家族的码本、非线性表示及重要性感知方法</td>
+<td><code>IQ3_M</code>、<code>IQ4_NL</code></td>
+</tr>
+<tr>
+<td><code>_S/_M/_L</code></td>
+<td>同一家族内部的 Small、Medium、Large 取舍</td>
+<td><code>Q3_K_S</code>、<code>Q3_K_M</code>、<code>Q3_K_L</code></td>
+</tr>
+<tr>
+<td><code>_XS/_XXS</code></td>
+<td>更小体积的配置</td>
+<td><code>IQ2_XS</code>、<code>IQ3_XXS</code></td>
+</tr>
+<tr>
+<td><code>_NL</code></td>
+<td>Non-Linear，采用非线性量化表示</td>
+<td><code>IQ4_NL</code></td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>传统 Q 家族</strong>：如 <code>Q4_0</code>、<code>Q4_1</code>，结构较简单，是较早的量化方案。</li>
+<li><strong>K-Quant 家族</strong>：使用 K-block 分块和混合精度策略，在不同张量间分配不同精度，通常具有较成熟的速度、兼容性和质量表现。</li>
+<li><strong>IQ 家族</strong>：更侧重极低位宽下的表示效率，常使用重要性感知、非线性量化或更复杂的码本；压缩潜力更高，但对 llama.cpp 版本、硬件算子和校准数据更敏感。</li>
+<li><strong><code>Q4_K_M</code> 的完整含义</strong>：主体权重约为 4-bit，属于 K-Quant 家族，采用 Medium 配置；部分重要张量会使用更高精度，因此它不是“所有参数都严格占 4 bit”。</li>
+<li><strong>imatrix 不属于任何量化家族</strong>：它是量化前生成的校准统计，可以辅助量化器判断哪些部分更重要。K-Quant 和 IQ 类型都可能使用 imatrix，但是否必需、如何使用取决于具体量化类型与 llama.cpp 版本。</li>
+<li><strong>本阶段为何不选 IQ</strong>：阶段五首先需要建立稳定、成熟、容易复现的 CPU 量化基线，因此统一采用 <code>Q4_K_M</code>。IQ2、IQ3、IQ4 可作为后续扩展矩阵，用来研究更激进压缩下的质量、速度和兼容性变化。</li>
+<li><strong>选择方法</strong>：不能只按位宽判断，应在同一评估集、Prompt、采样参数和推理后端下，同时比较质量、体积、内存、时延和吞吐。</li>
+</ul>
+<blockquote>
+<p><strong>扩展：量化远不止选择一个 Q4 或 Q8 档位。</strong> 完整的量化体系还可以从多个维度理解：按发生时间可分为训练后量化（PTQ）和量化感知训练（QAT）；按量化对象可分为仅权重量化、权重与激活量化、KV Cache 量化；按数据依赖可分为无校准量化、校准量化和重要性感知量化；具体算法生态还包括 llama.cpp 的传统 Q/K-Quant/IQ、GPTQ、AWQ、SmoothQuant、bitsandbytes 等。不同方案服务于不同硬件、精度和吞吐目标，不能只比较名称或位宽。本项目采用的是一条明确的子路径：<strong>训练后量化（PTQ）→ 仅权重量化（Weight-only）→ 使用领域数据生成 imatrix 校准 → llama.cpp K-Quant → Q4_K_M → GGUF/CPU 部署</strong>。本阶段只建立这条稳定基线，其余方向可作为后续量化实验的扩展入口。</p>
+</blockquote>
+<h4 id="3-imatrix">3. imatrix</h4>
+<ul>
+<li><strong>基本含义</strong>：imatrix 是 Importance Matrix，即重要性矩阵。llama.cpp 用校准文本运行模型，收集中间激活统计，用来估计不同权重或通道对模型输出的重要程度。</li>
+<li><strong>作用</strong>：量化器利用 imatrix 在有限位宽下更谨慎地处理重要部分，从而降低量化误差；它是量化过程的辅助校准信息，不是模型权重，也不是训练产生的 Adapter。</li>
+<li><strong>生成方式</strong>：准备具有代表性的领域文本 → 使用目标 F16 GGUF 运行 <code>llama-imatrix</code> → 得到该模型对应的 imatrix 文件 → 通过 <code>llama-quantize --imatrix</code> 参与量化。</li>
+<li><strong>需要关注的问题</strong>：校准文本应贴近真实输入分布但不能混入冻结评估集；不同模型应分别生成 imatrix；校准文本版本、参数和哈希需要记录，保证结果可追溯。</li>
+<li><strong>本项目参数</strong>：领域文本为 <code>data/calibration/phase05-v1.txt</code>，<code>threads=8</code>、<code>context=512</code>、<code>batch=128</code>，最终通过 <code>llama-quantize</code> 生成 <code>Q4_K_M</code> 模型。</li>
+</ul>
+<h2 id="_5">本地评估结果</h2>
+<p>完整的本地实验矩阵运行约 2 小时 33 分钟，覆盖 8 个 <code>Q4_K_M</code> 模型和 2 个 SFT F16 对照模型。每个模型均运行 51 条冻结质量用例，以及 short、medium、2K、4K 四档性能负载；每档负载包含 1 次冷启动请求、1 次预热请求和 5 次热运行请求。</p>
+<h3 id="_6">评估指标与计算口径</h3>
+<p>本阶段复用阶段二的冻结评估集、Prompt 组装方式和确定性评分器，因此质量指标与阶段二完全同口径：</p>
+<ol>
+<li><strong>协议遵循 <code>protocol</code></strong>：检查原始输出是否为可解析 JSON，<code>action</code> 是否合法，以及 Tool Call / Final 的字段名、字段数量、字段类型和枚举值是否符合 Schema。每条样本完全合法得 1 分，否则得 0 分；表中为 51 条样本的平均分。</li>
+<li><strong>任务正确性 <code>task_correctness</code></strong>：Tool Call 检查动作、工具名和参数；Final 检查结构化状态、<code>reply_type</code>、必要/禁止语义动作及回复与工具事实的一致性。Final 的结构化结果占 70%，自然语言回复占 30%；表中为 51 条样本的平均分。</li>
+<li><strong>有效通过率</strong>：单条样本必须同时满足“协议检查通过”且“任务正确性不低于 0.95”。报告使用 <code>通过条数/51</code>，与阶段二定义一致；任务分严格等于 1 的数量不作为主指标。</li>
+<li><strong>时延与吞吐</strong>：直接报告质量集的总时延均值、P95、平均首字时延和平均生成吞吐，不把速度折算成质量分。</li>
+</ol>
+<p>多轮、工具调用、工具结果、确认、无关输入和信息缺失仍作为场景切片保存在逐样本日志中，不重复构造一级总分。具体字段、回复和工具错误也继续保留在每条记录的错误标签中。</p>
+<h3 id="_7">评测结果和结论</h3>
+<p>以下结果由现有 <code>reports/phase05/&lt;model-id&gt;/quality.json</code> 中的 510 条真实逐样本记录重新聚合得到，没有重新运行模型推理。</p>
+<table>
+<thead>
+<tr>
+<th>模型</th>
+<th style="text-align: right;">协议遵循</th>
+<th style="text-align: right;">任务正确性</th>
+<th style="text-align: right;">有效通过率</th>
+<th style="text-align: right;">平均时延</th>
+<th style="text-align: right;">P95</th>
+<th style="text-align: right;">平均首字时延</th>
+<th style="text-align: right;">吞吐</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>qwen3-0.6b-base-q4-k-m</td>
+<td style="text-align: right;">68.6%</td>
+<td style="text-align: right;">43.2%</td>
+<td style="text-align: right;">2/51</td>
+<td style="text-align: right;">5.09s</td>
+<td style="text-align: right;">6.32s</td>
+<td style="text-align: right;">2.70s</td>
+<td style="text-align: right;">18.0 tok/s</td>
+</tr>
+<tr>
+<td>qwen3-0.6b-sft-q4-k-m</td>
+<td style="text-align: right;">78.4%</td>
+<td style="text-align: right;">78.3%</td>
+<td style="text-align: right;">22/51</td>
+<td style="text-align: right;"><strong>4.97s</strong></td>
+<td style="text-align: right;"><strong>7.78s</strong></td>
+<td style="text-align: right;"><strong>2.98s</strong></td>
+<td style="text-align: right;"><strong>18.3 tok/s</strong></td>
+</tr>
+<tr>
+<td>qwen3-0.6b-dpo-b01-q4-k-m</td>
+<td style="text-align: right;">86.3%</td>
+<td style="text-align: right;">79.7%</td>
+<td style="text-align: right;">24/51</td>
+<td style="text-align: right;">10.10s</td>
+<td style="text-align: right;">15.10s</td>
+<td style="text-align: right;">7.79s</td>
+<td style="text-align: right;">9.3 tok/s</td>
+</tr>
+<tr>
+<td>qwen3-0.6b-dpo-b03-q4-k-m</td>
+<td style="text-align: right;">80.4%</td>
+<td style="text-align: right;">77.0%</td>
+<td style="text-align: right;">23/51</td>
+<td style="text-align: right;">18.64s</td>
+<td style="text-align: right;">60.25s</td>
+<td style="text-align: right;">15.41s</td>
+<td style="text-align: right;">6.7 tok/s</td>
+</tr>
+<tr>
+<td>qwen3-0.6b-sft-f16</td>
+<td style="text-align: right;">86.3%</td>
+<td style="text-align: right;"><strong>81.7%</strong></td>
+<td style="text-align: right;"><strong>25/51</strong></td>
+<td style="text-align: right;">12.19s</td>
+<td style="text-align: right;">18.31s</td>
+<td style="text-align: right;">9.54s</td>
+<td style="text-align: right;">7.1 tok/s</td>
+</tr>
+<tr>
+<td>qwen3-1.7b-base-q4-k-m</td>
+<td style="text-align: right;">68.6%</td>
+<td style="text-align: right;">58.1%</td>
+<td style="text-align: right;">7/51</td>
+<td style="text-align: right;">11.25s</td>
+<td style="text-align: right;">17.37s</td>
+<td style="text-align: right;">8.07s</td>
+<td style="text-align: right;">6.8 tok/s</td>
+</tr>
+<tr>
+<td>qwen3-1.7b-sft-q4-k-m</td>
+<td style="text-align: right;">94.1%</td>
+<td style="text-align: right;">91.9%</td>
+<td style="text-align: right;">29/51</td>
+<td style="text-align: right;"><strong>12.08s</strong></td>
+<td style="text-align: right;">17.64s</td>
+<td style="text-align: right;"><strong>8.99s</strong></td>
+<td style="text-align: right;"><strong>7.6 tok/s</strong></td>
+</tr>
+<tr>
+<td>qwen3-1.7b-dpo-b01-q4-k-m</td>
+<td style="text-align: right;"><strong>96.1%</strong></td>
+<td style="text-align: right;">90.5%</td>
+<td style="text-align: right;"><strong>30/51</strong></td>
+<td style="text-align: right;">12.49s</td>
+<td style="text-align: right;"><strong>17.22s</strong></td>
+<td style="text-align: right;">9.34s</td>
+<td style="text-align: right;">7.5 tok/s</td>
+</tr>
+<tr>
+<td>qwen3-1.7b-dpo-b03-q4-k-m</td>
+<td style="text-align: right;">92.2%</td>
+<td style="text-align: right;"><strong>92.1%</strong></td>
+<td style="text-align: right;">29/51</td>
+<td style="text-align: right;">12.61s</td>
+<td style="text-align: right;">17.75s</td>
+<td style="text-align: right;">9.42s</td>
+<td style="text-align: right;">7.3 tok/s</td>
+</tr>
+<tr>
+<td>qwen3-1.7b-sft-f16</td>
+<td style="text-align: right;">88.2%</td>
+<td style="text-align: right;">91.8%</td>
+<td style="text-align: right;">29/51</td>
+<td style="text-align: right;">20.09s</td>
+<td style="text-align: right;">29.07s</td>
+<td style="text-align: right;">16.10s</td>
+<td style="text-align: right;">4.5 tok/s</td>
+</tr>
+</tbody>
+</table>
+<p>粗体表示同一参数规模的后训练模型中该列的最好结果，不用于自动选择模型。0.6B 组中，SFT F16 的质量最高，但 SFT Q4 的速度和体积优势明显；两个 DPO Q4 的质量增益伴随较大的时延波动。1.7B 组中，DPO b01 的协议遵循和有效通过数最高，DPO b03 的平均任务正确性最高；SFT Q4 与 F16 的任务正确性几乎相同，但本地推理更快。两个 Base 模型均明显弱于对应的后训练模型。</p>
+<h3 id="_8">性能与模型体积</h3>
+<p>下表记录 Windows CPU 本地实测的性能数据，不表示额外的质量得分。各列定义如下：</p>
+<ul>
+<li><strong>质量集平均时延</strong>：51 条冻结质量用例的端到端生成时间均值，包含请求、Prompt 处理和输出生成时间。</li>
+<li><strong>质量集 P95 时延</strong>：上述 51 次端到端时延的第 95 百分位数，约 95% 的请求可以在该时间以内完成。</li>
+<li><strong>生成吞吐（tok/s）</strong>：运行质量集时的平均输出 Token 生成速度，数值越高越快；不包含 Prompt 处理吞吐。</li>
+<li><strong>Short 热运行均值</strong>：完成 1 次不计入统计的预热后，连续 5 次 short Prompt 请求的端到端平均时延；此时服务和模型均已启动。</li>
+<li><strong>4K 热运行均值</strong>：使用名义 4K 长度负载进行 5 次热运行的平均时延，主要反映长 Prompt 处理和生成耗时。</li>
+<li><strong>模型体积（GiB）</strong>：GGUF 文件的二进制体积，计算方式为 <code>bytes / 1024^3</code>。</li>
+</ul>
+<p>对 short、medium、2K、4K 每档负载，评估器都执行 1 次首次请求、1 次不计入统计的预热请求和 5 次计时热请求。表中只展示热运行均值，因为它更接近本地服务启动后的重复使用场景。<code>2K</code> 和 <code>4K</code> 是通过重复中文文本构造的固定 Prompt 规模档位，不代表每种 tokenizer 都会产生精确的 2,000 或 4,000 个输入 Token。因此，这些时延主要用于比较同一次实验、同一硬件环境下不同模型的相对表现。</p>
+<table>
+<thead>
+<tr>
+<th>模型</th>
+<th style="text-align: right;">质量集平均时延</th>
+<th style="text-align: right;">质量集 P95 时延</th>
+<th style="text-align: right;">生成吞吐（tok/s）</th>
+<th style="text-align: right;">Short 热运行均值</th>
+<th style="text-align: right;">4K 热运行均值</th>
+<th style="text-align: right;">模型体积（GiB）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>qwen3-0.6b-base-q4-k-m</td>
+<td style="text-align: right;">5.09s</td>
+<td style="text-align: right;">6.32s</td>
+<td style="text-align: right;">18.02</td>
+<td style="text-align: right;">0.99s</td>
+<td style="text-align: right;">5.17s</td>
+<td style="text-align: right;">0.45</td>
+</tr>
+<tr>
+<td>qwen3-0.6b-sft-q4-k-m</td>
+<td style="text-align: right;">4.97s</td>
+<td style="text-align: right;">7.78s</td>
+<td style="text-align: right;">18.26</td>
+<td style="text-align: right;">0.76s</td>
+<td style="text-align: right;">3.90s</td>
+<td style="text-align: right;">0.37</td>
+</tr>
+<tr>
+<td>qwen3-0.6b-dpo-b01-q4-k-m</td>
+<td style="text-align: right;">10.10s</td>
+<td style="text-align: right;">15.10s</td>
+<td style="text-align: right;">9.31</td>
+<td style="text-align: right;">2.22s</td>
+<td style="text-align: right;">5.42s</td>
+<td style="text-align: right;">0.37</td>
+</tr>
+<tr>
+<td>qwen3-0.6b-dpo-b03-q4-k-m</td>
+<td style="text-align: right;">18.64s</td>
+<td style="text-align: right;">60.25s</td>
+<td style="text-align: right;">6.70</td>
+<td style="text-align: right;">1.23s</td>
+<td style="text-align: right;">3.58s</td>
+<td style="text-align: right;">0.37</td>
+</tr>
+<tr>
+<td>qwen3-0.6b-sft-f16</td>
+<td style="text-align: right;">12.19s</td>
+<td style="text-align: right;">18.31s</td>
+<td style="text-align: right;">7.08</td>
+<td style="text-align: right;">2.49s</td>
+<td style="text-align: right;">5.50s</td>
+<td style="text-align: right;">1.12</td>
+</tr>
+<tr>
+<td>qwen3-1.7b-base-q4-k-m</td>
+<td style="text-align: right;">11.25s</td>
+<td style="text-align: right;">17.37s</td>
+<td style="text-align: right;">6.82</td>
+<td style="text-align: right;">2.58s</td>
+<td style="text-align: right;">24.34s</td>
+<td style="text-align: right;">1.19</td>
+</tr>
+<tr>
+<td>qwen3-1.7b-sft-q4-k-m</td>
+<td style="text-align: right;">12.08s</td>
+<td style="text-align: right;">17.64s</td>
+<td style="text-align: right;">7.55</td>
+<td style="text-align: right;">2.36s</td>
+<td style="text-align: right;">21.45s</td>
+<td style="text-align: right;">1.03</td>
+</tr>
+<tr>
+<td>qwen3-1.7b-dpo-b01-q4-k-m</td>
+<td style="text-align: right;">12.49s</td>
+<td style="text-align: right;">17.22s</td>
+<td style="text-align: right;">7.46</td>
+<td style="text-align: right;">6.03s</td>
+<td style="text-align: right;">24.16s</td>
+<td style="text-align: right;">1.03</td>
+</tr>
+<tr>
+<td>qwen3-1.7b-dpo-b03-q4-k-m</td>
+<td style="text-align: right;">12.61s</td>
+<td style="text-align: right;">17.75s</td>
+<td style="text-align: right;">7.33</td>
+<td style="text-align: right;">2.19s</td>
+<td style="text-align: right;">24.13s</td>
+<td style="text-align: right;">1.03</td>
+</tr>
+<tr>
+<td>qwen3-1.7b-sft-f16</td>
+<td style="text-align: right;">20.09s</td>
+<td style="text-align: right;">29.07s</td>
+<td style="text-align: right;">4.51</td>
+<td style="text-align: right;">8.76s</td>
+<td style="text-align: right;">35.00s</td>
+<td style="text-align: right;">3.21</td>
+</tr>
+</tbody>
+</table>
+<h3 id="_9">结果观察</h3>
+<ul>
+<li><code>qwen3-1.7b-dpo-b01-q4-k-m</code> 的协议遵循得分最高，为 96.1%。</li>
+<li><code>qwen3-1.7b-dpo-b03-q4-k-m</code> 的任务正确性最高，为 92.1%。</li>
+<li>1.7B SFT Q4 与对应 F16 对照模型的任务正确性基本持平（91.9% 对 91.8%），同时速度更快、体积更小。</li>
+<li>0.6B SFT Q4 相比对应 F16 对照模型损失约 3.4 个百分点的任务正确性。</li>
+<li>两个 Base 模型均明显弱于对应的后训练模型。</li>
+<li>以上结果只作为实验观察，本阶段不设置自动胜出模型或质量验收阈值。</li>
+</ul>
+<h2 id="_10">阶段结论</h2>
+<p>走到这一步，我们已经获得了完整的质量、性能和模型体积数据，但这些实验结果还不足以支持“哪个模型最好”或“最终应该使用哪个模型”的结论。本阶段没有设置统一的业务验收阈值，也没有在质量、速度和资源占用之间定义固定权重，因此不在这里进行最终模型选型。</p>
+<p>第五阶段能够确认的核心结论是：<strong>从 Adapter 合并、GGUF 转换、imatrix 校准、Q4_K_M 量化，到 llama.cpp 本地推理、统一评估和双模型 App 对比，整条工程流程已经跑通。</strong> 无论从冻结数据集的评测结果，还是 App 中的直观使用效果来看，后训练模型整体上都明显优于对应的 Base 模型，说明前面阶段的 SFT/DPO 训练已经产生了可以观察到的正向效果。</p>
+<p>与此同时，当前结果也暴露出下一阶段需要重点回答的问题：</p>
+<ul>
+<li>为什么 DPO 相比 SFT 的提升并不稳定，部分模型的收益很小，甚至伴随指标回退？</li>
+<li>为什么协议遵循和任务正确性已经较高，但严格口径下的有效通过率仍然偏低？</li>
+<li>失败样本主要集中在哪些场景、字段和决策边界，现有训练数据是否覆盖不足或分布失衡？</li>
+<li>如何在保持质量的同时进一步降低平均时延、P95 和首字时延，提高本地 CPU 推理吞吐？</li>
+<li>模型规模、量化档位、Prompt、采样参数和推理后端分别对质量与性能产生了多大影响？</li>
+</ul>
+<p>前几个阶段更侧重于建立数据、训练、量化、评估和应用的完整闭环，目标是证明流程可执行、结果可记录、实验可复现。下一阶段将从“跑通流程”转向“基于数据和指标进行迭代”：分析具体失败样本，定位误差来源，调整数据配比和训练策略，必要时重新执行 SFT/DPO，并持续验证质量与推理性能是否得到真实提升。</p>
+    </main>
+  </div>
+
+  <div class="footer">生成时间：<span id="generated-at"></span></div>
+
+  <script>
+    (function () {
+      const content = document.getElementById('content');
+      const toc = document.getElementById('toc-nav');
+      const generated = document.getElementById('generated-at');
+      generated.textContent = new Date().toLocaleString('zh-CN');
+
+      const headers = content.querySelectorAll('h2, h3');
+      let autoId = 0;
+      headers.forEach((h) => {
+        if (!h.id) {
+          autoId += 1;
+          h.id = 'section-' + autoId;
+        }
+
+        const a = document.createElement('a');
+        a.href = '#' + h.id;
+        a.textContent = h.textContent;
+        a.className = h.tagName === 'H3' ? 'level-h3' : 'level-h2';
+        toc.appendChild(a);
+      });
+
+      const links = Array.from(toc.querySelectorAll('a'));
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          const id = entry.target.getAttribute('id');
+          links.forEach((link) => {
+            link.classList.toggle('active', link.getAttribute('href') === '#' + id);
+          });
+        });
+      }, { rootMargin: '-35% 0px -55% 0px', threshold: 0.01 });
+
+      headers.forEach((h) => observer.observe(h));
+    })();
+  </script>
+</body>
+</html>

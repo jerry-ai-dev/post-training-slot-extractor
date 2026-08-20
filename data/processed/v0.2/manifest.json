@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "dataset_id": "sft-v0.2",
+  "parent": "sft-v0.1",
+  "seed": 20260820,
+  "source_raw": "data/raw/v0.1/samples.jsonl",
+  "eval_dataset": "eval-v0.2",
+  "counts": {
+    "total": 795,
+    "replayed_v0.1": 479,
+    "duplicate_v0.1_removed": 21,
+    "targeted_new": 316,
+    "train": 715,
+    "validation": 80
+  },
+  "categories": {
+    "工具调用": 303,
+    "无关": 69,
+    "最终 JSON": 107,
+    "确认": 129,
+    "追问": 187
+  },
+  "targeted_tags": {
+    "不得猜测": 20,
+    "偏好修改": 20,
+    "动作边界": 60,
+    "可用方案确认": 24,
+    "同时缺失": 20,
+    "多轮": 96,
+    "拒绝确认": 16,
+    "日期标准化": 100,
+    "时长修改": 20,
+    "时间修改": 20,
+    "星期换算": 20,
+    "最小替换": 96,
+    "模糊时间": 20,
+    "相对日期": 48,
+    "组合修改": 16,
+    "缺少时长": 20,
+    "缺少时间": 20,
+    "跨月": 32,
+    "重选技师": 20,
+    "预约成功": 24,
+    "预约暂缓": 16
+  },
+  "eval_exact_input_overlap": 0,
+  "files": {
+    "raw": {
+      "path": "data/raw/v0.2/samples.jsonl",
+      "sha256": "386f47e466ac17693a8031a4bc4360345dd6a869ec67d96589d578755286ef28"
+    },
+    "train": {
+      "path": "data/processed/sft/v0.2/train.jsonl",
+      "sha256": "5773fdeabc9f2c0dcd45ec7f1aa8c7e4a09e6417977265e0e7d92fec605415c3"
+    },
+    "validation": {
+      "path": "data/processed/sft/v0.2/val.jsonl",
+      "sha256": "9d7529d60057020470b81f01ef55ebe7f6b6e987e15196764ff951d5c8dca198"
+    }
+  }
+}
