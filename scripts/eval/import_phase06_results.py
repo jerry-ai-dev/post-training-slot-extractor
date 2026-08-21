@@ -186,7 +186,9 @@ def import_results(
         "training-started-at.txt",
         "training-finished-at.txt",
     ):
-        shutil.copy2(cloud / name, destination / name)
+        path = cloud / name
+        if path.is_file():
+            shutil.copy2(path, destination / name)
     manifest = {
         "schema_version": 1,
         "round_id": round_id,

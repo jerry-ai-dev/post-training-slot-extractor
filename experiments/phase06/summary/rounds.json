@@ -23,6 +23,16 @@
     },
     {
       "round_id": "round-003",
+      "status": "completed",
+      "closed_at": "2026-08-21",
+      "decision": "continue_sft_final_round",
+      "results": {
+        "r003-qwen3-0.6b-sft": "37/51",
+        "r003-qwen3-1.7b-sft": "38/51"
+      }
+    },
+    {
+      "round_id": "round-004",
       "status": "awaiting_remote_run",
       "closed_at": null,
       "decision": "train_sft",

@@ -1,0 +1,1 @@
+{"schema_version":1,"round_id":"round-004","variant_id":"V004","status":"frozen","dataset":"sft-v0.5-model-specific","eval_datasets":["eval-v0.2","eval-v0.3-holdout"],"includes_adapters":false,"includes_training_logs":true}

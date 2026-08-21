@@ -50,4 +50,21 @@ datasets:
     first_used_in: round-003
     retired_at: null
     notes: 每个模型 1265 条；继承对应 v0.3 视图，新增 120 条共享回归修复与各 60 条模型专项样本。
+  - dataset_id: eval-v0.3-holdout
+    role: evaluation
+    status: frozen
+    parent: null
+    path: data/eval/phase06_holdout_v0.3.jsonl
+    first_used_in: round-004
+    retired_at: null
+    notes: Round 004 训练前冻结的 24 条独立盲测集，不参与任何 SFT 视图。
+  - dataset_id: sft-v0.5
+    role: training
+    status: frozen
+    parent: sft-v0.4
+    path: data/processed/sft/v0.5
+    manifest: data/processed/v0.5/manifest.json
+    first_used_in: round-004
+    retired_at: null
+    notes: 最后一轮定向 SFT；0.6B 回退到 v0.3 核心后做最小修复，1.7B 保留 v0.4 并增加回归保护。
 # 新数据版本必须新增条目，禁止修改旧版本文件来复用版本号。

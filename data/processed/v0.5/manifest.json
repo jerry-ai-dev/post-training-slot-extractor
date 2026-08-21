@@ -1,0 +1,117 @@
+{
+  "schema_version": 1,
+  "dataset_id": "sft-v0.5",
+  "parent": "sft-v0.4",
+  "seed": 20260821,
+  "counts": {
+    "small_view": 1165,
+    "large_view": 1345,
+    "small_new": 80,
+    "large_new": 80,
+    "blind_holdout": 24,
+    "union": 1425
+  },
+  "tags": {
+    "0.6B专项": 160,
+    "1.7B专项": 140,
+    "handoff": 15,
+    "不得猜测": 20,
+    "严格JSON": 120,
+    "严格短JSON": 80,
+    "信息齐全": 30,
+    "偏好保留": 10,
+    "偏好修改": 20,
+    "偏好排除": 60,
+    "动作边界": 180,
+    "只改偏好": 12,
+    "只改技师": 12,
+    "只改时长": 12,
+    "只改时间": 32,
+    "可用方案确认": 24,
+    "合法枚举": 60,
+    "同时缺失": 20,
+    "回复语义回放": 10,
+    "回归保护": 120,
+    "多义短词": 89,
+    "多轮": 196,
+    "字段保真": 60,
+    "字段边界": 30,
+    "工具状态-matched": 15,
+    "工具状态-no_match": 15,
+    "工具状态-not_found": 15,
+    "工具状态-unavailable": 15,
+    "工具结果": 30,
+    "工具结果字段保真": 40,
+    "工具结果映射": 90,
+    "工具调用": 583,
+    "幻觉陷阱": 107,
+    "性别不是偏好": 10,
+    "拒绝确认": 16,
+    "按摩不是偏好": 10,
+    "无关": 69,
+    "无关请求": 35,
+    "日期标准化": 100,
+    "时长不是偏好": 10,
+    "时长修改": 20,
+    "时间修改": 20,
+    "时间偏好组合修改": 20,
+    "易混边界": 176,
+    "星期换算": 20,
+    "暂停预约": 10,
+    "最小替换": 96,
+    "最小状态更新": 120,
+    "最终 JSON": 387,
+    "模糊时间": 20,
+    "状态-available": 10,
+    "状态-not_found": 10,
+    "状态-unavailable": 10,
+    "相对日期": 132,
+    "相对时间": 107,
+    "短JSON": 20,
+    "确认": 129,
+    "确认动作": 20,
+    "禁止提前调用": 15,
+    "组合修改": 28,
+    "缺少时长": 65,
+    "缺少时间": 100,
+    "跨月": 32,
+    "近邻决策": 90,
+    "追问": 257,
+    "重试重选": 80,
+    "重选技师": 20,
+    "预约成功": 24,
+    "预约暂缓": 16
+  },
+  "eval_exact_input_overlap": 0,
+  "holdout_in_training": false,
+  "files": {
+    "raw": {
+      "path": "data/raw/v0.5/samples.jsonl",
+      "sha256": "97a7c30d4288ecce6fb9c8b0d411d5baeca4c16b8f55c6de423dfaba84488d49"
+    },
+    "holdout": {
+      "path": "data/eval/phase06_holdout_v0.3.jsonl",
+      "sha256": "3c0b7118d5aae16efa9ea8e16c778b2a62e170f5e7c32b19bddabcd54e7a1aec"
+    },
+    "dataset_info": {
+      "path": "data/processed/v0.5/dataset_info.json",
+      "sha256": "048b5bf36223254756cc7c5fbf779e2d01aba927d29243cde192774f2c780906"
+    },
+    "small_train": {
+      "path": "data/processed/sft/v0.5/small/train.jsonl",
+      "sha256": "32a1055a7606314ac209faf289d7f606ef6c296aea72692c898e932309ea90b6"
+    },
+    "small_val": {
+      "path": "data/processed/sft/v0.5/small/val.jsonl",
+      "sha256": "be027a966f4d4796f36a8d1ceaf481f989b9756fca1ed59a7d7b02461393b535"
+    },
+    "large_train": {
+      "path": "data/processed/sft/v0.5/large/train.jsonl",
+      "sha256": "956403367bc5ac4d5c05235893a80d8e7bb244f4169e488f4e6db4c72884d900"
+    },
+    "large_val": {
+      "path": "data/processed/sft/v0.5/large/val.jsonl",
+      "sha256": "ed9e2862a8282c4d7d530e41c58d796685560547f6d51b0fd6c68d89f0865953"
+    }
+  }
+}

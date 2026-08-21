@@ -1,0 +1,12 @@
+schema_version: 1
+round_id: round-004
+strategies:
+  - strategy_id: R4-S001
+    title: 0.6B 回退并最小修复
+    actions: [继承 v0.3 small 视图, 新增 80 条短输出与状态保护样本]
+  - strategy_id: R4-S002
+    title: 1.7B 保留收益并压低回归
+    actions: [继承 v0.4 large 视图, 新增 80 条确认、字段保真、偏好排除和无关请求样本]
+  - strategy_id: R4-S003
+    title: 独立盲测与停止规则
+    actions: [冻结 24 条不参与训练的 holdout, 同时报告 eval-v0.2 与 holdout, 本轮后停止定向堆数据]
