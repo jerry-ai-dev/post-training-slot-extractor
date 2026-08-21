@@ -1,4 +1,23 @@
 {
   "schema_version": 1,
-  "models": []
+  "models": [
+    {
+      "run_id": "r001-qwen3-0.6b-sft",
+      "round_id": "round-001",
+      "base_model": "Qwen/Qwen3-0.6B",
+      "dataset": "sft-v0.2",
+      "effective_pass": "33/51",
+      "adapter_committed": false,
+      "adapter_sha256": "20b5b77662651599a7896b58c5e14de5a0a9a2003f118458510e2e6caceb202c"
+    },
+    {
+      "run_id": "r001-qwen3-1.7b-sft",
+      "round_id": "round-001",
+      "base_model": "Qwen/Qwen3-1.7B",
+      "dataset": "sft-v0.2",
+      "effective_pass": "34/51",
+      "adapter_committed": false,
+      "adapter_sha256": "cc3aad15e059ec06f528f8b787cda263b3f218964ae7dd97939b6b6a49ddf5f8"
+    }
+  ]
 }

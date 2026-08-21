@@ -25,3 +25,17 @@ artifacts:
     retention: permanent
     rebuild_from: [A001]
     note: 80 条 SFT 验证样本。
+  - artifact_id: A004
+    run_id: r001-qwen3-0.6b-sft
+    kind: evaluation_result
+    uri: experiments/phase06/round-001/imported/r001-qwen3-0.6b-sft
+    retention: permanent
+    rebuild_from: [A002]
+    note: 轻量训练指标、逐样本预测和修正版评分卡；Adapter 哈希见 import-manifest.json。
+  - artifact_id: A005
+    run_id: r001-qwen3-1.7b-sft
+    kind: evaluation_result
+    uri: experiments/phase06/round-001/imported/r001-qwen3-1.7b-sft
+    retention: permanent
+    rebuild_from: [A002]
+    note: 轻量训练指标、逐样本预测和修正版评分卡；Adapter 哈希见 import-manifest.json。

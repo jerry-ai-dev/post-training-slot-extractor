@@ -1,4 +1,25 @@
 {
   "schema_version": 1,
-  "problems": []
+  "problems": [
+    {
+      "round_id": "round-001",
+      "status": "open",
+      "problem": "0.6B 工具调用仍存在 JSON 截断和参数继承错误。"
+    },
+    {
+      "round_id": "round-001",
+      "status": "open",
+      "problem": "1.7B final 输出会生成未定义状态值 matched，且缺失信息动作边界仍不稳定。"
+    },
+    {
+      "round_id": "round-001",
+      "status": "open",
+      "problem": "两个模型仍存在多轮状态继承和相对日期错误。"
+    },
+    {
+      "round_id": "round-001",
+      "status": "resolved",
+      "problem": "booking_authorized 的预约成功表达被回复忠实度评分器误罚。"
+    }
+  ]
 }

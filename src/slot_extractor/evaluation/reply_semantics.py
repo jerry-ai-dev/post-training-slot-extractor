@@ -118,6 +118,7 @@ _SPEECH_ACT_PATTERNS: dict[str, tuple[str, ...]] = {
     ),
     "claim_booking_success": (
         r"预约成功",
+        r"预约已成功",
         r"预约好了",
         r"已经.{0,8}预约",
         r"已确认.{0,32}(?:预约|安排)",

@@ -44,7 +44,8 @@ def test_dataset_keeps_all_51_cases() -> None:
 
 def test_dataset_checksum_matches() -> None:
     expected = Path("data/eval/test.sha256").read_text(encoding="utf-8").split()[0]
-    actual = hashlib.sha256(DATASET.read_bytes()).hexdigest()
+    # Dataset hashes use Git/Linux LF bytes so the check is stable on Windows checkouts.
+    actual = hashlib.sha256(DATASET.read_bytes().replace(b"\r\n", b"\n")).hexdigest()
     assert actual == expected
 
 

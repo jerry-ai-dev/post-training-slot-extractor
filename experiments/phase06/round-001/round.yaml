@@ -1,12 +1,12 @@
 schema_version: 1
 round_id: round-001
 title: 第一轮——Phase 05 失败归因与定向数据迭代
-status: awaiting_remote_run
-import_status: null
+status: completed
+import_status: verified
 parent_round: null
 baseline: phase05
 created_at: 2026-08-20
-closed_at: null
+closed_at: 2026-08-21
 owner: zhiruiyang
 objective: 识别不同模型在 Phase 05 冻结评估集上的主要失败原因，为后续数据集重构和重新训练提供证据。
 context: Phase 05 已完成 0.6B/1.7B Base、SFT、DPO 及 F16/Q4_K_M 的本地统一评测。
@@ -26,16 +26,16 @@ inheritance:
   prompts: [phase05-current]
   evaluation_contracts: [eval-v0.1, eval-v0.2]
 versions:
-  training_dataset: sft-v0.1
+  training_dataset: sft-v0.2
   preference_dataset: dpo-v0.1
   diagnostic_dataset: null
   eval_dataset: eval-v0.2
-  scorer: phase05-current
+  scorer: phase06-booking-success-fix
   prompt: phase05-current
   output_schema: phase05-current
   tool_schema: phase05-current
 source:
-  git_commit: 9188757d7c1572284eb513ef183f2bd8f4ec04f3
+  git_commit: abcb2e27780fd3d9428b1a147b3bb7c4306644a6
   worktree_clean: false
 approvals:
   plan:
@@ -43,10 +43,10 @@ approvals:
     approved_at: 2026-08-20
     note: 已确认 Round 001 只优化 SFT，完成数据集后由用户执行远端训练。
   closure:
-    approved_by: null
-    approved_at: null
-    note: null
+    approved_by: zhiruiyang
+    approved_at: 2026-08-21
+    note: 已完成两个 SFT 的远端训练、云端推理、结果回收和离线统一重评分。
 decision:
   action: continue
-  next_parent_round: null
-  rationale: Round 001 先修复评测并完成 SFT 数据与训练迭代；DPO 延后至新 SFT 残余错误明确后单独开展。
+  next_parent_round: round-001
+  rationale: 0.6B 有实质提升，1.7B 严格通过数持平；下一轮继续针对残余错误优化 SFT，DPO 继续延后。

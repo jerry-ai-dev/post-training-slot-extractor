@@ -1,4 +1,15 @@
 {
   "schema_version": 1,
-  "rounds": []
+  "rounds": [
+    {
+      "round_id": "round-001",
+      "status": "completed",
+      "closed_at": "2026-08-21",
+      "decision": "continue_sft",
+      "results": {
+        "r001-qwen3-0.6b-sft": "33/51",
+        "r001-qwen3-1.7b-sft": "34/51"
+      }
+    }
+  ]
 }

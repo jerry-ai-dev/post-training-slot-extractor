@@ -84,6 +84,8 @@ experiments/runs/*
 experiments/baselines/*
 reports/generated/*
 !reports/generated/scorecard-gpt-5.6-sol.json
+round-*-cloud-results/
+round-*-cloud-results.tar.gz
 
 # Local llama.cpp binaries (downloaded per-machine, never committed)
 deployment/llama_cpp/bin/*
