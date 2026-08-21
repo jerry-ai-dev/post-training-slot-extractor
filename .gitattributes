@@ -4,3 +4,5 @@ models/adapters/**/adapter_model.safetensors filter=lfs diff=lfs merge=lfs -text
 requirements-train.txt text eol=lf
 data/eval/*.jsonl text eol=lf
 data/eval/*.sha256 text eol=lf
+data/raw/v0.3/*.jsonl text eol=lf
+data/processed/sft/v0.3/**/*.jsonl text eol=lf

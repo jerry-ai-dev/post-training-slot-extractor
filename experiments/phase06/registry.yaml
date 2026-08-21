@@ -1,6 +1,6 @@
 schema_version: 1
 phase: phase06
-current_round: round-001
+current_round: round-002
 rounds:
   - round_id: round-001
     parent_round: null
@@ -11,6 +11,15 @@ rounds:
     closed_at: 2026-08-21
     path: experiments/phase06/round-001
     decision: continue_sft
+  - round_id: round-002
+    parent_round: round-001
+    baseline: round-001
+    status: ready_for_remote_run
+    owner: zhiruiyang
+    created_at: 2026-08-21
+    closed_at: null
+    path: experiments/phase06/round-002
+    decision: train_sft
 # 每个轮次登记示例：
 # - round_id: round-001
 #   parent_round: null
