@@ -2,6 +2,10 @@
 set -euo pipefail
 
 cd "$(git rev-parse --show-toplevel)"
+export HF_ENDPOINT="${HF_ENDPOINT:-https://hf-mirror.com}"
+export HF_HOME="${HF_HOME:-/root/autodl-tmp/huggingface}"
+echo "HF_ENDPOINT=$HF_ENDPOINT"
+echo "HF_HOME=$HF_HOME"
 python - <<'PY'
 import sys
 if sys.version_info < (3, 12):

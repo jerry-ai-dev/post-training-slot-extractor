@@ -32,3 +32,27 @@ uv run python -m scripts.quantize.run_phase05 --config configs/quantization/phas
 The committed training and inference configurations, adapters, evaluation dataset, fixture, and
 pipeline code are the reproducibility boundary. Base model downloads remain subject to their
 upstream license and availability.
+
+## AutoDL / 国内远端训练的 Hugging Face 配置
+
+训练配置使用 `Qwen/Qwen3-*` 仓库名。即使模型权重已经缓存在本机，Transformers 和
+Hugging Face Hub 在启动时仍可能访问远端，解析 `main` revision、检查元数据和确认缺失
+文件。国内实例直连 `huggingface.co` 可能长时间停在 `loading configuration file`。
+
+AutoDL 实例启动或重启后设置：
+
+```bash
+export HF_ENDPOINT=https://hf-mirror.com
+export HF_HOME=/root/autodl-tmp/huggingface
+```
+
+`HF_ENDPOINT` 决定元数据查询和缺失文件下载地址；`HF_HOME` 指向持久盘中的模型缓存。
+这不会强制重新下载已有模型。若确认缓存完整，也可以额外启用完全离线模式：
+
+```bash
+export HF_HUB_OFFLINE=1
+export TRANSFORMERS_OFFLINE=1
+```
+
+环境变量只在当前 shell 中有效；需要长期保留时可写入 `~/.bashrc`。各阶段的远端训练包
+也会设置适合 AutoDL 的默认值，但允许调用方通过已有环境变量覆盖。

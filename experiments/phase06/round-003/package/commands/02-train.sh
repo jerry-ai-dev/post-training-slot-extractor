@@ -2,6 +2,8 @@
 set -euo pipefail
 
 cd "$(git rev-parse --show-toplevel)"
+export HF_ENDPOINT="${HF_ENDPOINT:-https://hf-mirror.com}"
+export HF_HOME="${HF_HOME:-/root/autodl-tmp/huggingface}"
 RESULTS="experiments/phase06/round-003/cloud-results"
 mkdir -p "$RESULTS"
 date --iso-8601=seconds > "$RESULTS/training-started-at.txt"

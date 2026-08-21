@@ -3,6 +3,19 @@
 本轮只训练两个 SFT 模型，不运行 DPO。结果包不包含 Adapter、checkpoint、optimizer
 或其他大权重；只有确认模型效果达到标准后，才单独取回对应 Adapter。
 
+## 启动前的 Hugging Face 环境
+
+即使基础模型已下载，Transformers 启动时仍可能联网解析模型 revision 或检查缺失文件。
+实例重启后，先设置镜像地址和持久缓存目录：
+
+```bash
+export HF_ENDPOINT=https://hf-mirror.com
+export HF_HOME=/root/autodl-tmp/huggingface
+```
+
+本轮脚本已内置以上 AutoDL 默认值；手动设置的目的，是让当前 shell 中的诊断命令和所有
+后续命令也使用同一配置。模型缓存完整时不会重复下载权重。
+
 在仓库根目录依次执行：
 
 ```bash
