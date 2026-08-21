@@ -25,8 +25,8 @@ versions:
   output_schema: phase05-current
   tool_schema: phase05-current
 source:
-  git_commit: pending
-  worktree_clean: false
+  git_commit: 6db3050
+  worktree_clean: true
 approvals:
   plan:
     approved_by: zhiruiyang
