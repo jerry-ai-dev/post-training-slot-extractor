@@ -1,0 +1,22 @@
+schema_version: 1
+round_id: round-003
+variant_id: V003
+dataset: sft-v0.4-model-specific
+evaluation_dataset: eval-v0.2
+runs:
+  - run_id: r003-qwen3-0.6b-sft
+    model:
+      name: Qwen/Qwen3-0.6B
+      revision: main
+    stage: sft
+    seed: 20260821
+    rendered_config: experiments/phase06/round-003/package/configs/r003-qwen3-0.6b-sft.yaml
+    output_dir: models/adapters/r003-qwen3-0.6b-sft
+  - run_id: r003-qwen3-1.7b-sft
+    model:
+      name: Qwen/Qwen3-1.7B
+      revision: main
+    stage: sft
+    seed: 20260821
+    rendered_config: experiments/phase06/round-003/package/configs/r003-qwen3-1.7b-sft.yaml
+    output_dir: models/adapters/r003-qwen3-1.7b-sft

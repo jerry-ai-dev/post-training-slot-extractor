@@ -1,0 +1,88 @@
+{
+  "run_id": "r002-qwen3-1.7b-sft",
+  "model": "r002-qwen3-1.7b-sft",
+  "status": "evaluated",
+  "dataset": "data\\eval\\test.jsonl",
+  "backend_config": "C:\\post-training-slot-extractor\\round-002-cloud-results\\experiments\\phase06\\round-002\\cloud-results\\r002-qwen3-1.7b-sft\\runtime\\backend.yaml",
+  "n": 51,
+  "aggregate_dimensions": {
+    "protocol": {
+      "score": 0.9607843137254902,
+      "passed": false,
+      "detail": "mean over 51 applicable case(s)"
+    },
+    "task_correctness": {
+      "score": 0.9138891117535956,
+      "passed": false,
+      "detail": "mean over 51 applicable case(s)"
+    },
+    "resource": {
+      "score": null,
+      "passed": null,
+      "detail": "n/a"
+    }
+  },
+  "effective_pass": {
+    "numerator": 34,
+    "denominator": 51,
+    "rate": 0.6666666666666666
+  },
+  "output_kinds": {
+    "final": {
+      "count": 36,
+      "dimensions": {
+        "protocol": 0.9444444444444444,
+        "task_correctness": 0.8978508448255302
+      }
+    },
+    "tool_call": {
+      "count": 15,
+      "dimensions": {
+        "protocol": 1.0,
+        "task_correctness": 0.9523809523809523
+      }
+    }
+  },
+  "scenario_slices": {
+    "confirmation": {
+      "count": 3,
+      "task_correctness": 0.9742307693300339
+    },
+    "missing_information": {
+      "count": 9,
+      "task_correctness": 0.9311305406744003
+    },
+    "multi_turn": {
+      "count": 28,
+      "task_correctness": 0.8807119062715774
+    },
+    "tool_call": {
+      "count": 15,
+      "task_correctness": 0.9523809523809523
+    },
+    "tool_result": {
+      "count": 27,
+      "task_correctness": 0.8969427980610921
+    },
+    "unrelated": {
+      "count": 5,
+      "task_correctness": 0.945
+    }
+  },
+  "timing": {
+    "count": 51,
+    "total_ms_mean": 1467.504680010618,
+    "total_ms_p50": 1613.0672991275787,
+    "total_ms_p95": 1949.6626816689968,
+    "total_ms_max": 2062.977097928524,
+    "total_ms_min": 374.396488070488,
+    "first_token_ms_mean": null,
+    "tokens_per_s_mean": 56.79143700778338
+  },
+  "evaluation_environment": {
+    "backend": "llamafactory_huggingface",
+    "device": "cuda",
+    "latency_comparable_to_m0": false,
+    "rescored_offline": true
+  }
+}

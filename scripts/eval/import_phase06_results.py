@@ -14,7 +14,13 @@ from slot_extractor.evaluation.scorecard import aggregate_scorecard, summarize_t
 from slot_extractor.schemas.results import CaseResult, GenerationResult
 from slot_extractor.schemas.sample import load_samples
 
-RUN_IDS = ("r001-qwen3-0.6b-sft", "r001-qwen3-1.7b-sft")
+DEFAULT_ROUND_ID = "round-001"
+
+
+def _run_ids(round_id: str) -> tuple[str, str]:
+    number = int(round_id.removeprefix("round-"))
+    prefix = f"r{number:03d}"
+    return (f"{prefix}-qwen3-0.6b-sft", f"{prefix}-qwen3-1.7b-sft")
 
 
 def _sha256(path: Path) -> str:
@@ -25,8 +31,8 @@ def _sha256(path: Path) -> str:
     return digest.hexdigest()
 
 
-def verify_cloud_package(source: Path) -> int:
-    checksum_file = source / "experiments/phase06/round-001/cloud-results/SHA256SUMS"
+def verify_cloud_package(source: Path, round_id: str = DEFAULT_ROUND_ID) -> int:
+    checksum_file = source / f"experiments/phase06/{round_id}/cloud-results/SHA256SUMS"
     if not checksum_file.is_file():
         raise ValueError(f"missing checksum manifest: {checksum_file}")
     checked = 0
@@ -131,24 +137,43 @@ def _rescore(run_id: str, source: Path, destination: Path, cases: Path) -> None:
     )
 
 
-def import_results(source: Path, destination: Path, cases: Path) -> dict[str, Any]:
-    checked = verify_cloud_package(source)
-    cloud = source / "experiments/phase06/round-001/cloud-results"
+def import_results(
+    source: Path,
+    destination: Path,
+    cases: Path,
+    *,
+    round_id: str = DEFAULT_ROUND_ID,
+) -> dict[str, Any]:
+    checked = verify_cloud_package(source, round_id)
+    cloud = source / f"experiments/phase06/{round_id}/cloud-results"
     models = source / "models/adapters"
     destination.mkdir(parents=True, exist_ok=True)
     runs: list[dict[str, Any]] = []
-    for run_id in RUN_IDS:
+    for run_id in _run_ids(round_id):
         run_destination = destination / run_id
         run_destination.mkdir(exist_ok=True)
         _rescore(run_id, cloud / run_id, run_destination, cases)
-        for name in ("train_results.json", "eval_results.json", "trainer_log.jsonl"):
-            shutil.copy2(models / run_id / name, run_destination / name)
+        packaged_training = cloud / run_id / "training"
+        training_source = packaged_training if packaged_training.is_dir() else models / run_id
+        for name in (
+            "train_results.json",
+            "eval_results.json",
+            "trainer_state.json",
+            "trainer_log.jsonl",
+            "training_loss.png",
+            "training_eval_loss.png",
+        ):
+            path = training_source / name
+            if path.is_file():
+                shutil.copy2(path, run_destination / name)
         adapter = models / run_id / "adapter_model.safetensors"
+        adapter_in_package = adapter.is_file()
         runs.append(
             {
                 "run_id": run_id,
-                "adapter_sha256": _sha256(adapter),
-                "adapter_bytes": adapter.stat().st_size,
+                "adapter_in_package": adapter_in_package,
+                "adapter_sha256": _sha256(adapter) if adapter_in_package else None,
+                "adapter_bytes": adapter.stat().st_size if adapter_in_package else None,
                 "adapter_committed": False,
             }
         )
@@ -164,7 +189,7 @@ def import_results(source: Path, destination: Path, cases: Path) -> dict[str, An
         shutil.copy2(cloud / name, destination / name)
     manifest = {
         "schema_version": 1,
-        "round_id": "round-001",
+        "round_id": round_id,
         "verified_cloud_files": checked,
         "source_package": source.name,
         "policy": "Metrics and provenance are committed; adapters and checkpoints stay external.",
@@ -181,14 +206,26 @@ def main() -> int:
         description="Verify and import compact Phase 06 cloud results."
     )
     parser.add_argument("--source", type=Path, required=True)
+    parser.add_argument("--round-id", default=DEFAULT_ROUND_ID)
     parser.add_argument(
         "--destination",
         type=Path,
-        default=Path("experiments/phase06/round-001/imported"),
+        default=None,
     )
     parser.add_argument("--cases", type=Path, default=Path("data/eval/test.jsonl"))
     args = parser.parse_args()
-    print(json.dumps(import_results(args.source, args.destination, args.cases), indent=2))
+    destination = args.destination or Path(f"experiments/phase06/{args.round_id}/imported")
+    print(
+        json.dumps(
+            import_results(
+                args.source,
+                destination,
+                args.cases,
+                round_id=args.round_id,
+            ),
+            indent=2,
+        )
+    )
     return 0
 
 

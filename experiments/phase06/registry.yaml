@@ -1,6 +1,6 @@
 schema_version: 1
 phase: phase06
-current_round: round-002
+current_round: round-003
 rounds:
   - round_id: round-001
     parent_round: null
@@ -14,11 +14,20 @@ rounds:
   - round_id: round-002
     parent_round: round-001
     baseline: round-001
-    status: ready_for_remote_run
+    status: completed
+    owner: zhiruiyang
+    created_at: 2026-08-21
+    closed_at: 2026-08-21
+    path: experiments/phase06/round-002
+    decision: continue_sft
+  - round_id: round-003
+    parent_round: round-002
+    baseline: round-002
+    status: awaiting_remote_run
     owner: zhiruiyang
     created_at: 2026-08-21
     closed_at: null
-    path: experiments/phase06/round-002
+    path: experiments/phase06/round-003
     decision: train_sft
 # 每个轮次登记示例：
 # - round_id: round-001

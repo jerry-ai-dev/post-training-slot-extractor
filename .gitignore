@@ -30,6 +30,8 @@ data/eval/*
 !data/raw/v0.2/samples.jsonl
 !data/raw/v0.3/
 !data/raw/v0.3/samples.jsonl
+!data/raw/v0.4/
+!data/raw/v0.4/samples.jsonl
 !data/processed/sft/
 data/processed/sft/*
 !data/processed/sft/v0.1/
@@ -40,6 +42,8 @@ data/processed/sft/*
 !data/processed/sft/v0.2/val.jsonl
 !data/processed/sft/v0.3/
 !data/processed/sft/v0.3/**
+!data/processed/sft/v0.4/
+!data/processed/sft/v0.4/**
 !data/processed/dpo/
 data/processed/dpo/*
 !data/processed/dpo/v0.1/
@@ -56,6 +60,10 @@ data/processed/dpo/*
 !data/processed/v0.3/manifest.json
 !data/processed/v0.3/DATASET_CARD.md
 !data/processed/v0.3/dataset_info.json
+!data/processed/v0.4/
+!data/processed/v0.4/manifest.json
+!data/processed/v0.4/DATASET_CARD.md
+!data/processed/v0.4/dataset_info.json
 # 评估集破例入库（尺子需 git 版本化）
 !data/eval/test.jsonl
 !data/eval/DATASET_CARD.md

@@ -18,6 +18,24 @@
       "effective_pass": "34/51",
       "adapter_committed": false,
       "adapter_sha256": "cc3aad15e059ec06f528f8b787cda263b3f218964ae7dd97939b6b6a49ddf5f8"
+    },
+    {
+      "run_id": "r002-qwen3-0.6b-sft",
+      "round_id": "round-002",
+      "base_model": "Qwen/Qwen3-0.6B",
+      "dataset": "sft-v0.3-small",
+      "effective_pass": "36/51",
+      "adapter_committed": false,
+      "adapter_sha256": "71810f30df1448df980f6d1f22d5f2d6101700fb006921634cc480230fe575fc"
+    },
+    {
+      "run_id": "r002-qwen3-1.7b-sft",
+      "round_id": "round-002",
+      "base_model": "Qwen/Qwen3-1.7B",
+      "dataset": "sft-v0.3-large",
+      "effective_pass": "34/51",
+      "adapter_committed": false,
+      "adapter_sha256": "7e86cdf5658f056cf0c5082b447c3a510275f95dfb07b7577e6319e248540f9d"
     }
   ]
 }

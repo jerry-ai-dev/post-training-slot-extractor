@@ -10,6 +10,23 @@
         "r001-qwen3-0.6b-sft": "33/51",
         "r001-qwen3-1.7b-sft": "34/51"
       }
+    },
+    {
+      "round_id": "round-002",
+      "status": "completed",
+      "closed_at": "2026-08-21",
+      "decision": "continue_sft",
+      "results": {
+        "r002-qwen3-0.6b-sft": "36/51",
+        "r002-qwen3-1.7b-sft": "34/51"
+      }
+    },
+    {
+      "round_id": "round-003",
+      "status": "awaiting_remote_run",
+      "closed_at": null,
+      "decision": "train_sft",
+      "results": {}
     }
   ]
 }

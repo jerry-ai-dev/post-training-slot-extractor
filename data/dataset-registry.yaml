@@ -34,11 +34,20 @@ datasets:
     notes: 479 条去重后的 v0.1 回放样本加 316 条 Round 001 定向样本；不含 DPO。
   - dataset_id: sft-v0.3
     role: training
-    status: proposed
+    status: frozen
     parent: sft-v0.2
     path: data/processed/sft/v0.3
     manifest: data/processed/v0.3/manifest.json
     first_used_in: round-002
     retired_at: null
     notes: 795 条 v0.2 完整回放、210 条共享定向样本，以及每个模型各 80 条专项样本。
+  - dataset_id: sft-v0.4
+    role: training
+    status: frozen
+    parent: sft-v0.3
+    path: data/processed/sft/v0.4
+    manifest: data/processed/v0.4/manifest.json
+    first_used_in: round-003
+    retired_at: null
+    notes: 每个模型 1265 条；继承对应 v0.3 视图，新增 120 条共享回归修复与各 60 条模型专项样本。
 # 新数据版本必须新增条目，禁止修改旧版本文件来复用版本号。
