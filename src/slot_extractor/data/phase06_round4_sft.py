@@ -322,6 +322,31 @@ def generate_round4_holdout() -> list[RawSample]:
     return samples
 
 
+def _holdout_eval_record(sample: RawSample) -> dict[str, Any]:
+    record: dict[str, Any] = {
+        "id": sample.id,
+        "output_kind": sample.output_kind,
+        "conversation_kind": sample.conversation_kind,
+        "assertions": ["no_field_outside_schema"],
+        "tags": list(sample.tags),
+        "input": sample.input,
+        "expected": sample.expected,
+    }
+    if sample.output_kind == "final":
+        required_acts = {
+            "ask_start_time": ["ask_for_start_time"],
+            "handoff": [],
+        }.get(sample.expected["reply_type"], [])
+        reply = sample.expected.get("reply")
+        record["reply_expectations"] = {
+            "required_acts": required_acts,
+            "forbidden_acts": ["claim_booking_success"],
+            "required_fields": [],
+            "references": [reply] if isinstance(reply, str) else [],
+        }
+    return record
+
+
 def build_round4_datasets(
     source_raw: str | Path = "data/raw/v0.2/samples.jsonl",
     eval_path: str | Path = "data/eval/test.jsonl",
@@ -360,7 +385,7 @@ def build_round4_datasets(
     raw_path = root / "raw" / version / "samples.jsonl"
     write_jsonl(raw_path, [asdict(sample) for sample in union])
     holdout_path = root / "eval" / "phase06_holdout_v0.3.jsonl"
-    write_jsonl(holdout_path, [asdict(sample) for sample in holdout])
+    write_jsonl(holdout_path, [_holdout_eval_record(sample) for sample in holdout])
     model_splits: dict[str, tuple[Path, Path]] = {}
     for view, samples in views.items():
         train, val = _split(samples, seed + (0 if view == "small" else 1000))

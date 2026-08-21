@@ -12,6 +12,6 @@ artifacts:
     run_id: null
     kind: blind_evaluation_dataset
     uri: data/eval/phase06_holdout_v0.3.jsonl
-    sha256: 3c0b7118d5aae16efa9ea8e16c778b2a62e170f5e7c32b19bddabcd54e7a1aec
+    sha256: bbaa74ede381d407438ab9b641b8cbe7087b887589852e20fbc88c1ab6c2589b
     retention: permanent
     note: 训练前冻结且不进入训练或验证视图。
