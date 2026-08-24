@@ -1,5 +1,6 @@
 from collections.abc import Callable
 from contextlib import asynccontextmanager
+from datetime import datetime, timedelta, timezone
 from functools import cache
 from pathlib import Path
 from threading import Lock, RLock
@@ -27,6 +28,11 @@ from .ndjson import encode_event, encode_side_status
 from .orchestrator import ConversationOrchestrator
 
 STATIC = Path(__file__).parent / "static"
+SHANGHAI_TIMEZONE = timezone(timedelta(hours=8))
+
+
+def _shanghai_now() -> datetime:
+    return datetime.now(SHANGHAI_TIMEZONE)
 
 
 class TimedBackend:
@@ -63,10 +69,15 @@ class ClientLogRequest(BaseModel):
 
 
 class ResidentModelSlots:
-    def __init__(self, registry, backend_factory=None, diagnostics=None) -> None:
+    def __init__(
+        self, registry, backend_factory=None, diagnostics=None, quantization_config=None,
+        slot_ports=None,
+    ) -> None:
         self.registry = registry
         self.backend_factory = backend_factory
         self.diagnostics = diagnostics
+        self.quantization_config = quantization_config or Path("configs/quantization/phase05.yaml")
+        self.slot_ports = slot_ports or {"left": 18080, "right": 18081}
         self._slots = {}
         self._lock = RLock()
 
@@ -86,10 +97,8 @@ class ResidentModelSlots:
                     backend = self.backend_factory(spec)
                     manager = process = None
                 else:
-                    config = yaml.safe_load(
-                        Path("configs/quantization/phase05.yaml").read_text(encoding="utf-8")
-                    )
-                    port = 18080 if side == "left" else 18081
+                    config = yaml.safe_load(self.quantization_config.read_text(encoding="utf-8"))
+                    port = self.slot_ports[side]
                     manager = LlamaServerManager(
                         self.registry, Path(config["toolchain"]["server"]), port=port
                     )
@@ -133,9 +142,7 @@ class ResidentModelSlots:
             if current and current["manager"] is not None:
                 current["manager"].stop(current["process"])
             if current:
-                self.diagnostics.write(
-                    "model_unloaded", side=side, model_id=current["model_id"]
-                )
+                self.diagnostics.write("model_unloaded", side=side, model_id=current["model_id"])
 
     def close(self) -> None:
         for side in ("left", "right"):
@@ -147,13 +154,24 @@ def create_app(
     registry: ModelRegistry | None = None,
     backend_factory: Callable[[ModelSpec], Backend] | None = None,
     log_path: Path = Path("reports/phase05/app/app.jsonl"),
+    now_provider: Callable[[], datetime] | None = None,
+    quantization_config: Path = Path("configs/quantization/phase05.yaml"),
+    slot_ports: dict[str, int] | None = None,
+    canonicalize_unique_matches: bool = False,
 ) -> FastAPI:
-    store = store or FixtureStore.from_yaml(Path("data/fixtures/technicians/phase05-v1.yaml"))
-    registry = registry or ModelRegistry.from_config(Path("configs/quantization/phase05.yaml"))
+    now_provider = now_provider or _shanghai_now
+    store = store or FixtureStore.from_yaml(
+        Path("data/fixtures/technicians/phase05-v1.yaml"),
+        target_date=now_provider().date(),
+    )
+    registry = registry or ModelRegistry.from_config(quantization_config)
     executor = FindTechniciansExecutor(store)
     comparison_lock = Lock()
     diagnostics = DiagnosticLog(log_path)
-    model_slots = ResidentModelSlots(registry, backend_factory, diagnostics)
+    model_slots = ResidentModelSlots(
+        registry, backend_factory, diagnostics, quantization_config=quantization_config,
+        slot_ports=slot_ports,
+    )
 
     @asynccontextmanager
     async def lifespan(_app):
@@ -186,13 +204,15 @@ def create_app(
         result = []
         for spec in registry.models:
             is_available, reason = availability(spec.model_id)
-            result.append({
-                "model_id": spec.model_id,
-                "stage": spec.stage,
-                "artifact_kind": spec.artifact_kind,
-                "available": is_available,
-                "unavailable_reason": reason,
-            })
+            result.append(
+                {
+                    "model_id": spec.model_id,
+                    "stage": spec.stage,
+                    "artifact_kind": spec.artifact_kind,
+                    "available": is_available,
+                    "unavailable_reason": reason,
+                }
+            )
         return result
 
     @app.post("/api/model-slots/{side}/load")
@@ -286,9 +306,12 @@ def create_app(
                         backend = model_slots.get(side, model_id)
                         timed_backend = TimedBackend(backend)
                         yield encode_side_status(side, "inferencing", comparable)
-                        result = ConversationOrchestrator(timed_backend, executor).run(
-                            request.user_input, history
-                        )
+                        result = ConversationOrchestrator(
+                            timed_backend,
+                            executor,
+                            now_provider=now_provider,
+                            canonicalize_unique_matches=canonicalize_unique_matches,
+                        ).run(request.user_input, history)
                         for event in result.events:
                             yield encode_event(CompareEvent(side, event, comparable)) + "\n"
                         has_error = any(e.kind == "error" for e in result.events)
@@ -299,9 +322,7 @@ def create_app(
                             side=side,
                             model_id=model_id,
                             status=status,
-                            inference_duration_ms=round(
-                                timed_backend.inference_duration_ms, 3
-                            ),
+                            inference_duration_ms=round(timed_backend.inference_duration_ms, 3),
                             events=[
                                 {"kind": event.kind, "payload": event.payload}
                                 for event in result.events
@@ -311,9 +332,7 @@ def create_app(
                             side,
                             status,
                             comparable,
-                            inference_duration_ms=round(
-                                timed_backend.inference_duration_ms, 3
-                            ),
+                            inference_duration_ms=round(timed_backend.inference_duration_ms, 3),
                         )
                     except Exception:
                         diagnostics.write(

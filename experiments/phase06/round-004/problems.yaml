@@ -1,0 +1,15 @@
+schema_version: 1
+round_id: round-004
+problems:
+  - problem_id: R4-P001
+    title: 0.6B final-heavy 数据导致协议退化
+    evidence: Round 003 协议由 50/51 降到 46/51，出现纯文本、截断和非法枚举。
+    strategy: 回退到 v0.3 核心，只增加短工具 JSON、缺失信息和少量完整 final 回放。
+  - problem_id: R4-P002
+    title: 1.7B 达到通过数但仍有历史回归
+    evidence: Round 003 为 38/51、协议 51/51，但相对最佳历史回归 3 条。
+    strategy: 保留 v0.4 能力，集中增加确认动作、工具结果字段保真、偏好排除和无关请求回放。
+  - problem_id: R4-P003
+    title: 固定评测集被多轮用于决策
+    evidence: 连续三轮围绕同一 51 条样本分析残余错误，继续迭代会产生开发集过拟合风险。
+    strategy: 训练前冻结 24 条独立 holdout；Round 004 后停止同类数据迭代。

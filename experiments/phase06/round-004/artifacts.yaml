@@ -1,0 +1,17 @@
+schema_version: 1
+round_id: round-004
+artifacts:
+  - artifact_id: R4-A001
+    run_id: null
+    kind: raw_dataset
+    uri: data/raw/v0.5/samples.jsonl
+    sha256: 97a7c30d4288ecce6fb9c8b0d411d5baeca4c16b8f55c6de423dfaba84488d49
+    retention: permanent
+    rebuild_from: [src/slot_extractor/data/phase06_round4_sft.py]
+  - artifact_id: R4-A002
+    run_id: null
+    kind: blind_evaluation_dataset
+    uri: data/eval/phase06_holdout_v0.3.jsonl
+    sha256: bbaa74ede381d407438ab9b641b8cbe7087b887589852e20fbc88c1ab6c2589b
+    retention: permanent
+    note: 训练前冻结且不进入训练或验证视图。

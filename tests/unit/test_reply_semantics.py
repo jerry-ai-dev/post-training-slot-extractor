@@ -32,6 +32,11 @@ def test_detects_confirmation_request_paraphrases(text: str) -> None:
 
 def test_detects_premature_booking_success_claim() -> None:
     assert has_speech_act("已经帮您预约成功了", "claim_booking_success")
+    assert has_speech_act("好的，王芳技师的预约已成功。", "claim_booking_success")
+    assert has_speech_act(
+        "好的，已确认预约王芳技师明天下午两点为您安排服务。",
+        "claim_booking_success",
+    )
 
 
 def test_detects_pause_acknowledgement() -> None:
@@ -82,6 +87,18 @@ def test_common_natural_paraphrases_match_required_acts() -> None:
         "李明技师可在6月10日上午10点提供60分钟服务。",
         "inform_technician_available",
     )
+
+
+def test_detects_direct_request_for_appointment_date_and_start_time() -> None:
+    assert has_speech_act("请告诉我具体预约日期和开始时间。", "ask_for_start_time")
+    assert has_speech_act("请问您想预约具体日期和时间？", "ask_for_start_time")
+
+
+def test_confirming_duration_before_question_is_not_booking_success() -> None:
+    text = "好的，已确认60分钟服务。请问您想预约具体哪一天、几点开始？"
+
+    assert has_speech_act(text, "ask_for_start_time")
+    assert not has_speech_act(text, "claim_booking_success")
 
 
 def test_reference_similarity_accepts_paraphrase_better_than_unrelated_text() -> None:

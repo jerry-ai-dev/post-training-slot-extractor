@@ -1,0 +1,14 @@
+schema_version: 1
+round_id: ROUND_ID
+strategies:
+  - strategy_id: S001
+    title: ""
+    type: other
+    addresses: [P001]
+    hypotheses: [H001]
+    changes: []
+    controls_held_constant: []
+    expected_effects: []
+    risks: []
+    attribution_limits: []
+

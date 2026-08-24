@@ -33,7 +33,8 @@ This project follows the spec workflow:
 ├── docs/                          # Engineering notes beyond the main spec
 ├── experiments/                   # Reproducible experiment outputs
 │   ├── baselines/                 # M0 baseline outputs
-│   └── runs/                      # SFT / DPO / quantization comparison runs
+│   ├── runs/                      # SFT / DPO / quantization comparison runs
+│   └── phase06/                   # Versioned multi-round iteration ledger and templates
 ├── project-log/                   # Phase-by-phase construction logs
 │   ├── phase-01-scaffold/
 │   ├── phase-02-eval-baseline/
@@ -77,6 +78,8 @@ This project follows the spec workflow:
 - `data/eval/` is for frozen evaluation data. It must never be reused for training.
 - `data/processed/` is for training-ready SFT / DPO data and LLaMA-Factory registration files.
 - `experiments/` stores run outputs and metrics, while `reports/` stores curated summaries.
+- `experiments/phase06/registry.yaml` is the Phase 06 round index; `_template/` is copied for each new immutable iteration round.
+- `data/dataset-registry.yaml` tracks dataset roles, lineage, contracts, and retirement without overwriting old versions.
 - `project-log/` stores construction logs by implementation phase. Each phase directory has a Markdown log for goals, tasks, decisions, commands, outputs, problems, and next steps.
 - `models/` is intentionally ignored by git because it will contain large model artifacts.
 - `scripts/` should stay thin; reusable logic belongs in `src/slot_extractor/`.

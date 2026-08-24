@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "round_id": "round-003",
+  "variant_id": "V003",
+  "status": "frozen",
+  "dataset": "sft-v0.4-model-specific",
+  "eval_dataset": "eval-v0.2",
+  "run_count": 2,
+  "includes_adapters": false,
+  "includes_training_logs": true,
+  "notes": "Round 003 trains SFT only. The routine result package excludes adapters and checkpoints; retrieve an adapter separately only after reviewing metrics."
+}

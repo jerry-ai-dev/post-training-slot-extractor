@@ -1,0 +1,13 @@
+schema_version: 1
+round_id: round-004
+variants:
+  - variant_id: V004
+    title: sft-v0.5 最终定向候选
+    strategies: [R4-S001, R4-S002, R4-S003]
+    problems: [R4-P001, R4-P002, R4-P003]
+    control: false
+    controls_held_constant:
+      - LoRA rank 16、alpha 32、dropout 0.05
+      - learning rate 1e-4、epoch 3、effective batch size 16
+      - Qwen3 template、no-think、cutoff length 2048
+    run_ids: [r004-qwen3-0.6b-sft, r004-qwen3-1.7b-sft]

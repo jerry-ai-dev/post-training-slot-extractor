@@ -1,0 +1,94 @@
+schema_version: 1
+phase: phase06
+current_round: round-009
+rounds:
+  - round_id: round-001
+    parent_round: null
+    baseline: phase05
+    status: completed
+    owner: phase06-team
+    created_at: 2026-08-20
+    closed_at: 2026-08-21
+    path: experiments/phase06/round-001
+    decision: continue_sft
+  - round_id: round-002
+    parent_round: round-001
+    baseline: round-001
+    status: completed
+    owner: phase06-team
+    created_at: 2026-08-21
+    closed_at: 2026-08-21
+    path: experiments/phase06/round-002
+    decision: continue_sft
+  - round_id: round-003
+    parent_round: round-002
+    baseline: round-002
+    status: completed
+    owner: phase06-team
+    created_at: 2026-08-21
+    closed_at: 2026-08-21
+    path: experiments/phase06/round-003
+    decision: continue_sft_final_round
+  - round_id: round-004
+    parent_round: round-003
+    baseline: best_per_model
+    status: completed
+    owner: phase06-team
+    created_at: 2026-08-21
+    closed_at: 2026-08-22
+    path: experiments/phase06/round-004
+    decision: train_sft
+  - round_id: round-005
+    parent_round: round-004
+    baseline: best_per_model
+    status: completed
+    owner: phase06-team
+    created_at: 2026-08-22
+    closed_at: 2026-08-23
+    path: experiments/phase06/round-005
+    decision: close_sft_select_finalists
+  - round_id: round-006
+    parent_round: round-005
+    baseline: r004-qwen3-0.6b-sft-f16
+    status: completed
+    owner: phase06-team
+    created_at: 2026-08-23
+    closed_at: 2026-08-23
+    path: experiments/phase06/round-006
+    decision: retain_q8_and_q4
+  - round_id: round-007
+    parent_round: round-006
+    baseline: q8_0
+    status: completed
+    owner: phase06-team
+    created_at: 2026-08-23
+    closed_at: 2026-08-23
+    path: experiments/phase06/round-007
+    decision: q8_default_q4_low_latency
+  - round_id: round-008
+    parent_round: round-007
+    baseline: q4_k_m
+    status: completed
+    owner: phase06-team
+    created_at: 2026-08-23
+    closed_at: 2026-08-23
+    path: experiments/phase06/round-008
+    decision: enable_prompt_cache_reject_aggressive_prompt_reduction
+  - round_id: round-009
+    parent_round: round-008
+    baseline: q8_default_q4_low_latency
+    status: completed
+    owner: phase06-team
+    created_at: 2026-08-23
+    closed_at: 2026-08-23
+    path: experiments/phase06/round-009
+    decision: complete_app_integration_and_close_phase06
+# 每个轮次登记示例：
+# - round_id: round-001
+#   parent_round: null
+#   status: draft
+#   owner: name
+#   created_at: 2026-08-20
+#   closed_at: null
+#   path: experiments/phase06/round-001
+#   decision: null

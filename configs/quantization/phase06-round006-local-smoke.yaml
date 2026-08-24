@@ -1,0 +1,28 @@
+version: phase06-round006-local-v1
+model:
+  run_id: r004-qwen3-0.6b-sft
+  base_model: Qwen/Qwen3-0.6B
+  adapter_path: models/adapters/r004-qwen3-0.6b-sft
+paths:
+  merged_hf: models/merged/phase06-round006-r004-qwen3-0.6b-sft
+  f16_gguf: models/gguf/phase06-round006-local/r004-qwen3-0.6b-sft-F16.gguf
+  output_dir: models/gguf/phase06-round006-local
+  results_dir: experiments/phase06/round-006/local-quality-smoke
+  calibration_data: data/calibration/phase05-v1.txt
+tools:
+  converter: deployment/llama_cpp/source/convert_hf_to_gguf.py
+  quantize: deployment/llama_cpp/bin/llama-quantize.exe
+  imatrix: deployment/llama_cpp/bin/llama-imatrix.exe
+  server: deployment/llama_cpp/bin/llama-server.exe
+quantizations:
+  - Q4_K_M
+  - IQ2_XS
+evaluation:
+  cases:
+    - data/eval/test.jsonl
+    - data/eval/phase06_holdout_v0.3.jsonl
+  port: 8017
+  gpu_layers: 0
+  context_size: 4096
+  max_tokens: 512
+  temperature: 0.0

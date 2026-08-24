@@ -1,0 +1,70 @@
+schema_version: 1
+datasets:
+  - dataset_id: eval-v0.1
+    role: evaluation
+    status: superseded
+    parent: null
+    path_at_commit: data/eval/test.jsonl@9188757d7c1572284eb513ef183f2bd8f4ec04f3
+    sha256: 510345f855f443fa120ce2d23ad2cd831f2141a5fb3c572803c991ab8ea645c4
+    first_used_in: phase01
+    retired_at: 2026-08-20
+    notes: Phase 05 使用的历史 51 条评估样本；不得直接用于训练。
+  - dataset_id: eval-v0.2
+    role: evaluation
+    status: frozen
+    parent: eval-v0.1
+    path: data/eval/test.jsonl
+    contract: data/eval/dataset_contract.json
+    sha256_file: data/eval/test.sha256
+    first_used_in: round-001
+    retired_at: null
+    changes:
+      - 三条 available 后用户确认用例改为预约成功语义。
+      - 三条失败结果知悉用例的 confirmation 修正为 false。
+    notes: 保持 51 条输入不变，修正确认语义、预期输出与语义约束。
+  - dataset_id: sft-v0.2
+    role: training
+    status: frozen
+    parent: sft-v0.1
+    path: data/processed/sft/v0.2/train.jsonl
+    validation_path: data/processed/sft/v0.2/val.jsonl
+    manifest: data/processed/v0.2/manifest.json
+    first_used_in: round-001
+    retired_at: null
+    notes: 479 条去重后的 v0.1 回放样本加 316 条 Round 001 定向样本；不含 DPO。
+  - dataset_id: sft-v0.3
+    role: training
+    status: frozen
+    parent: sft-v0.2
+    path: data/processed/sft/v0.3
+    manifest: data/processed/v0.3/manifest.json
+    first_used_in: round-002
+    retired_at: null
+    notes: 795 条 v0.2 完整回放、210 条共享定向样本，以及每个模型各 80 条专项样本。
+  - dataset_id: sft-v0.4
+    role: training
+    status: frozen
+    parent: sft-v0.3
+    path: data/processed/sft/v0.4
+    manifest: data/processed/v0.4/manifest.json
+    first_used_in: round-003
+    retired_at: null
+    notes: 每个模型 1265 条；继承对应 v0.3 视图，新增 120 条共享回归修复与各 60 条模型专项样本。
+  - dataset_id: eval-v0.3-holdout
+    role: evaluation
+    status: frozen
+    parent: null
+    path: data/eval/phase06_holdout_v0.3.jsonl
+    first_used_in: round-004
+    retired_at: null
+    notes: Round 004 训练前冻结的 24 条独立盲测集，不参与任何 SFT 视图。
+  - dataset_id: sft-v0.5
+    role: training
+    status: frozen
+    parent: sft-v0.4
+    path: data/processed/sft/v0.5
+    manifest: data/processed/v0.5/manifest.json
+    first_used_in: round-004
+    retired_at: null
+    notes: 最后一轮定向 SFT；0.6B 回退到 v0.3 核心后做最小修复，1.7B 保留 v0.4 并增加回归保护。
+# 新数据版本必须新增条目，禁止修改旧版本文件来复用版本号。

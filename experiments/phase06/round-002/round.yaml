@@ -1,0 +1,42 @@
+schema_version: 1
+round_id: round-002
+title: 第二轮——残余错误分层与 SFT 精准修复
+status: completed
+import_status: verified
+parent_round: round-001
+baseline: round-001
+created_at: 2026-08-21
+closed_at: 2026-08-21
+owner: phase06-team
+objective: 在不引入 DPO 的前提下，针对 Round 001 残余错误分别提升 0.6B 工具调用稳定性和 1.7B 最终状态合法性，并避免已通过样本退化。
+context: Round 001 中 0.6B 达到 33/51，1.7B 达到 34/51；两者有 10 条共性失败，同时存在明显的模型特有错误。
+inheritance:
+  datasets: [sft-v0.2, eval-v0.2]
+  models: [r001-qwen3-0.6b-sft, r001-qwen3-1.7b-sft]
+  prompts: [phase05-current]
+  evaluation_contracts: [eval-v0.2]
+versions:
+  training_dataset: sft-v0.3
+  preference_dataset: dpo-v0.1-unused
+  diagnostic_dataset: round-002-residual-v0.1
+  eval_dataset: eval-v0.2
+  scorer: phase06-booking-success-fix
+  prompt: phase05-current
+  output_schema: phase05-current
+  tool_schema: phase05-current
+source:
+  git_commit: 4b13315
+  worktree_clean: true
+approvals:
+  plan:
+    approved_by: phase06-team
+    approved_at: 2026-08-21
+    note: 用户要求按既定策略制作数据集和训练脚本，准备重新训练。
+  closure:
+    approved_by: phase06-team
+    approved_at: 2026-08-21
+    note: 结果完整性已校验；Round 002 部分有效但未达到成功标准，继续 SFT。
+decision:
+  action: continue_sft
+  next_parent_round: round-002
+  rationale: 0.6B 有净提升但回归超标；1.7B 无净提升且出现纯文本输出回归，结构化错误仍应由 SFT 修复。

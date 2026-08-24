@@ -1,0 +1,8 @@
+run_id: r001-qwen3-1.7b-sft
+model_name_or_path: Qwen/Qwen3-1.7B
+dataset: phase06_sft_v0_2
+eval_dataset: phase06_sft_val_v0_2
+dataset_dir: data/processed/v0.2
+seed: 20260820
+output_dir: models/adapters/r001-qwen3-1.7b-sft
+

@@ -1,0 +1,66 @@
+{
+  "created_at": "2026-08-23T12:34:51.119921+00:00",
+  "method": {
+    "samples": 1,
+    "repetitions": 1,
+    "threads": 8
+  },
+  "results": [
+    {
+      "quantization": "Q8_0",
+      "model": "models\\gguf\\phase06-round006-local\\r004-qwen3-0.6b-sft-Q8_0.gguf",
+      "model_bytes": 639446816,
+      "peak_server_rss_bytes": 1211289600,
+      "rows": [
+        {
+          "sample_id": "phase06-r4-holdout-015",
+          "repetition": 1,
+          "input_tokens": 1432,
+          "output_tokens": 61,
+          "prefill_ms": 29.659,
+          "prefill_tokens_per_s": 33.716578441619745,
+          "ttft_ms": 517.3130000475794,
+          "decode_ms": 2104.98,
+          "decode_tokens_per_s": 28.978897661735505,
+          "total_ms": 2623.0528000742197
+        }
+      ],
+      "median": {
+        "prefill_ms": 29.659,
+        "prefill_tokens_per_s": 33.716578441619745,
+        "ttft_ms": 517.3130000475794,
+        "decode_ms": 2104.98,
+        "decode_tokens_per_s": 28.978897661735505,
+        "total_ms": 2623.0528000742197
+      }
+    },
+    {
+      "quantization": "Q4_K_M",
+      "model": "models\\gguf\\phase06-round006-local\\r004-qwen3-0.6b-sft-Q4_K_M.gguf",
+      "model_bytes": 396704544,
+      "peak_server_rss_bytes": 1183305728,
+      "rows": [
+        {
+          "sample_id": "phase06-r4-holdout-015",
+          "repetition": 1,
+          "input_tokens": 1432,
+          "output_tokens": 61,
+          "prefill_ms": 26.352,
+          "prefill_tokens_per_s": 37.947783849423196,
+          "ttft_ms": 590.4881999595091,
+          "decode_ms": 1742.261,
+          "decode_tokens_per_s": 35.01197581763008,
+          "total_ms": 2333.834300050512
+        }
+      ],
+      "median": {
+        "prefill_ms": 26.352,
+        "prefill_tokens_per_s": 37.947783849423196,
+        "ttft_ms": 590.4881999595091,
+        "decode_ms": 1742.261,
+        "decode_tokens_per_s": 35.01197581763008,
+        "total_ms": 2333.834300050512
+      }
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+5a1189a5484d26b7d0003a7e0688681a13aa25ae508821d9e49fc61de0297c8d  data/raw/v0.4/samples.jsonl
+8fa01a9c673052dd989f908b509e13fe114495a99e1356d1d0ba97fbc54784ec  data/processed/sft/v0.4/small/train.jsonl
+1b977a8bfd490c1d9a309d0601f76c72836a31f236d4664d8d764746344d6ee8  data/processed/sft/v0.4/small/val.jsonl
+0a35999823b654ede14f66133886ffa04c668211df70a29aead07e41e6de9579  data/processed/sft/v0.4/large/train.jsonl
+53224e1d331ca185af114171168064f6287a8ac42d38fad6b948b3a52e8455d4  data/processed/sft/v0.4/large/val.jsonl
+4f94059d56ede764e093de31f1d11ecdb2feaba9769fa390c58b547fb9cf71a0  data/processed/v0.4/dataset_info.json
+8d0e50c6ca5b93481d256ab613209545d7b86d133aa906f32f361b1dfe8da592  experiments/phase06/round-003/package/configs/r003-qwen3-0.6b-sft.yaml
+e44c7a4448722f7b49246c81767e4dcc6538de2ddefd493aa0fcf3b4e9443269  experiments/phase06/round-003/package/configs/r003-qwen3-1.7b-sft.yaml
+65c767be9a78d4327f285438192799d98740d4e605735ff0114e9fd48e2ba448  requirements-train.txt
+35d8ac704b1df03e3c358786064b6593639f21fd775dfe3d4fe3e8ba8ecdadb8  data/eval/test.jsonl

@@ -1,0 +1,46 @@
+version: phase06-round006-v1
+model:
+  run_id: r004-qwen3-0.6b-sft
+  base_model: Qwen/Qwen3-0.6B
+  adapter_path: models/adapters/r004-qwen3-0.6b-sft
+paths:
+  merged_hf: models/merged/phase06-round006-r004-qwen3-0.6b-sft
+  f16_gguf: models/gguf/phase06-round006/r004-qwen3-0.6b-sft-F16.gguf
+  output_dir: models/gguf/phase06-round006
+  results_dir: experiments/phase06/round-006/cloud-results
+  calibration_data: data/calibration/phase05-v1.txt
+tools:
+  converter: deployment/llama_cpp/source/convert_hf_to_gguf.py
+  quantize: deployment/llama_cpp/bin/llama-quantize
+  imatrix: deployment/llama_cpp/bin/llama-imatrix
+  server: deployment/llama_cpp/bin/llama-server
+quantizations:
+  - F16
+  - Q8_0
+  - Q6_K
+  - Q5_K_M
+  - Q4_K_M
+  - Q3_K_M
+  - IQ2_M
+  - IQ2_XS
+evaluation:
+  cases:
+    - data/eval/test.jsonl
+    - data/eval/phase06_holdout_v0.3.jsonl
+  port: 8017
+  gpu_layers: 99
+  context_size: 4096
+  max_tokens: 512
+  temperature: 0.0
+local_speed:
+  # Same Qwen3-0.6B architecture; weights are not used for quality conclusions.
+  source_f16: models/merged/qwen3-0.6b-sft-f16/model-f16.gguf
+  source_imatrix: models/imatrix/qwen3-0.6b-sft-q4-k-m.dat
+  output_dir: models/gguf/phase06-round006-speed-only
+  results_dir: experiments/phase06/round-006/local-speed
+  threads: 8
+  repetitions: 3
+  prompt_tokens: [128, 512, 1024]
+  generation_tokens: [64, 128]
+  quantize_exe: deployment/llama_cpp/bin/llama-quantize.exe
+  bench_exe: deployment/llama_cpp/bin/llama-bench.exe

@@ -2,7 +2,7 @@
 
 ## 基本信息
 
-- 机器合同：v2.3
+- 机器合同：v2.4
 - 样本文件：`data/eval/test.jsonl`
 - 样本数量：51
 - 校验和：`data/eval/test.sha256`
@@ -177,11 +177,11 @@ Final 严格包含十四个字段：
 | `inform_unavailable` | 指定技师该时段没空 |
 | `inform_not_found` | 指定技师不存在 |
 | `inform_no_match` | 条件搜索无匹配 |
-| `booking_authorized` | 用户接受可用方案，授权上层创建预约 |
+| `booking_authorized` | 技师已核实可用且用户接受方案，预约成功 |
 | `acknowledge_result` | 用户确认已知悉失败查询结果 |
 | `appointment_paused` | 用户拒绝或暂缓待确认方案 |
 
-`booking_authorized` 不表示预约已经写入。回复不得使用“预约成功”“已经预约好了”等完成态表述。
+`booking_authorized` 表示技师已核实可用且用户明确确认，在当前业务约定下视为预约成功，回复应明确告知用户预约已经确认。
 
 ## 状态规则
 
@@ -191,7 +191,7 @@ Final 严格包含十四个字段：
 - `start_time` 或 `duration_minutes` 缺失时禁止 Tool Call。
 - 修改姓名、时间、时长、性别或偏好后，旧工具结果失效。
 - `available/unavailable/not_found/no_match` 只能来自当前工具结果或已经保存的已核实状态。
-- `confirmation=true` 只允许用户明确接受或知悉同一待确认结果且没有修改条件。
+- `confirmation=true` 只允许用户明确接受同一已核实可用方案且没有修改条件；知悉失败结果仍为 `false`。
 - “先不了”等表达使用 `appointment_paused`，不再与刚展示方案的 `confirm_available` 混为同一状态。
 
 ## Reply Expectations
@@ -255,6 +255,13 @@ task_correctness = 0.70 * structured_score + 0.30 * reply_score
 - 多轮槽位继承和覆盖。
 
 当前范围不覆盖已落库预约的取消/改约、工具超时重试和新的业务字段。
+
+### v2.4 变更
+
+- 明确当前业务约定：技师已核实为 `available` 且用户明确确认后，预约即成功。
+- 三条 `booking_authorized` 用例改为要求预约成功语义，不再要求“正在办理预约”。
+- 三条失败结果知悉用例的 `confirmation` 修正为 `false`。
+- 技师尚未核实可用或用户尚未确认时，仍禁止提前声称预约成功。
 
 ## 校验
 

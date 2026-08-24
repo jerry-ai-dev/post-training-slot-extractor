@@ -1,0 +1,100 @@
+schema_version: 1
+round_id: round-002
+strategies:
+  - strategy_id: R2-S001
+    title: 共享核心——状态差分与动作边界成对数据
+    type: data_correction
+    addresses: [R2-P001, R2-P002, R2-P005]
+    hypotheses: [R2-H001, R2-H002, R2-H005]
+    changes:
+      - 围绕同一上下文生成最小变化对：只改时间、只改时长、只改技师、只改偏好、明确不改其余字段。
+      - 为每个完整工具调用构造一个仅缺单字段的追问近邻，训练“缺失则问、齐全才查”。
+      - 覆盖 tool result 到 final 的 available、unavailable、not_found、no_match 状态转换及必要回复动作。
+      - 日期答案继续由程序计算和校验，模型负责理解、提取和标准化。
+    controls_held_constant:
+      - 基础模型、LoRA 结构和主训练超参数
+      - Prompt、输出 Schema、工具 Schema、eval-v0.2
+    expected_effects:
+      - 降低共有 10 条残余失败中的状态和动作错误
+      - 提升 missing_information 与 multi_turn 切片
+    risks:
+      - 机械模板过多会让回复僵化
+      - 与评估样本措辞过近会产生泄漏
+    attribution_limits:
+      - 状态差分与动作边界同时加入时只能归因于共享核心组合
+
+  - strategy_id: R2-S002
+    title: 0.6B 专项——短而严格的工具 JSON
+    type: data_correction
+    addresses: [R2-P003]
+    hypotheses: [R2-H003]
+    changes:
+      - 提高 tool_call 样本占比，重点覆盖 reselect、retry 和 plan modification。
+      - 所有工具答案只含 action、tool_name、arguments，禁止混入 final 字段或解释文字。
+      - 对相同长上下文提供多种短工具答案，强化闭合 JSON 和完整参数顺序。
+      - 增加 preferences 为空列表与非空列表、具体技师与不限技师的平衡组合。
+    controls_held_constant:
+      - 不修改推理 max_tokens 来掩盖训练问题
+      - 不通过后处理修补不完整 JSON
+    expected_effects:
+      - 0.6B tool-call 协议通过率由 73.3% 提高到至少 93.3%（14/15）
+      - 4 条不可解析输出降至不超过 1 条
+    risks:
+      - tool_call 过采样可能损害 final 动作选择
+    attribution_limits:
+      - 若与共享核心合并训练，无法完全分离两部分贡献
+
+  - strategy_id: R2-S003
+    title: 1.7B 专项——工具状态到输出枚举映射
+    type: data_correction
+    addresses: [R2-P004]
+    hypotheses: [R2-H004]
+    changes:
+      - 系统覆盖工具 status=matched 到 final technician_status=available 的映射。
+      - 覆盖工具 status=not_found、no_match、unavailable 到合法输出枚举的对照。
+      - 加入错误枚举 matched 的反例仅用于数据校验，不作为 DPO 训练。
+    controls_held_constant:
+      - 不扩展当前输出 Schema 接受 matched
+      - 工具返回 Schema保持不变
+    expected_effects:
+      - 1.7B 未定义 matched 输出由 5 条降为 0
+      - final 协议通过率由 83.3% 提高到至少 97.2%（35/36）
+    risks:
+      - 若工具状态词在上下文中过强，模型仍可能复制原值
+    attribution_limits: []
+
+  - strategy_id: R2-S004
+    title: 回放与退化保护
+    type: control_or_ablation
+    addresses: [R2-P006]
+    hypotheses: [R2-H006]
+    changes:
+      - 保留 sft-v0.2 的代表性回放数据，按场景分层而不是简单随机抽样。
+      - 将 Round 001 中所有新退化样本纳入独立 regression 集，不进入正式 eval 分数。
+      - 数据构建阶段报告各场景比例、重复率、训练/验证/评估重叠。
+    controls_held_constant:
+      - eval-v0.2 的 51 条输入保持冻结
+    expected_effects:
+      - Round 001 已通过样本的退化数每个模型不超过 1 条
+      - 简单追问、无关请求和确认场景不下降
+    risks:
+      - 回放比例过高会稀释残余错误修复信号
+    attribution_limits:
+      - 单次训练不能排除随机种子导致的个别翻转
+
+  - strategy_id: R2-S005
+    title: 继续只训练 SFT
+    type: control_or_ablation
+    addresses: [R2-P001, R2-P002, R2-P003, R2-P004, R2-P005, R2-P006]
+    hypotheses: [R2-H001, R2-H002, R2-H003, R2-H004, R2-H005, R2-H006]
+    changes:
+      - Round 002 不训练 DPO，不改变模型结构，不进行量化对比。
+      - 先验证基础结构化能力和业务状态机是否通过 SFT 数据得到改善。
+    controls_held_constant:
+      - 两个模型继续使用相同训练超参数和同一冻结评估集
+    expected_effects:
+      - 将收益主要归因于数据设计
+    risks:
+      - 若错误来自容量上限，0.6B 可能较早达到平台期
+    attribution_limits:
+      - 本轮不能得出 DPO 是否有效的结论

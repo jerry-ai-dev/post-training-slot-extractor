@@ -141,7 +141,10 @@ class ReplyFaithfulnessScorer:
         if status in {"unavailable", "not_found", "no_match"} and mentions_available:
             errors.append("technician_status")
 
-        if has_speech_act(reply, "claim_booking_success"):
+        if (
+            "claim_booking_success" in sample.reply_expectations.forbidden_acts
+            and has_speech_act(reply, "claim_booking_success")
+        ):
             errors.append("booking_success")
 
         score = max(0.0, (checks - len(set(errors))) / checks)

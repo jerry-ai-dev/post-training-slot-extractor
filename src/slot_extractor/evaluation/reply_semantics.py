@@ -39,6 +39,8 @@ _SPEECH_ACT_PATTERNS: dict[str, tuple[str, ...]] = {
         r"哪天",
         r"预约时间",
         r"具体时间.{0,8}(?:说|告知|提供|确定|方便)",
+        r"(?:告诉|告知|提供|说明).{0,8}(?:预约)?(?:日期|哪天).{0,8}(?:开始时间|时间|几点)",
+        r"(?:预约)?(?:具体)?日期.{0,4}(?:和|及|、)?(?:开始)?时间",
     ),
     "ask_for_duration": (
         r"多久",
@@ -118,8 +120,10 @@ _SPEECH_ACT_PATTERNS: dict[str, tuple[str, ...]] = {
     ),
     "claim_booking_success": (
         r"预约成功",
+        r"预约已成功",
         r"预约好了",
         r"已经.{0,8}预约",
+        r"已确认.{0,32}(?:预约|安排)",
         r"已为您.{0,8}安排好",
         r"已经.{0,8}安排好",
     ),
@@ -139,6 +143,10 @@ def has_speech_act(text: str, act: str) -> bool:
     if patterns is None:
         raise ValueError(f"unsupported reply speech act: {act}")
     normalized = normalize_reply(text)
+    if act == "claim_booking_success":
+        # Confirming a duration is not claiming that the appointment itself was booked.
+        # Remove this local acknowledgement before checking later mentions of “预约”.
+        normalized = re.sub(r"已确认\d+分钟服务", "", normalized)
     return any(re.search(pattern, normalized) for pattern in patterns)
 
 

@@ -1,0 +1,6 @@
+model_name_or_path: Qwen/Qwen3-0.6B
+dataset: phase06_sft_small_train_v0_5
+eval_dataset: phase06_sft_small_val_v0_5
+dataset_dir: data/processed/v0.5
+seed: 20260821
+output_dir: models/adapters/r004-qwen3-0.6b-sft

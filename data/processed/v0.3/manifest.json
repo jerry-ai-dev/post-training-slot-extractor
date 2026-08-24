@@ -1,0 +1,95 @@
+{
+  "schema_version": 1,
+  "dataset_id": "sft-v0.3",
+  "parent": "sft-v0.2",
+  "seed": 20260821,
+  "counts": {
+    "replay_v0.2": 795,
+    "shared_new": 210,
+    "small_specialty_new": 80,
+    "large_specialty_new": 80,
+    "union": 1165,
+    "small_view": 1085,
+    "large_view": 1085
+  },
+  "tags": {
+    "0.6B专项": 80,
+    "1.7B专项": 80,
+    "matched映射": 20,
+    "不得猜测": 20,
+    "严格短JSON": 80,
+    "信息齐全": 30,
+    "偏好修改": 20,
+    "动作稳定": 20,
+    "动作边界": 150,
+    "只改偏好": 12,
+    "只改技师": 12,
+    "只改时长": 12,
+    "只改时间": 12,
+    "可用方案确认": 24,
+    "合法枚举": 80,
+    "同时缺失": 20,
+    "多义短词": 89,
+    "多轮": 156,
+    "工具状态-matched": 15,
+    "工具状态-no_match": 15,
+    "工具状态-not_found": 15,
+    "工具状态-unavailable": 15,
+    "工具结果映射": 60,
+    "工具调用": 473,
+    "幻觉陷阱": 107,
+    "拒绝确认": 16,
+    "无关": 69,
+    "无关请求": 20,
+    "日期标准化": 100,
+    "时长修改": 20,
+    "时间修改": 20,
+    "易混边界": 176,
+    "星期换算": 20,
+    "最小替换": 96,
+    "最小状态更新": 60,
+    "最终 JSON": 247,
+    "模糊时间": 20,
+    "相对日期": 72,
+    "相对时间": 107,
+    "确认": 129,
+    "禁止工具调用": 40,
+    "组合修改": 28,
+    "缺少时长": 70,
+    "缺少时间": 70,
+    "跨月": 32,
+    "近邻决策": 90,
+    "追问": 247,
+    "重试重选": 80,
+    "重选技师": 20,
+    "预约成功": 24,
+    "预约暂缓": 16
+  },
+  "eval_exact_input_overlap": 0,
+  "files": {
+    "raw": {
+      "path": "data/raw/v0.3/samples.jsonl",
+      "sha256": "32e06c38d8593258fe95120d11118b97d67a71e7a95d8ddaf1eabe6cb5c12013"
+    },
+    "dataset_info": {
+      "path": "data/processed/v0.3/dataset_info.json",
+      "sha256": "15a1f17062a2b03b7cf3b0a4d203d39b0262f3dc116aeebba48679cac8784fe7"
+    },
+    "small_train": {
+      "path": "data/processed/sft/v0.3/small/train.jsonl",
+      "sha256": "f2026f66142f57f6c15448a4e7d976e68aee53565e06f7f1ecdc1960b863996d"
+    },
+    "small_val": {
+      "path": "data/processed/sft/v0.3/small/val.jsonl",
+      "sha256": "10646a259ef051cb2d658a6ce8dce22fc59f66ca2919d50e0bdcde92f70cc2e2"
+    },
+    "large_train": {
+      "path": "data/processed/sft/v0.3/large/train.jsonl",
+      "sha256": "3b248363bce21fdbda94063ea9c8a16f5eb11103e8c46c29a3b4a472c57d0f8f"
+    },
+    "large_val": {
+      "path": "data/processed/sft/v0.3/large/val.jsonl",
+      "sha256": "253e20028dc580351c53f6c4768b472f61aa97653e9fc5ae3ee5e655d687258a"
+    }
+  }
+}

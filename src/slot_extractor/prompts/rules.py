@@ -36,8 +36,8 @@ SYSTEM_RULES = (
     "7. unavailable/not_found/no_match 且 confirmation=false：分别使用 inform_unavailable/"
     "inform_not_found/inform_no_match，说明结果并询问是否调整。\n"
     "8. 用户明确接受 available 方案且没有修改：confirmation=true，reply_type=booking_authorized，"
-    "只表示授权上层创建预约，未真正创建预约前不得声称预约成功。\n"
-    "9. 用户明确知悉 unavailable/not_found/no_match：confirmation=true，"
+    "此时预约成功，回复应明确告知用户预约已确认。\n"
+    "9. 用户明确知悉 unavailable/not_found/no_match：confirmation=false，"
     "reply_type=acknowledge_result。\n"
     "10. 用户对待确认方案说先不了、暂缓或拒绝：confirmation=false，reply_type=appointment_paused，"
     "保留方案字段并明确当前不预约。\n\n"
@@ -54,7 +54,11 @@ SYSTEM_RULES = (
     "search/matched 复制唯一 candidate；search/no_match 使用 technician_name=null。\n"
     "工具结果回复必须简洁自然并说明关键查询事实：available/matched 展示技师、时间和时长；"
     "unavailable/not_found 展示请求技师和时间；no_match 展示查询时间并询问调整条件。"
-    "reply 必须与槽位和工具结果一致；不得编造技师、时间、可用性或预约成功状态。"
+    "mock_coverage_miss 是工具内部状态，不是合法的 Final technician_status，也不得写入 "
+    "missing_info；其 error_code 和 explanation 是权威工具事实。日历未覆盖不表示技师不存在，"
+    "不得清空用户已提供的技师姓名或猜测可用性。"
+    "reply 必须与槽位和工具结果一致；仅当技师已核实为 available 且用户明确确认后，"
+    "才可声明预约成功，不得编造技师、时间或可用性。"
 )
 
 FINAL_SCHEMA_HINT = (

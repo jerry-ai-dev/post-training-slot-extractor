@@ -1,6 +1,7 @@
 # src/slot_extractor/inference/llama_server.py
 from __future__ import annotations
 
+import json
 import time
 from dataclasses import dataclass
 from typing import Any
@@ -40,34 +41,66 @@ class LlamaServerBackend:
             {key: value for key, value in message.items() if not key.startswith("_")}
             for message in messages
         ]
+        request = {
+            "model": self.model,
+            "messages": api_messages,
+            "temperature": generation_params.temperature,
+            "max_tokens": generation_params.max_tokens,
+            "chat_template_kwargs": {"enable_thinking": False},
+            "stream": True,
+            "stream_options": {"include_usage": True},
+        }
         started = time.perf_counter()
-        response = httpx.post(
+        first_token_ms: float | None = None
+        chunks: list[str] = []
+        usage: dict[str, Any] = {}
+        timings: dict[str, Any] = {}
+        raw_events: list[dict[str, Any]] = []
+        with httpx.stream(
+            "POST",
             f"{self._base_url}/chat/completions",
             headers={"Authorization": f"Bearer {self._api_key}"},
-            json={
-                "model": self.model,
-                "messages": api_messages,
-                "temperature": generation_params.temperature,
-                "max_tokens": generation_params.max_tokens,
-                "chat_template_kwargs": {"enable_thinking": False},
-            },
+            json=request,
             timeout=self._timeout_s,
-        )
+        ) as response:
+            response.raise_for_status()
+            for line in response.iter_lines():
+                if not line.startswith("data:"):
+                    continue
+                data = line.removeprefix("data:").strip()
+                if not data or data == "[DONE]":
+                    continue
+                event = json.loads(data)
+                raw_events.append(event)
+                usage.update(event.get("usage") or {})
+                timings.update(event.get("timings") or {})
+                choices = event.get("choices") or []
+                if not choices:
+                    continue
+                content = choices[0].get("delta", {}).get("content")
+                if content:
+                    if first_token_ms is None:
+                        first_token_ms = (time.perf_counter() - started) * 1000
+                    chunks.append(content)
         total_ms = (time.perf_counter() - started) * 1000
-        response.raise_for_status()
-        payload = response.json()
-        text = payload["choices"][0]["message"]["content"]
-        usage = payload.get("usage", {})
+        text = "".join(chunks)
         output_tokens = usage.get("completion_tokens")
-        tokens_per_s = output_tokens * 1000 / total_ms if output_tokens else None
-        timings = payload.get("timings", {})
+        decode_ms = timings.get("predicted_ms")
+        decode_tokens_per_s = timings.get("predicted_per_second")
+        tokens_per_s = decode_tokens_per_s
+        if tokens_per_s is None and output_tokens and decode_ms:
+            tokens_per_s = output_tokens * 1000 / decode_ms
         return GenerationResult(
             text=text,
             model=self.model,
             prefill_ms=timings.get("prompt_ms"),
-            first_token_ms=timings.get("predicted_ms"),
+            first_token_ms=first_token_ms,
             total_ms=total_ms,
             output_tokens=output_tokens,
             tokens_per_s=tokens_per_s,
-            raw=payload,
+            input_tokens=usage.get("prompt_tokens"),
+            decode_ms=decode_ms,
+            prefill_tokens_per_s=timings.get("prompt_per_second"),
+            decode_tokens_per_s=decode_tokens_per_s,
+            raw={"events": raw_events, "usage": usage, "timings": timings},
         )

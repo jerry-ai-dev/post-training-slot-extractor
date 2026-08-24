@@ -1,0 +1,22 @@
+schema_version: 1
+round_id: round-002
+variant_id: V002
+dataset: sft-v0.3-model-specific
+evaluation_dataset: eval-v0.2
+runs:
+  - run_id: r002-qwen3-0.6b-sft
+    model:
+      name: Qwen/Qwen3-0.6B
+      revision: main
+    stage: sft
+    seed: 20260821
+    dataset_view: small
+    output_dir: models/adapters/r002-qwen3-0.6b-sft
+  - run_id: r002-qwen3-1.7b-sft
+    model:
+      name: Qwen/Qwen3-1.7B
+      revision: main
+    stage: sft
+    seed: 20260821
+    dataset_view: large
+    output_dir: models/adapters/r002-qwen3-1.7b-sft

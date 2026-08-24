@@ -1,0 +1,30 @@
+schema_version: 1
+round_id: round-002
+variants:
+  - variant_id: V002
+    title: sft-v0.3 分模型配比候选
+    strategies: [R2-S001, R2-S002, R2-S003, R2-S004, R2-S005]
+    problems: [R2-P001, R2-P002, R2-P003, R2-P004, R2-P005, R2-P006]
+    control: false
+    based_on:
+      round_id: round-001
+      variant_id: V001
+      run_ids: [r001-qwen3-0.6b-sft, r001-qwen3-1.7b-sft]
+    changes:
+      - 两个模型共享状态差分、动作边界和回放核心。
+      - 0.6B 提高严格 tool_call 样本权重。
+      - 1.7B 提高工具结果到 final 合法枚举映射样本权重。
+    controls_held_constant:
+      - LoRA rank 16、alpha 32、dropout 0.05
+      - learning rate 1e-4、epoch 3、effective batch size 16
+      - Qwen3 template、no-think、cutoff length 2048
+      - eval-v0.2 和修正版评分器
+    attribution_limits:
+      - 两个尺寸使用不同采样配比，不能把二者差异只归因于参数规模
+      - 若审核要求严格单变量实验，应拆为共享版和专项版两个子变体
+    matrix:
+      models: [qwen3-0.6b, qwen3-1.7b]
+      stages: [sft]
+      quantizations: []
+    run_ids: [r002-qwen3-0.6b-sft, r002-qwen3-1.7b-sft]
+    rationale: Round 001 已证明两个模型残余错误结构不同，同一均匀数据配比不是最优方案。

@@ -1,0 +1,80 @@
+{
+  "run_id": "r004-qwen3-0.6b-sft",
+  "model": "r004-qwen3-0.6b-sft",
+  "status": "evaluated",
+  "dataset": "data\\eval\\phase06_holdout_v0.3.jsonl",
+  "backend_config": "experiments\\phase06\\round-005\\results\\llamacpp\\r004-qwen3-0.6b-sft\\backend.yaml",
+  "n": 24,
+  "aggregate_dimensions": {
+    "protocol": {
+      "score": 1.0,
+      "passed": true,
+      "detail": "mean over 24 applicable case(s)"
+    },
+    "task_correctness": {
+      "score": 0.9779934862434861,
+      "passed": false,
+      "detail": "mean over 24 applicable case(s)"
+    },
+    "resource": {
+      "score": null,
+      "passed": null,
+      "detail": "n/a"
+    }
+  },
+  "effective_pass": {
+    "numerator": 21,
+    "denominator": 24,
+    "rate": 0.875
+  },
+  "output_kinds": {
+    "final": {
+      "count": 12,
+      "dimensions": {
+        "protocol": 1.0,
+        "task_correctness": 0.9858679248679248
+      }
+    },
+    "tool_call": {
+      "count": 12,
+      "dimensions": {
+        "protocol": 1.0,
+        "task_correctness": 0.9642857142857143
+      }
+    }
+  },
+  "scenario_slices": {
+    "missing_information": {
+      "count": 6,
+      "task_correctness": 0.9717358497358498
+    },
+    "multi_turn": {
+      "count": 6,
+      "task_correctness": 0.9523809523809524
+    },
+    "tool_call": {
+      "count": 12,
+      "task_correctness": 0.9642857142857143
+    },
+    "unrelated": {
+      "count": 6,
+      "task_correctness": 1.0
+    }
+  },
+  "timing": {
+    "count": 24,
+    "total_ms_mean": 3651.370929190307,
+    "total_ms_p50": 3663.4064000099897,
+    "total_ms_p95": 4331.387834978523,
+    "total_ms_max": 4657.9217000398785,
+    "total_ms_min": 2929.8181999474764,
+    "first_token_ms_mean": 2393.7505833333335,
+    "tokens_per_s_mean": 19.545237237987205
+  },
+  "evaluation_environment": {
+    "backend": "llama_cpp_q8_base_plus_f16_lora",
+    "device": "cpu",
+    "latency_comparable_to_m0": false,
+    "rescored_with": "phase06-semantic-calibrated-v2"
+  }
+}

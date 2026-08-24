@@ -1,0 +1,42 @@
+schema_version: 1
+round_id: round-003
+title: 第三轮——结构化回归保护与字段保真修复
+status: completed
+import_status: verified
+parent_round: round-002
+baseline: round-002
+created_at: 2026-08-21
+closed_at: 2026-08-21
+owner: phase06-team
+objective: 保留 Round 002 的工具调用收益，修复两个模型的四条回归，并提升日期、偏好字段和工具结果到 final 的稳定性。
+context: Round 002 中 0.6B 为 36/51、1.7B 为 34/51；两者各有 4 条由通过转失败，结构化错误仍不适合 DPO。
+inheritance:
+  datasets: [sft-v0.3, eval-v0.2]
+  models: [r002-qwen3-0.6b-sft, r001-qwen3-1.7b-sft]
+  prompts: [phase05-current]
+  evaluation_contracts: [eval-v0.2]
+versions:
+  training_dataset: sft-v0.4
+  preference_dataset: dpo-v0.1-unused
+  diagnostic_dataset: round-003-residual-v0.1
+  eval_dataset: eval-v0.2
+  scorer: phase06-booking-success-fix
+  prompt: phase05-current
+  output_schema: phase05-current
+  tool_schema: phase05-current
+source:
+  git_commit: 6db3050
+  worktree_clean: true
+approvals:
+  plan:
+    approved_by: phase06-team
+    approved_at: 2026-08-21
+    note: 用户确认继续 SFT；常规结果包不含 Adapter，只带回日志和评测结果，达到候选标准后才单独下载权重。
+  closure:
+    approved_by: phase06-team
+    approved_at: 2026-08-21
+    note: 轻量结果包 31 个文件校验通过；未保存 Adapter，继续最后一轮 SFT。
+decision:
+  action: continue_sft_final_round
+  next_parent_round: round-003
+  rationale: 1.7B 达到 38/51 且协议全通过，但相对最佳历史仍回归 3 条；0.6B 协议退化，需最后一次受控修复。

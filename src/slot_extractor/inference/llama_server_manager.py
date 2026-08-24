@@ -1,6 +1,7 @@
 """Registry-driven llama-server lifecycle management."""
 
 import argparse
+import json
 import os
 import subprocess
 import time
@@ -30,6 +31,7 @@ class LlamaServerManager:
         self.port = port
         self.threads = threads
         self._logs: dict[int, object] = {}
+        self._expected_models: dict[int, str] = {}
 
     @property
     def base_url(self) -> str:
@@ -54,6 +56,7 @@ class LlamaServerManager:
             str(self.port),
             "--threads",
             str(self.threads),
+            *spec.server_args,
         ]
         try:
             process = subprocess.Popen(
@@ -67,6 +70,7 @@ class LlamaServerManager:
             log.close()
             raise ServerError(f"cannot start llama-server: {exc}") from exc
         self._logs[id(process)] = log
+        self._expected_models[id(process)] = str(spec.artifact_path).replace("/", "\\").lower()
         return process
 
     def wait_ready(self, process: subprocess.Popen[str], timeout_s: float) -> None:
@@ -77,8 +81,15 @@ class LlamaServerManager:
                 raise ServerError(f"llama-server exited with code {process.returncode}")
             try:
                 with urlopen(f"{self.base_url}/models", timeout=1) as response:
-                    if response.status == 200:
+                    payload = json.loads(response.read().decode("utf-8"))
+                    served_ids = {
+                        str(item.get("id", "")).replace("/", "\\").lower()
+                        for item in payload.get("data", [])
+                    }
+                    expected = self._expected_models[id(process)]
+                    if response.status == 200 and expected in served_ids:
                         return
+                    last_error = f"port serves a different model; expected {expected}"
             except OSError as exc:
                 last_error = str(exc)
             if time.monotonic() >= deadline:
@@ -94,6 +105,7 @@ class LlamaServerManager:
                 process.kill()
                 process.wait(timeout=5)
         log = self._logs.pop(id(process), None)
+        self._expected_models.pop(id(process), None)
         if log is not None:
             log.close()
 

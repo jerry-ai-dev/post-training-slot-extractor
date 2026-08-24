@@ -1,0 +1,127 @@
+{
+  "label": "full-cache",
+  "passed": 17,
+  "n": 24,
+  "rows": [
+    {
+      "id": "phase06-r4-holdout-001",
+      "passed": true,
+      "output": "{\"action\":\"tool_call\",\"tool_name\":\"find_technicians\",\"arguments\":{\"technician_name\":\"顾言\",\"start_time\":\"2030-02-12 16:00\",\"duration_minutes\":40,\"gender_preference\":null,\"preferences\":[]}}"
+    },
+    {
+      "id": "phase06-r4-holdout-002",
+      "passed": false,
+      "output": "{\"action\":\"final\",\"gender_preference\":null,\"technician_gender\":null,\"start_time\":null,\"duration_minutes\":60,\"preferences\":[\"腰背\"],\"technician_name\":\"苏禾\",\"technician_status\":\"not_checked\",\"confirmation\":false,\"info_complete\":false,\"unrelated\":false,\"missing_info\":[\"start_time\"],\"reply_type\":\"ask_start_time\",\"reply\":\"好的，已知悉。请问您想预约哪一天、几点开始？\"}"
+    },
+    {
+      "id": "phase06-r4-holdout-003",
+      "passed": true,
+      "output": "{\"action\":\"tool_call\",\"tool_name\":\"find_technicians\",\"arguments\":{\"technician_name\":\"程安\",\"start_time\":\"2030-02-14 16:00\",\"duration_minutes\":80,\"gender_preference\":null,\"preferences\":[\"芳香精油\"]}}"
+    },
+    {
+      "id": "phase06-r4-holdout-004",
+      "passed": true,
+      "output": "{\"action\":\"final\",\"gender_preference\":null,\"technician_gender\":null,\"start_time\":null,\"duration_minutes\":null,\"preferences\":[],\"technician_name\":null,\"technician_status\":\"not_checked\",\"confirmation\":false,\"info_complete\":false,\"unrelated\":true,\"missing_info\":[],\"reply_type\":\"handoff\",\"reply\":null}"
+    },
+    {
+      "id": "phase06-r4-holdout-005",
+      "passed": true,
+      "output": "{\"action\":\"tool_call\",\"tool_name\":\"find_technicians\",\"arguments\":{\"technician_name\":\"顾言\",\"start_time\":\"2030-02-16 16:00\",\"duration_minutes\":60,\"gender_preference\":null,\"preferences\":[]}}"
+    },
+    {
+      "id": "phase06-r4-holdout-006",
+      "passed": false,
+      "output": "{\"action\":\"final\",\"gender_preference\":null,\"technician_gender\":null,\"start_time\":null,\"duration_minutes\":80,\"preferences\":[\"腰背\"],\"technician_name\":\"苏禾\",\"technician_status\":\"not_checked\",\"confirmation\":false,\"info_complete\":false,\"unrelated\":false,\"missing_info\":[\"start_time\"],\"reply_type\":\"ask_start_time\",\"reply\":\"好的，请问您想预约哪一天、几点开始？\"}"
+    },
+    {
+      "id": "phase06-r4-holdout-007",
+      "passed": true,
+      "output": "{\"action\":\"tool_call\",\"tool_name\":\"find_technicians\",\"arguments\":{\"technician_name\":\"程安\",\"start_time\":\"2030-02-18 16:00\",\"duration_minutes\":40,\"gender_preference\":null,\"preferences\":[\"芳香精油\"]}}"
+    },
+    {
+      "id": "phase06-r4-holdout-008",
+      "passed": true,
+      "output": "{\"action\":\"final\",\"gender_preference\":null,\"technician_gender\":null,\"start_time\":null,\"duration_minutes\":null,\"preferences\":[],\"technician_name\":null,\"technician_status\":\"not_checked\",\"confirmation\":false,\"info_complete\":false,\"unrelated\":true,\"missing_info\":[],\"reply_type\":\"handoff\",\"reply\":null}"
+    },
+    {
+      "id": "phase06-r4-holdout-009",
+      "passed": true,
+      "output": "{\"action\":\"tool_call\",\"tool_name\":\"find_technicians\",\"arguments\":{\"technician_name\":\"顾言\",\"start_time\":\"2030-02-20 16:00\",\"duration_minutes\":80,\"gender_preference\":null,\"preferences\":[]}}"
+    },
+    {
+      "id": "phase06-r4-holdout-010",
+      "passed": false,
+      "output": "{\"action\":\"final\",\"gender_preference\":null,\"technician_gender\":null,\"start_time\":null,\"duration_minutes\":40,\"preferences\":[\"腰背\"],\"technician_name\":\"苏禾\",\"technician_status\":\"not_checked\",\"confirmation\":false,\"info_complete\":false,\"unrelated\":false,\"missing_info\":[\"start_time\"],\"reply_type\":\"ask_start_time\",\"reply\":\"好的，已知悉。请问您想预约哪一天、几点开始？\"}"
+    },
+    {
+      "id": "phase06-r4-holdout-011",
+      "passed": true,
+      "output": "{\"action\":\"tool_call\",\"tool_name\":\"find_technicians\",\"arguments\":{\"technician_name\":\"程安\",\"start_time\":\"2030-02-22 16:00\",\"duration_minutes\":60,\"gender_preference\":null,\"preferences\":[\"芳香精油\"]}}"
+    },
+    {
+      "id": "phase06-r4-holdout-012",
+      "passed": true,
+      "output": "{\"action\":\"final\",\"gender_preference\":null,\"technician_gender\":null,\"start_time\":null,\"duration_minutes\":null,\"preferences\":[],\"technician_name\":null,\"technician_status\":\"not_checked\",\"confirmation\":false,\"info_complete\":false,\"unrelated\":true,\"missing_info\":[],\"reply_type\":\"handoff\",\"reply\":null}"
+    },
+    {
+      "id": "phase06-r4-holdout-013",
+      "passed": true,
+      "output": "{\"action\":\"tool_call\",\"tool_name\":\"find_technicians\",\"arguments\":{\"technician_name\":\"顾言\",\"start_time\":\"2030-02-24 16:00\",\"duration_minutes\":40,\"gender_preference\":null,\"preferences\":[]}}"
+    },
+    {
+      "id": "phase06-r4-holdout-014",
+      "passed": false,
+      "output": "{\"action\":\"final\",\"gender_preference\":null,\"technician_gender\":null,\"start_time\":null,\"duration_minutes\":60,\"preferences\":[\"腰背\"],\"technician_name\":\"苏禾\",\"technician_status\":\"not_checked\",\"confirmation\":false,\"info_complete\":false,\"unrelated\":false,\"missing_info\":[\"start_time\"],\"reply_type\":\"ask_start_time\",\"reply\":\"好的，已知悉。请问您想预约哪一天、几点开始？\"}"
+    },
+    {
+      "id": "phase06-r4-holdout-015",
+      "passed": true,
+      "output": "{\"action\":\"tool_call\",\"tool_name\":\"find_technicians\",\"arguments\":{\"technician_name\":\"程安\",\"start_time\":\"2030-02-26 16:00\",\"duration_minutes\":80,\"gender_preference\":null,\"preferences\":[\"芳香精油\"]}}"
+    },
+    {
+      "id": "phase06-r4-holdout-016",
+      "passed": true,
+      "output": "{\"action\":\"final\",\"gender_preference\":null,\"technician_gender\":null,\"start_time\":null,\"duration_minutes\":null,\"preferences\":[],\"technician_name\":null,\"technician_status\":\"not_checked\",\"confirmation\":false,\"info_complete\":false,\"unrelated\":true,\"missing_info\":[],\"reply_type\":\"handoff\",\"reply\":null}"
+    },
+    {
+      "id": "phase06-r4-holdout-017",
+      "passed": true,
+      "output": "{\"action\":\"tool_call\",\"tool_name\":\"find_technicians\",\"arguments\":{\"technician_name\":\"顾言\",\"start_time\":\"2030-02-28 16:00\",\"duration_minutes\":60,\"gender_preference\":null,\"preferences\":[]}}"
+    },
+    {
+      "id": "phase06-r4-holdout-018",
+      "passed": false,
+      "output": "{\"action\":\"final\",\"gender_preference\":null,\"technician_gender\":null,\"start_time\":null,\"duration_minutes\":80,\"preferences\":[\"腰背\"],\"technician_name\":\"苏禾\",\"technician_status\":\"not_checked\",\"confirmation\":false,\"info_complete\":false,\"unrelated\":false,\"missing_info\":[\"start_time\"],\"reply_type\":\"ask_start_time\",\"reply\":\"好的，已知悉。请问您想预约哪一天、几点开始？\"}"
+    },
+    {
+      "id": "phase06-r4-holdout-019",
+      "passed": false,
+      "output": "{\"action\":\"tool_call\",\"tool_name\":\"find_technicians\",\"arguments\":{\"technician_name\":\"程安\",\"start_time\":\"2030-02-30 16:00\",\"duration_minutes\":40,\"gender_preference\":null,\"preferences\":[\"芳香精油\"]}}"
+    },
+    {
+      "id": "phase06-r4-holdout-020",
+      "passed": true,
+      "output": "{\"action\":\"final\",\"gender_preference\":null,\"technician_gender\":null,\"start_time\":null,\"duration_minutes\":null,\"preferences\":[],\"technician_name\":null,\"technician_status\":\"not_checked\",\"confirmation\":false,\"info_complete\":false,\"unrelated\":true,\"missing_info\":[],\"reply_type\":\"handoff\",\"reply\":null}"
+    },
+    {
+      "id": "phase06-r4-holdout-021",
+      "passed": true,
+      "output": "{\"action\":\"tool_call\",\"tool_name\":\"find_technicians\",\"arguments\":{\"technician_name\":\"顾言\",\"start_time\":\"2030-03-04 16:00\",\"duration_minutes\":80,\"gender_preference\":null,\"preferences\":[]}}"
+    },
+    {
+      "id": "phase06-r4-holdout-022",
+      "passed": false,
+      "output": "{\"action\":\"final\",\"gender_preference\":null,\"technician_gender\":null,\"start_time\":null,\"duration_minutes\":40,\"preferences\":[\"腰背\"],\"technician_name\":\"苏禾\",\"technician_status\":\"not_checked\",\"confirmation\":false,\"info_complete\":false,\"unrelated\":false,\"missing_info\":[\"start_time\"],\"reply_type\":\"ask_start_time\",\"reply\":\"好的，已知悉。请问您想预约哪一天、几点开始？\"}"
+    },
+    {
+      "id": "phase06-r4-holdout-023",
+      "passed": true,
+      "output": "{\"action\":\"tool_call\",\"tool_name\":\"find_technicians\",\"arguments\":{\"technician_name\":\"程安\",\"start_time\":\"2030-03-06 16:00\",\"duration_minutes\":60,\"gender_preference\":null,\"preferences\":[\"芳香精油\"]}}"
+    },
+    {
+      "id": "phase06-r4-holdout-024",
+      "passed": true,
+      "output": "{\"action\":\"final\",\"gender_preference\":null,\"technician_gender\":null,\"start_time\":null,\"duration_minutes\":null,\"preferences\":[],\"technician_name\":null,\"technician_status\":\"not_checked\",\"confirmation\":false,\"info_complete\":false,\"unrelated\":true,\"missing_info\":[],\"reply_type\":\"handoff\",\"reply\":null}"
+    }
+  ]
+}

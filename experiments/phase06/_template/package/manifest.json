@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "round_id": "ROUND_ID",
+  "frozen_at": null,
+  "source_commit": null,
+  "worktree_clean": null,
+  "run_plan": "run-plan.yaml",
+  "input_checksums": {},
+  "notes": "Package is not frozen until all null identity fields and checksums are populated."
+}

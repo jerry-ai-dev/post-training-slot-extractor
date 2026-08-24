@@ -1,0 +1,33 @@
+schema_version: 1
+round_id: round-003
+problems:
+  - problem_id: R3-P001
+    title: Round 002 已通过样本回归过多
+    severity: critical
+    evidence: 两个模型均有 4 条 Round 001 已通过样本退化，超过每模型最多 1 条的护栏。
+    hypothesis: 新增专项样本提高目标能力，但对旧 final 回复、字段完整性和无关请求的回放不足。
+  - problem_id: R3-P002
+    title: 通用服务词和时长污染 preferences
+    severity: high
+    evidence: 两个模型都在指定技师等样本中将“按摩”或“60分钟”写入 preferences。
+    hypothesis: 训练集缺少只改变语义槽位归属的最小差异样本。
+  - problem_id: R3-P003
+    title: 多轮相对日期与最小更新不稳定
+    severity: high
+    evidence: 后天被计算为大后天，或新输入只改偏好时旧时间仍被错误替换。
+    hypothesis: 多轮样本覆盖了单项能力，但“以 current_time 计算日期并保持其余状态”组合不足。
+  - problem_id: R3-P004
+    title: 工具结果到 final 时字段丢失
+    severity: high
+    evidence: technician_gender、technician_name、时长及时间会在 final 回复中遗漏或与回复不一致。
+    hypothesis: 状态映射样本未系统覆盖完整字段保真。
+  - problem_id: R3-P005
+    title: 1.7B 出现纯文本 final 回归
+    severity: critical
+    evidence: 两条 Round 001 合法 JSON 在 Round 002 变成自然语言，导致协议和任务分同时归零。
+    hypothesis: 1.7B final 专项强调语义映射，但严格 JSON 与旧能力回放权重不足。
+  - problem_id: R3-P006
+    title: 无关请求和暂停动作边界不稳
+    severity: medium
+    evidence: 1.7B 将无关请求标为业务请求，0.6B 在失败结果确认后选错 reply_type。
+    hypothesis: 相邻动作类别缺少成对覆盖。

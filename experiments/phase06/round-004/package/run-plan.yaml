@@ -1,0 +1,18 @@
+schema_version: 1
+round_id: round-004
+variant_id: V004
+dataset: sft-v0.5-model-specific
+evaluation_dataset: eval-v0.2-and-holdout
+runs:
+  - run_id: r004-qwen3-0.6b-sft
+    model: {name: Qwen/Qwen3-0.6B, revision: main}
+    stage: sft
+    seed: 20260821
+    rendered_config: experiments/phase06/round-004/package/configs/r004-qwen3-0.6b-sft.yaml
+    output_dir: models/adapters/r004-qwen3-0.6b-sft
+  - run_id: r004-qwen3-1.7b-sft
+    model: {name: Qwen/Qwen3-1.7B, revision: main}
+    stage: sft
+    seed: 20260821
+    rendered_config: experiments/phase06/round-004/package/configs/r004-qwen3-1.7b-sft.yaml
+    output_dir: models/adapters/r004-qwen3-1.7b-sft

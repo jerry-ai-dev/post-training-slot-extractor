@@ -1,0 +1,80 @@
+{
+  "run_id": "r003-qwen3-1.7b-sft",
+  "model": "r003-qwen3-1.7b-sft",
+  "status": "evaluated",
+  "dataset": "data\\eval\\phase06_holdout_v0.3.jsonl",
+  "backend_config": "experiments\\phase06\\round-005\\results\\llamacpp\\r003-qwen3-1.7b-sft\\backend.yaml",
+  "n": 24,
+  "aggregate_dimensions": {
+    "protocol": {
+      "score": 0.9166666666666666,
+      "passed": false,
+      "detail": "mean over 24 applicable case(s)"
+    },
+    "task_correctness": {
+      "score": 0.9752197802197803,
+      "passed": false,
+      "detail": "mean over 24 applicable case(s)"
+    },
+    "resource": {
+      "score": null,
+      "passed": null,
+      "detail": "n/a"
+    }
+  },
+  "effective_pass": {
+    "numerator": 21,
+    "denominator": 24,
+    "rate": 0.875
+  },
+  "output_kinds": {
+    "final": {
+      "count": 12,
+      "dimensions": {
+        "protocol": 1.0,
+        "task_correctness": 0.986153846153846
+      }
+    },
+    "tool_call": {
+      "count": 12,
+      "dimensions": {
+        "protocol": 0.8333333333333334,
+        "task_correctness": 0.9642857142857143
+      }
+    }
+  },
+  "scenario_slices": {
+    "missing_information": {
+      "count": 6,
+      "task_correctness": 0.9723076923076923
+    },
+    "multi_turn": {
+      "count": 6,
+      "task_correctness": 0.9523809523809524
+    },
+    "tool_call": {
+      "count": 12,
+      "task_correctness": 0.9642857142857143
+    },
+    "unrelated": {
+      "count": 6,
+      "task_correctness": 1.0
+    }
+  },
+  "timing": {
+    "count": 24,
+    "total_ms_mean": 5402.293104169075,
+    "total_ms_p50": 5484.599450021051,
+    "total_ms_p95": 6334.635885019088,
+    "total_ms_max": 6462.032900075428,
+    "total_ms_min": 4293.028799933381,
+    "first_token_ms_mean": 3587.158541666666,
+    "tokens_per_s_mean": 12.994561893999807
+  },
+  "evaluation_environment": {
+    "backend": "llama_cpp_q8_base_plus_f16_lora",
+    "device": "cpu",
+    "latency_comparable_to_m0": false,
+    "rescored_with": "phase06-semantic-calibrated-v2"
+  }
+}

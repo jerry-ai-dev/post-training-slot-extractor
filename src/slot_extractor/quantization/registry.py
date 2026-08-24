@@ -22,20 +22,24 @@ class ModelSpec:
     base_revision: str
     adapter_run_id: str | None
     parent_model_id: str | None
-    artifact_kind: Literal["f16", "q4_k_m"]
+    artifact_kind: str
     artifact_path: Path
     manifest_path: Path
     is_anchor: bool
+    server_args: tuple[str, ...] = ()
 
 
 @dataclass(frozen=True)
 class ModelRegistry:
     models: tuple[ModelSpec, ...]
+    profile: str = "phase05_matrix"
 
     def __post_init__(self) -> None:
         ids = [model.model_id for model in self.models]
         if len(ids) != len(set(ids)):
             raise RegistryError("duplicate model_id")
+        if self.profile != "phase05_matrix":
+            return
         if len(self.quantization_targets()) != 8:
             raise RegistryError("Phase 05 requires exactly 8 Q4_K_M targets")
         anchors = self.anchors()
@@ -62,12 +66,13 @@ class ModelRegistry:
                     artifact_path=Path(record["artifact_path"]),
                     manifest_path=Path(record["manifest_path"]),
                     is_anchor=bool(record.get("is_anchor", False)),
+                    server_args=tuple(str(value) for value in record.get("server_args", [])),
                 )
                 for record in records
             )
         except (OSError, KeyError, TypeError, yaml.YAMLError) as exc:
             raise RegistryError(f"invalid registry config: {path}") from exc
-        return cls(models)
+        return cls(models, str(payload.get("registry_profile", "phase05_matrix")))
 
     def get(self, model_id: str) -> ModelSpec:
         try:

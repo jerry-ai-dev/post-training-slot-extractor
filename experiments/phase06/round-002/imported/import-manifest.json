@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "round_id": "round-002",
+  "verified_cloud_files": 93,
+  "source_package": "round-002-cloud-results",
+  "policy": "Metrics and provenance are committed; adapters and checkpoints stay external.",
+  "runs": [
+    {
+      "run_id": "r002-qwen3-0.6b-sft",
+      "adapter_sha256": "71810f30df1448df980f6d1f22d5f2d6101700fb006921634cc480230fe575fc",
+      "adapter_bytes": 40422168,
+      "adapter_committed": false
+    },
+    {
+      "run_id": "r002-qwen3-1.7b-sft",
+      "adapter_sha256": "7e86cdf5658f056cf0c5082b447c3a510275f95dfb07b7577e6319e248540f9d",
+      "adapter_bytes": 69782384,
+      "adapter_committed": false
+    }
+  ]
+}

@@ -102,8 +102,14 @@ def main(argv: list[str] | None = None) -> int:
                 "model_output": gen.text,
                 "dimensions": dims,
                 "timing": {
+                    "input_tokens": gen.input_tokens,
+                    "output_tokens": gen.output_tokens,
+                    "prefill_ms": gen.prefill_ms,
+                    "prefill_tokens_per_s": gen.prefill_tokens_per_s,
                     "total_ms": gen.total_ms,
                     "first_token_ms": gen.first_token_ms,
+                    "decode_ms": gen.decode_ms,
+                    "decode_tokens_per_s": gen.decode_tokens_per_s,
                     "tokens_per_s": gen.tokens_per_s,
                 },
             }
@@ -134,8 +140,7 @@ def main(argv: list[str] | None = None) -> int:
     scorecard = aggregate_scorecard(model=backend.model, cases=scored_cases)
     timing = summarize_timing(scored_cases)
     task_scores = {
-        record["id"]: record["dimensions"]["task_correctness"]["score"]
-        for record in records
+        record["id"]: record["dimensions"]["task_correctness"]["score"] for record in records
     }
 
     payload = {
@@ -182,9 +187,7 @@ def main(argv: list[str] | None = None) -> int:
         print(f"Predictions JSONL: {predictions_path}")
         print(f"Scorecard JSON: {scorecard_path}")
 
-    passed = sum(
-        1 for r in records if r["dimensions"].get("protocol", {}).get("score") == 1.0
-    )
+    passed = sum(1 for r in records if r["dimensions"].get("protocol", {}).get("score") == 1.0)
     print(f"{backend.model}: n={len(records)}, protocol_pass={passed}")
     return 0
 

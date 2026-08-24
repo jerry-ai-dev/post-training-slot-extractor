@@ -8,12 +8,21 @@ from .models import (
     ToolQuery,
 )
 
-SUPPORTED = {"肩颈", "精油", "足部", "泰式"}
+SUPPORTED = {"肩颈", "精油", "足部", "泰式", "力度较重", "力度较轻"}
+GENERIC_PREFERENCES = {"按摩"}
 ALIASES = {
     "肩颈按摩": "肩颈",
     "精油按摩": "精油",
     "足部按摩": "足部",
     "泰式按摩": "泰式",
+    "力气大": "力度较重",
+    "力度大": "力度较重",
+    "手法重": "力度较重",
+    "重一点": "力度较重",
+    "力气小": "力度较轻",
+    "力度轻": "力度较轻",
+    "手法轻柔": "力度较轻",
+    "轻一点": "力度较轻",
 }
 
 
@@ -38,12 +47,15 @@ class FindTechniciansExecutor:
             return self._result(
                 query, "mock_coverage_miss", (), (), "查询超出 Demo 日历范围", "unsupported_time"
             )
-        normalized_preferences = tuple(ALIASES.get(item, item) for item in query.preferences)
+        preference_pairs = tuple(
+            (original, ALIASES.get(original, original))
+            for original in query.preferences
+            if original not in GENERIC_PREFERENCES
+        )
+        normalized_preferences = tuple(normalized for _, normalized in preference_pairs)
         unsupported = tuple(
             original
-            for original, normalized in zip(
-                query.preferences, normalized_preferences, strict=True
-            )
+            for original, normalized in preference_pairs
             if normalized not in SUPPORTED
         )
         if unsupported:
@@ -77,9 +89,7 @@ class FindTechniciansExecutor:
                 reasons.append("性别不匹配")
             missing = [
                 original
-                for original, normalized in zip(
-                    query.preferences, normalized_preferences, strict=True
-                )
+                for original, normalized in preference_pairs
                 if normalized not in technician.specialties
             ]
             if considered and missing:

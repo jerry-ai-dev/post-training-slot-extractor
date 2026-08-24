@@ -1,0 +1,41 @@
+schema_version: 1
+round_id: ROUND_ID
+title: ""
+status: draft
+import_status: null
+parent_round: null
+created_at: YYYY-MM-DD
+closed_at: null
+owner: ""
+objective: ""
+context: ""
+inheritance:
+  datasets: []
+  models: []
+  prompts: []
+  evaluation_contracts: []
+versions:
+  training_dataset: null
+  diagnostic_dataset: null
+  eval_dataset: null
+  scorer: null
+  prompt: null
+  output_schema: null
+  tool_schema: null
+source:
+  git_commit: null
+  worktree_clean: null
+approvals:
+  plan:
+    approved_by: null
+    approved_at: null
+    note: null
+  closure:
+    approved_by: null
+    approved_at: null
+    note: null
+decision:
+  action: null # continue | supplement | rollback | final_validation
+  next_parent_round: null
+  rationale: null
+

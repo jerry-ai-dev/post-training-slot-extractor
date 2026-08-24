@@ -1,4 +1,6 @@
 # tests/unit/test_inference_backend.py
+import json
+from contextlib import contextmanager
 from pathlib import Path
 
 import httpx
@@ -50,20 +52,34 @@ timeout_s: 30
     )
     captured: dict = {}
 
-    def fake_post(url, *, headers, json, timeout):
-        captured.update({"url": url, "headers": headers, "json": json, "timeout": timeout})
-        return httpx.Response(
-            200,
-            request=httpx.Request("POST", url),
-            json={
-                "choices": [{"message": {"content": '{"action":"final"}'}}],
-                "usage": {"completion_tokens": 4},
-            },
+    @contextmanager
+    def fake_stream(method, url, *, headers, json, timeout):
+        captured.update(
+            {"method": method, "url": url, "headers": headers, "json": json, "timeout": timeout}
         )
+        events = [
+            {"choices": [{"delta": {"content": '{"action":'}}]},
+            {"choices": [{"delta": {"content": '"final"}'}}]},
+            {
+                "choices": [],
+                "usage": {"prompt_tokens": 12, "completion_tokens": 4},
+                "timings": {
+                    "prompt_ms": 10.0,
+                    "prompt_per_second": 1200.0,
+                    "predicted_ms": 20.0,
+                    "predicted_per_second": 200.0,
+                },
+            },
+        ]
+        content = "".join(f"data: {json_module.dumps(event)}\n\n" for event in events)
+        content += "data: [DONE]\n\n"
+        response = httpx.Response(200, request=httpx.Request("POST", url), content=content.encode())
+        yield response
 
-    monkeypatch.setattr(httpx, "post", fake_post)
+    json_module = json
+    monkeypatch.setattr(httpx, "stream", fake_stream)
     backend = build_backend_from_config(config)
-    backend.generate(
+    result = backend.generate(
         [
             {
                 "role": "system",
@@ -94,6 +110,7 @@ timeout_s: 30
 
     assert captured["json"]["temperature"] == 0.25
     assert captured["json"]["max_tokens"] == 512
+    assert captured["json"]["stream"] is True
     assert captured["json"]["messages"] == [
         {"role": "system", "content": "只输出 JSON"},
         {
@@ -112,6 +129,11 @@ timeout_s: 30
         },
         {"role": "tool", "tool_call_id": "call-1", "content": '{"status":"available"}'},
     ]
+    assert result.text == '{"action":"final"}'
+    assert result.first_token_ms is not None
+    assert result.prefill_ms == 10.0
+    assert result.decode_ms == 20.0
+    assert result.tokens_per_s == 200.0
 
 
 def test_responses_backend_maps_tool_history_and_reads_output_text(

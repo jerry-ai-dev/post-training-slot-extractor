@@ -14,6 +14,10 @@ class GenerationResult:
     total_ms: float
     output_tokens: int | None = None
     tokens_per_s: float | None = None
+    input_tokens: int | None = None
+    decode_ms: float | None = None
+    prefill_tokens_per_s: float | None = None
+    decode_tokens_per_s: float | None = None
     raw: dict[str, Any] = field(default_factory=dict)
 
 

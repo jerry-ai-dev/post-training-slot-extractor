@@ -1,0 +1,23 @@
+schema_version: 1
+round_id: round-005
+title: 评分器校准与本地最终候选复评
+status: complete
+parent_round: round-004
+created_at: 2026-08-21
+owner: phase06-team
+objective: 修正已确认的评分器误判，在相同本地 CPU 条件下重新推理并比较两个冻结候选 Adapter。
+versions:
+  training_dataset: none
+  eval_dataset: eval-v0.2
+  holdout_dataset: eval-v0.3-holdout
+  scorer: phase06-semantic-calibrated-v2
+  prompt: phase05-current
+  output_schema: phase05-current
+decision:
+  action: close_current_training_route
+  training_allowed: false
+  sft_decision: stop_current_0.6b_1.7b_route
+  dpo_decision: not_applicable_to_residual_errors
+  selected_primary: r003-qwen3-1.7b-sft
+  selected_efficient_alternative: r004-qwen3-0.6b-sft
+  rationale: 多轮 SFT 已出现收益递减、1.7B 回归与评测集过拟合风险；DPO 不适合修复日期、工具名、严格协议和状态事实错误。两者质量近似，1.7B 作为容量优先主模型，0.6B 作为高效替代。

@@ -444,7 +444,7 @@ def _validate_final(sample: Sample, contract: dict[str, Any]) -> list[str]:
             ):
                 errors.append(f"{sample.id}: current_state must match confirmed plan")
         elif reply_type == "acknowledge_result":
-            if not expected["confirmation"] or status not in {
+            if expected["confirmation"] or status not in {
                 "unavailable",
                 "not_found",
                 "no_match",

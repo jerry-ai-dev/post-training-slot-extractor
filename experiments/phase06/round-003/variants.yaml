@@ -1,0 +1,29 @@
+schema_version: 1
+round_id: round-003
+variants:
+  - variant_id: V003
+    title: sft-v0.4 回归保护与字段保真候选
+    strategies: [R3-S001, R3-S002, R3-S003, R3-S004, R3-S005]
+    problems: [R3-P001, R3-P002, R3-P003, R3-P004, R3-P005, R3-P006]
+    control: false
+    based_on:
+      round_id: round-002
+      variant_id: V002
+      run_ids: [r002-qwen3-0.6b-sft, r001-qwen3-1.7b-sft]
+    changes:
+      - 每个模型继承对应 sft-v0.3 视图并新增 120 条共享修复样本。
+      - 每个模型新增 60 条针对自身回归模式的专项样本。
+      - 不加入 DPO，不修改训练超参数、评测集、Prompt 或 Schema。
+    controls_held_constant:
+      - LoRA rank 16、alpha 32、dropout 0.05
+      - learning rate 1e-4、epoch 3、effective batch size 16
+      - Qwen3 template、no-think、cutoff length 2048
+      - eval-v0.2 和修正版评分器
+    attribution_limits:
+      - 每个视图同时加入多个相关错误簇，只能归因于组合修复策略。
+      - 两个模型使用不同专项数据，跨尺寸差异不能只归因于模型参数量。
+    matrix:
+      models: [qwen3-0.6b, qwen3-1.7b]
+      stages: [sft]
+      quantizations: []
+    run_ids: [r003-qwen3-0.6b-sft, r003-qwen3-1.7b-sft]

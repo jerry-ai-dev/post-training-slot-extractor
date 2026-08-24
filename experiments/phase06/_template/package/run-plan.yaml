@@ -1,0 +1,14 @@
+schema_version: 1
+round_id: ROUND_ID
+runs: []
+# - run_id: r001-v001-qwen3-0.6b-sft-s01
+#   variant_id: V001
+#   model:
+#     name: Qwen3-0.6B
+#     revision: null
+#   stage: sft
+#   seed: 1
+#   configs: []
+#   parent_artifacts: []
+#   expected_outputs: []
+

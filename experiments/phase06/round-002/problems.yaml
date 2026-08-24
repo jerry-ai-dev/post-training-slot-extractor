@@ -1,0 +1,122 @@
+schema_version: 1
+round_id: round-002
+problems:
+  - problem_id: R2-P001
+    title: 多轮状态最小更新仍不稳定
+    observation: 两个模型都会丢失已有槽位、错误覆盖未修改字段，或错误计算相对日期。
+    severity: high
+    affected_models: [r001-qwen3-0.6b-sft, r001-qwen3-1.7b-sft]
+    affected_scenarios: [multi_turn, missing_information, plan_modification]
+    evidence:
+      - type: metric
+        ref: experiments/phase06/round-001/imported
+        finding: 两个模型共有 10 条失败，ask-0005、multiturn-incomplete-03 等直接涉及状态继承。
+      - type: sample
+        ref: multiturn-incomplete-03
+        finding: 0.6B 将后天下午四点标准化为错误日期；1.7B 则丢失已有时间并重复追问。
+      - type: sample
+        ref: plan-modify-time-pref-01-requery
+        finding: 0.6B 同时错误继承旧时间和旧偏好，1.7B 已正确。
+    hypotheses:
+      - hypothesis_id: R2-H001
+        statement: v0.2 的多轮样本虽增加，但跨轮差分组合仍不足，模型没有稳定学习“只修改用户明确改变的字段”。
+        confidence: high
+        unknowns: [日期错误与状态覆盖错误各自所占比例]
+    status: open
+
+  - problem_id: R2-P002
+    title: 缺失信息与工具调用边界仍会混淆
+    observation: 缺时长或时间时，模型会提前调用工具、遗漏已有信息或追问错误字段。
+    severity: high
+    affected_models: [r001-qwen3-0.6b-sft, r001-qwen3-1.7b-sft]
+    affected_scenarios: [missing_information, tool_call]
+    evidence:
+      - type: sample
+        ref: ask-0005
+        finding: 0.6B 丢失技师和时间；1.7B 使用 null 时长调用工具并附加无依据偏好。
+      - type: metric
+        ref: experiments/phase06/round-001/imported/r001-qwen3-1.7b-sft/scorecard.json
+        finding: 1.7B 缺失信息切片任务均分仅 82.3%。
+    hypotheses:
+      - hypothesis_id: R2-H002
+        statement: 完整信息与不完整信息的近邻对照不足，模型对“何时追问、何时查工具”的决策边界尚未形成。
+        confidence: high
+        unknowns: []
+    status: open
+
+  - problem_id: R2-P003
+    title: 0.6B 工具调用 JSON 和参数完整性不足
+    observation: 0.6B 的 15 条工具调用中协议通过率仅 73.3%、任务均分 66.7%。
+    severity: critical
+    affected_models: [r001-qwen3-0.6b-sft]
+    affected_scenarios: [tool_call, multi_turn, reselect, retry]
+    evidence:
+      - type: metric
+        ref: experiments/phase06/round-001/imported/r001-qwen3-0.6b-sft/scorecard.json
+        finding: 4 条输出不可解析，另有多条 start_time、preferences 参数错误。
+      - type: sample
+        ref: specific-unavailable-01-reselect
+        finding: JSON 在 arguments 内混入 final 字段并被截断。
+    hypotheses:
+      - hypothesis_id: R2-H003
+        statement: 0.6B 容量较小，对长上下文后严格工具 Schema 的稳定生成能力不足，且 v0.2 中复杂工具样本占比不够。
+        confidence: high
+        unknowns: [缩短上下文与增加严格短输出样本的相对贡献]
+    status: open
+
+  - problem_id: R2-P004
+    title: 1.7B 最终状态枚举漂移
+    observation: 1.7B 工具调用稳定，但 5 个 final 样本生成未定义的 technician_status=matched。
+    severity: high
+    affected_models: [r001-qwen3-1.7b-sft]
+    affected_scenarios: [tool_result, final]
+    evidence:
+      - type: metric
+        ref: experiments/phase06/round-001/imported/r001-qwen3-1.7b-sft/scorecard.json
+        finding: 6 条协议失败中 5 条来自未定义 matched 状态。
+      - type: sample
+        ref: search-matched-01-result
+        finding: 工具返回 status=matched 后，模型照抄该工具状态，而没有映射为输出 Schema 的 available。
+    hypotheses:
+      - hypothesis_id: R2-H004
+        statement: 工具返回 Schema 与最终输出 Schema 使用不同枚举，映射样本不足导致模型复制工具原值。
+        confidence: high
+        unknowns: []
+    status: open
+
+  - problem_id: R2-P005
+    title: 回复动作表达和事实忠实度仍有临界失败
+    observation: 若干结构字段基本正确的 final 回复没有明确表达 not_found、no_match 或需要的追问动作。
+    severity: medium
+    affected_models: [r001-qwen3-0.6b-sft, r001-qwen3-1.7b-sft]
+    affected_scenarios: [tool_result, missing_information, confirmation]
+    evidence:
+      - type: sample
+        ref: specific-not-found-01-result
+        finding: 1.7B 没有明确表达技师不存在，且回复暗示可继续选择该技师。
+      - type: sample
+        ref: search-no-match-01-result
+        finding: 两个模型对“没有符合条件的技师”的表达不够明确。
+    hypotheses:
+      - hypothesis_id: R2-H005
+        statement: 训练答案表达模板过于集中，模型没有稳定覆盖每类业务动作的必要语义，同时自然表达的正样本多样性不足。
+        confidence: medium
+        unknowns: [剩余临界失败中评分覆盖不足的比例]
+    status: open
+
+  - problem_id: R2-P006
+    title: Round 001 出现少量能力退化
+    observation: 新数据带来新通过样本的同时，也使部分旧通过样本退化。
+    severity: high
+    affected_models: [r001-qwen3-0.6b-sft, r001-qwen3-1.7b-sft]
+    affected_scenarios: [unrelated, missing_information, multi_turn]
+    evidence:
+      - type: metric
+        ref: experiments/phase06/round-001/reports/result-analysis.md
+        finding: 0.6B 新通过 8 条但退化 2 条；1.7B 新通过 5 条但退化 3 条。
+    hypotheses:
+      - hypothesis_id: R2-H006
+        statement: 定向新增数据与回放数据的比例及难度分布仍不平衡，造成局部灾难性遗忘或决策边界偏移。
+        confidence: medium
+        unknowns: [随机种子波动对逐样本翻转的影响]
+    status: open

@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "round_id": "round-003",
+  "verified_cloud_files": 31,
+  "source_package": "round-003-cloud-results",
+  "policy": "Metrics and provenance are committed; adapters and checkpoints stay external.",
+  "runs": [
+    {
+      "run_id": "r003-qwen3-0.6b-sft",
+      "adapter_in_package": false,
+      "adapter_sha256": null,
+      "adapter_bytes": null,
+      "adapter_committed": false
+    },
+    {
+      "run_id": "r003-qwen3-1.7b-sft",
+      "adapter_in_package": false,
+      "adapter_sha256": null,
+      "adapter_bytes": null,
+      "adapter_committed": false
+    }
+  ]
+}

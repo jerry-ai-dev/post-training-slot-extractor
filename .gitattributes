@@ -1,2 +1,10 @@
 experiments/runs/phase04-*/adapter/adapter_model.safetensors filter=lfs diff=lfs merge=lfs -text
+models/adapters/r003-qwen3-1.7b-sft/adapter_model.safetensors filter=lfs diff=lfs merge=lfs -text
+models/adapters/r004-qwen3-0.6b-sft/adapter_model.safetensors filter=lfs diff=lfs merge=lfs -text
 models/adapters/**/adapter_model.safetensors filter=lfs diff=lfs merge=lfs -text
+*.sh text eol=lf
+requirements-train.txt text eol=lf
+data/eval/*.jsonl text eol=lf
+data/eval/*.sha256 text eol=lf
+data/raw/v0.3/*.jsonl text eol=lf
+data/processed/sft/v0.3/**/*.jsonl text eol=lf

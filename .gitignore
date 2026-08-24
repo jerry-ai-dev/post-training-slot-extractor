@@ -9,6 +9,8 @@ __pycache__/
 venv/
 .worktrees/
 .phase04-dryrun/
+.claude/
+.superpowers/
 configs/training/llamafactory/_rendered/
 
 # Local environment
@@ -24,11 +26,28 @@ data/eval/*
 # 阶段三 v0.1 小样是可复现的管线验收产物，精确破例入库
 !data/raw/v0.1/
 !data/raw/v0.1/samples.jsonl
+!data/raw/v0.2/
+!data/raw/v0.2/samples.jsonl
+!data/raw/v0.3/
+!data/raw/v0.3/samples.jsonl
+!data/raw/v0.4/
+!data/raw/v0.4/samples.jsonl
+!data/raw/v0.5/
+!data/raw/v0.5/samples.jsonl
 !data/processed/sft/
 data/processed/sft/*
 !data/processed/sft/v0.1/
 !data/processed/sft/v0.1/train.jsonl
 !data/processed/sft/v0.1/val.jsonl
+!data/processed/sft/v0.2/
+!data/processed/sft/v0.2/train.jsonl
+!data/processed/sft/v0.2/val.jsonl
+!data/processed/sft/v0.3/
+!data/processed/sft/v0.3/**
+!data/processed/sft/v0.4/
+!data/processed/sft/v0.4/**
+!data/processed/sft/v0.5/
+!data/processed/sft/v0.5/**
 !data/processed/dpo/
 data/processed/dpo/*
 !data/processed/dpo/v0.1/
@@ -37,11 +56,28 @@ data/processed/dpo/*
 !data/processed/v0.1/
 !data/processed/v0.1/dataset_info.json
 !data/processed/v0.1/DATASET_CARD.md
+!data/processed/v0.2/
+!data/processed/v0.2/manifest.json
+!data/processed/v0.2/DATASET_CARD.md
+!data/processed/v0.2/dataset_info.json
+!data/processed/v0.3/
+!data/processed/v0.3/manifest.json
+!data/processed/v0.3/DATASET_CARD.md
+!data/processed/v0.3/dataset_info.json
+!data/processed/v0.4/
+!data/processed/v0.4/manifest.json
+!data/processed/v0.4/DATASET_CARD.md
+!data/processed/v0.4/dataset_info.json
+!data/processed/v0.5/
+!data/processed/v0.5/manifest.json
+!data/processed/v0.5/DATASET_CARD.md
+!data/processed/v0.5/dataset_info.json
 # 评估集破例入库（尺子需 git 版本化）
 !data/eval/test.jsonl
 !data/eval/DATASET_CARD.md
 !data/eval/dataset_contract.json
 !data/eval/test.sha256
+!data/eval/phase06_holdout_v0.3.jsonl
 models/base/*
 models/adapters/*
 # Phase 04 final experiment adapters are versioned for Phase 05 reproduction.
@@ -63,6 +99,14 @@ models/adapters/*
 !models/adapters/qwen3-1.7b-dpo-b03/
 !models/adapters/qwen3-1.7b-dpo-b03/adapter_config.json
 !models/adapters/qwen3-1.7b-dpo-b03/adapter_model.safetensors
+# Phase 06 finalist adapters remain external model assets. Later Phase 06
+# rounds accept their path explicitly so weights are never committed by accident.
+!models/adapters/r003-qwen3-1.7b-sft/
+!models/adapters/r003-qwen3-1.7b-sft/adapter_config.json
+!models/adapters/r003-qwen3-1.7b-sft/adapter_model.safetensors
+!models/adapters/r004-qwen3-0.6b-sft/
+!models/adapters/r004-qwen3-0.6b-sft/adapter_config.json
+!models/adapters/r004-qwen3-0.6b-sft/adapter_model.safetensors
 models/merged/*
 models/gguf/*
 models/quantization/*
@@ -73,6 +117,9 @@ experiments/runs/*
 experiments/baselines/*
 reports/generated/*
 !reports/generated/scorecard-gpt-5.6-sol.json
+round-*-cloud-results/
+round-*-cloud-results.tar.gz
+experiments/phase06/round-009/app/
 
 # Local llama.cpp binaries (downloaded per-machine, never committed)
 deployment/llama_cpp/bin/*

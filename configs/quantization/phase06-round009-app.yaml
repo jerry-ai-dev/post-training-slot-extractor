@@ -1,0 +1,47 @@
+version: phase06-round009-app-v1
+registry_profile: deployment
+toolchain:
+  server: deployment/llama_cpp/bin/llama-server.exe
+models:
+  - model_id: qwen3-0.6b-base-f16
+    family: qwen3
+    size_b: 0.6
+    stage: base
+    variant: untrained-f16-baseline
+    base_model: Qwen/Qwen3-0.6B
+    base_revision: main
+    adapter_run_id: null
+    parent_model_id: null
+    artifact_kind: f16
+    artifact_path: models/gguf/phase06-round009-qwen3-0.6b-base-F16.gguf
+    manifest_path: models/quantization/phase06-round009/base-f16/manifest.json
+    is_anchor: true
+    server_args: [--threads-batch, "16", --batch-size, "2048", --ubatch-size, "512", --ctx-size, "4096", --parallel, "1", --jinja, --cache-prompt]
+  - model_id: r004-qwen3-0.6b-sft-q8-quality
+    family: qwen3
+    size_b: 0.6
+    stage: sft
+    variant: quality-default
+    base_model: Qwen/Qwen3-0.6B
+    base_revision: main
+    adapter_run_id: r004-qwen3-0.6b-sft
+    parent_model_id: qwen3-0.6b-base-f16
+    artifact_kind: q8_0
+    artifact_path: models/gguf/phase06-round006-local/r004-qwen3-0.6b-sft-Q8_0.gguf
+    manifest_path: models/quantization/phase06-round009/q8/manifest.json
+    is_anchor: false
+    server_args: [--threads-batch, "16", --batch-size, "2048", --ubatch-size, "512", --ctx-size, "4096", --parallel, "1", --jinja, --cache-prompt]
+  - model_id: r004-qwen3-0.6b-sft-q4-fast
+    family: qwen3
+    size_b: 0.6
+    stage: sft
+    variant: low-latency
+    base_model: Qwen/Qwen3-0.6B
+    base_revision: main
+    adapter_run_id: r004-qwen3-0.6b-sft
+    parent_model_id: r004-qwen3-0.6b-sft-q8-quality
+    artifact_kind: q4_k_m
+    artifact_path: models/gguf/phase06-round006-local/r004-qwen3-0.6b-sft-Q4_K_M.gguf
+    manifest_path: models/quantization/phase06-round009/q4/manifest.json
+    is_anchor: false
+    server_args: [--threads-batch, "16", --batch-size, "2048", --ubatch-size, "512", --ctx-size, "4096", --parallel, "1", --jinja, --cache-prompt]

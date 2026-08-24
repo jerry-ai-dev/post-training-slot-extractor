@@ -1,0 +1,471 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Phase 06：九轮迭代实验总结</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      --bg: #f6f8fa;
+      --surface: #ffffff;
+      --text: #1f2328;
+      --muted: #59636e;
+      --border: #d0d7de;
+      --accent: #0969da;
+      --quote: #6e7781;
+      --code-bg: #eff1f3;
+      --shadow: 0 8px 30px rgba(140, 149, 159, 0.18);
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #0d1117;
+        --surface: #161b22;
+        --text: #e6edf3;
+        --muted: #9198a1;
+        --border: #30363d;
+        --accent: #58a6ff;
+        --quote: #8b949e;
+        --code-bg: #262c36;
+        --shadow: 0 8px 30px rgba(0, 0, 0, 0.35);
+      }
+    }
+
+    * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", "PingFang SC", "Noto Sans CJK SC", Arial, sans-serif;
+      line-height: 1.75;
+    }
+
+    main {
+      width: min(1120px, calc(100% - 32px));
+      margin: 40px auto;
+      padding: clamp(24px, 5vw, 64px);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      box-shadow: var(--shadow);
+    }
+
+    h1, h2, h3 {
+      line-height: 1.3;
+      scroll-margin-top: 24px;
+    }
+
+    h1 {
+      margin: 0 0 32px;
+      padding-bottom: 18px;
+      border-bottom: 1px solid var(--border);
+      font-size: clamp(2rem, 4vw, 3rem);
+    }
+
+    h2 {
+      margin: 48px 0 20px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border);
+      font-size: clamp(1.5rem, 3vw, 2rem);
+    }
+
+    h3 {
+      margin: 32px 0 12px;
+      font-size: 1.25rem;
+    }
+
+    p { margin: 0 0 16px; }
+
+    ul, ol {
+      margin: 0 0 20px;
+      padding-left: 2em;
+    }
+
+    li + li { margin-top: 6px; }
+
+    strong { font-weight: 700; }
+
+    code {
+      padding: 0.15em 0.4em;
+      border-radius: 6px;
+      background: var(--code-bg);
+      font-family: "Cascadia Code", Consolas, monospace;
+      font-size: 0.9em;
+    }
+
+    blockquote {
+      margin: 24px 0;
+      padding: 12px 18px;
+      color: var(--quote);
+      border-left: 4px solid var(--accent);
+      background: color-mix(in srgb, var(--accent) 7%, transparent);
+      border-radius: 0 8px 8px 0;
+    }
+
+    blockquote p:last-child { margin-bottom: 0; }
+
+    .table-wrap {
+      width: 100%;
+      margin: 24px 0;
+      overflow-x: auto;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.94rem;
+    }
+
+    th, td {
+      min-width: 140px;
+      padding: 12px 14px;
+      text-align: left;
+      vertical-align: top;
+      border-right: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+
+    th {
+      background: color-mix(in srgb, var(--accent) 10%, var(--surface));
+      font-weight: 700;
+    }
+
+    tr:last-child td { border-bottom: 0; }
+    th:last-child, td:last-child { border-right: 0; }
+
+    a { color: var(--accent); }
+
+    .render-error {
+      padding: 16px;
+      border: 1px solid #cf222e;
+      border-radius: 8px;
+      color: #cf222e;
+    }
+
+    @media (max-width: 640px) {
+      main {
+        width: 100%;
+        margin: 0;
+        border: 0;
+        border-radius: 0;
+        box-shadow: none;
+      }
+    }
+
+    @media print {
+      body { background: #fff; }
+      main {
+        width: 100%;
+        margin: 0;
+        padding: 0;
+        border: 0;
+        box-shadow: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main id="content" aria-live="polite"></main>
+
+  <template id="markdown-source"># Phase 06：九轮迭代实验总结
+
+## 阶段目标
+
+Phase 06 的目标是把 Phase 05 的模型评测结果转化为可追踪的优化闭环：先根据失败样本迭代 SFT 数据并选择最终模型，再完成评分器校准、量化选型、本地推理优化和 APP 集成。
+
+本阶段共进行了九轮实验，整体路线为：
+
+`定向 SFT（Round 001–004） → 统一复评与模型收口（Round 005） → 量化矩阵（Round 006） → Q8/Q4 终选（Round 007） → 本地推理优化（Round 008） → APP 集成（Round 009）`
+
+---
+
+## Round 001：第一轮定向 SFT
+
+### 当前轮次实验目标
+
+修复 Phase 05 暴露出的多轮状态继承、工具调用、相对日期、Schema 稳定性和确认语义问题，验证扩充后的定向 SFT 数据能否同时提升 0.6B 与 1.7B 模型。为保持归因清晰，本轮只做 SFT，不开展 DPO。
+
+### 做了什么
+
+- 修正预约成功场景中评测规则与回复忠实度评分器的冲突，并将评测合同升级到统一口径。
+- 构建 `sft-v0.2`：795 条去重样本，其中训练集 715 条、验证集 80 条；新增 316 条定向样本。
+- 分别对 Qwen3-0.6B 和 Qwen3-1.7B 进行 3 epoch LoRA SFT。
+- 在与训练输入零精确重叠的 51 条 `eval-v0.2` 上统一复评。
+
+### 结果是什么
+
+- 0.6B：严格通过数由 **29/51 提升到 33/51**，协议通过 46/51。
+- 1.7B：严格通过数保持 **34/51**，但任务均分由 92.83% 小幅提升到 93.59%。
+- 0.6B 的普通 final 回复改善，但 tool call、JSON 完整性和参数继承仍不稳定。
+- 1.7B 的工具调用较稳定，主要问题转为非法枚举、缺失信息动作边界和 final Schema。
+
+### 结论是什么
+
+组合数据策略对 0.6B 有明确收益，对 1.7B 只带来均分改善，尚未形成通过率提升。本轮判定为“部分成功”，继续进行第二轮 SFT；DPO 继续延后。
+
+---
+
+## Round 002：分模型专项 SFT 与回归保护
+
+### 当前轮次实验目标
+
+在 Round 001 基础上，使用共享核心数据加分模型专项配比，重点改善 0.6B 的严格 JSON 和工具调用，以及 1.7B 的枚举、追问和 final 状态字段，同时控制历史能力回归。
+
+### 做了什么
+
+- 构建 `sft-v0.3`，两个模型分别使用 976 条训练数据和 109 条验证数据。
+- 增加严格短 JSON、工具调用、重选、重试、方案修改、技师继承和枚举约束样本。
+- 两个模型均训练 3 epoch，并在冻结的 51 条主评测集上统一复评。
+- 完整校验云端结果包；Adapter 外部保存，Git 记录哈希、指标和逐样本预测。
+
+### 结果是什么
+
+- 0.6B：由 **33/51 提升到 36/51**，协议提升到 50/51；新通过 7 条、退化 4 条。
+- 1.7B：保持 **34/51**，协议 49/51；新通过和退化各 4 条，任务均分下降。
+- 0.6B 的不可解析输出由 4 条降到 1 条，说明严格 JSON 和 tool call 专项有效。
+- 两个模型仍存在日期继承、字段归类、工具结果映射和简单追问回归。
+
+### 结论是什么
+
+本轮对 0.6B 有净提升，但两个模型都未达到预设目标，且回归数超过护栏。问题仍属于有唯一正确答案的结构化状态错误，因此继续 SFT，不进入 DPO。
+
+---
+
+## Round 003：字段边界、日期与协议强化
+
+### 当前轮次实验目标
+
+使用 `sft-v0.4` 定向修复字段边界、相对日期、工具结果字段保真、严格 JSON 和无关请求识别，并观察更强回归保护能否稳定提升两个模型。
+
+### 做了什么
+
+- 补充字段归类、相对日期、多轮状态、工具结果到 final 的字段保真和协议约束样本。
+- 对 Qwen3-0.6B 和 Qwen3-1.7B 分别执行 3 epoch LoRA SFT。
+- 继续使用冻结的 51 条主评测集，并检查新通过、退化和协议失败样本。
+
+### 结果是什么
+
+- 0.6B：由 **36/51 提升到 37/51**，但协议降至 46/51，出现 5 条协议失败。
+- 1.7B：由 **34/51 提升到 38/51**，协议达到 **51/51**，完成本轮主指标。
+- 1.7B 新通过 6 条、退化 2 条；若对照其最佳历史版本，则仍有 3 条回归。
+- 两个模型训练 loss 与验证 loss 均正常下降，但业务能力并未稳定、单调提升。
+
+### 结论是什么
+
+1.7B 获得阶段性最佳结果，但回归护栏仍未满足；0.6B 虽有一条净提升，却发生明显协议退化。决定只再执行一轮定向 SFT，并在下一轮加入训练前冻结的独立盲测，避免继续围绕固定主集过拟合。
+
+---
+
+## Round 004：最后一轮定向 SFT 与独立盲测
+
+### 当前轮次实验目标
+
+完成当前小模型路线的最后一轮定向 SFT：0.6B 回退到更稳定的数据核心，1.7B 保留 Round 003 收益并加强回归保护；同时使用 24 条训练前冻结的 holdout 检查泛化能力。
+
+### 做了什么
+
+- 为 0.6B 与 1.7B 分别调整专项数据配比并重新训练。
+- 在 51 条主评测之外，新增 24 条独立盲测，覆盖日期、追问、状态继承和无关请求。
+- 对 Round 004 两个模型和 Round 003 最佳 1.7B 做主集、盲测及逐条人工复核。
+- 识别并人工修正语义等价追问被评分器误判的问题。
+
+### 结果是什么
+
+- Round 004 0.6B：主集由 37/51 提升到 **39/51**；盲测自动 16/24，人工复核 **21/24**。
+- Round 003 1.7B：主集 **38/51**；盲测自动 15/24，人工复核 **21/24**。
+- Round 004 1.7B：由 38/51 回退到 **35/51**；人工盲测 20/24，被淘汰。
+- 0.6B 的真实盲测错误主要是相对日期与时间计算；1.7B 的错误主要是字段误归类和非法工具名。
+
+### 结论是什么
+
+继续围绕同一评测集堆叠 SFT 数据已进入收益递减阶段。选择 `r004-qwen3-0.6b-sft` 为首选候选，保留 `r003-qwen3-1.7b-sft` 为备选；停止同类型定向 SFT，后续转向评分校准和工程优化。
+
+---
+
+## Round 005：评分器校准与最终候选收口
+
+### 当前轮次实验目标
+
+不再训练模型。修复人工复核确认的评分器误判，在同一本地 llama.cpp 推理环境下统一复评两个冻结候选，判断当前 SFT 路线是否已经达到工程瓶颈，并确定最终候选策略。
+
+### 做了什么
+
+- 修复两类评分误判：等价日期时间追问，以及“确认服务时长”被误判成“预约成功”。
+- 使用本地 Q8 基座加 F16 LoRA、temperature=0，重新生成全部预测。
+- 对两个候选统一运行 51 条主集和 24 条 holdout，而非复用旧输出。
+- 同时比较协议、真实错误、时延和吞吐。
+
+### 结果是什么
+
+- `r004` 0.6B：主集 **40/51**，holdout **21/24**，主集平均时延 5.12 秒。
+- `r003` 1.7B：主集 **39/51**，holdout **21/24**，主集平均时延 8.51 秒。
+- 两者质量差异不足以证明任一模型显著更强；0.6B 本地速度约为 1.7B 的 1.6 倍。
+- 0.6B 剩余问题主要是日期计算；1.7B 主要是字段归类和非法工具调用。
+
+### 结论是什么
+
+当前 0.6B/1.7B SFT 路线正式收口，不再启动新的 SFT，也不开展 DPO。项目保留双候选：`r003` 1.7B 作为容量优先候选，`r004` 0.6B 作为质量相近但更高效的候选；部署优化最终聚焦 0.6B。
+
+---
+
+## Round 006：八档 GGUF 量化质量与速度矩阵
+
+### 当前轮次实验目标
+
+固定最终 `r004-qwen3-0.6b-sft`，比较 F16、Q8、Q6、Q5、Q4、Q3 和两档 IQ2 的质量、模型体积与 CPU 性能，筛选值得进入部署终选的量化格式。
+
+### 做了什么
+
+- 合并 Round 004 0.6B Adapter，并构建八档 GGUF。
+- 在相同云端 GPU offload 环境运行 51 条主集和 24 条 holdout 完整质量评测。
+- 在本地 8 线程 CPU 上分别测量不同量化档位的 Prefill 与 Decode。
+- 识别历史延迟字段误把完整 Decode 时间当成 TTFT 的测量问题。
+
+### 结果是什么
+
+- F16：60/75，约 1143 MiB。
+- Q8_0：**61/75**，约 610 MiB；相对 F16 未丢失原有通过样本。
+- Q4_K_M：59/75，约 378 MiB；Prefill 512 达 439.5 tok/s，Decode 128 达 81.0 tok/s。
+- Q3_K_M 仅 5/75，两档 IQ2 均为 0/75，出现重复字段、错误参数和截断 JSON。
+- Q5/Q6 在本轮没有同时优于 Q4 的质量、体积或速度表现。
+
+### 结论是什么
+
+淘汰 Q6、Q5、Q3 和 IQ2 路线，只保留 `Q8_0` 与 `Q4_K_M`。Q8 是质量安全基线，Q4 是性能最优候选；在定版前需要重复复评 Q4 的新增回归，并使用真实流式请求测量 TTFT。
+
+---
+
+## Round 007：Q8/Q4 终选与真实 TTFT
+
+### 当前轮次实验目标
+
+修复 TTFT 测量口径，在关闭 Prompt Cache 的条件下，用真实业务请求比较 Q8 与 Q4 的首 Token 延迟、端到端延迟和峰值内存，并结合重复质量复评确定最终部署策略。
+
+### 做了什么
+
+- 将推理改为流式响应，在首个非空内容片段到达时记录真实 TTFT。
+- 选取 8 条不同长度的真实业务 Prompt，每条重复 3 次；模型预热后测试。
+- 分别记录 Prefill、TTFT、Decode、端到端延迟、吞吐和服务 RSS。
+- 重复云端质量评测，确认 Q4 的质量变化是否稳定。
+
+### 结果是什么
+
+- Q8：质量 **61/75**，体积 609.8 MiB，TTFT 中位数 8.81 秒，端到端 11.95 秒。
+- Q4：质量 **59/75**，体积 378.3 MiB，TTFT 中位数 5.58 秒，端到端 8.32 秒。
+- Q4 相对 Q8：体积减少 **38.0%**，Prefill 加快 **62.9%**，TTFT 降低 **36.6%**，端到端降低 **30.4%**。
+- Q4 相对 F16 的 7 条主集新增失败在复评中稳定存在，因此不能称为无损量化。
+
+### 结论是什么
+
+正式采用双配置：`Q8_0` 作为质量默认版本，`Q4_K_M` 作为低延迟版本。真实业务请求的主要瓶颈是长系统 Prompt 的 Prefill，后续优化应优先验证公共前缀缓存和谨慎缩减 Prompt，而不是继续降低位宽。
+
+---
+
+## Round 008：Q4 本地推理参数与 Prompt Cache 优化
+
+### 当前轮次实验目标
+
+固定 Q4 模型，不训练、不重新量化，寻找最合适的 CPU 线程与 batch 参数，验证跨请求公共前缀缓存的加速效果，并判断激进精简 Prompt 是否能在不损失质量的情况下继续降低延迟。
+
+### 做了什么
+
+- 测试不同 `threads`、`threads-batch`、`batch-size` 和 `ubatch-size` 组合。
+- 对 8 条真实请求比较完整 Prompt 的冷请求与公共前缀缓存请求。
+- 将 Prompt 从约 1337 tokens 激进精简到约 605 tokens，并比较冷/热请求速度。
+- 在完整 24 条 holdout 上验证缓存与精简 Prompt 的质量影响。
+
+### 结果是什么
+
+- 推荐参数：`threads=8`、`threads-batch=16`、`batch=2048`、`ubatch=512`、`parallel=1`。
+- 完整 Prompt 启用缓存后：Prefill 由 4.81 秒降至 1.05 秒，TTFT 由 **5.35 秒降至 1.57 秒**，端到端由 7.38 秒降至 3.73 秒。
+- 缓存前后 holdout 均为 **17/24**，失败集合完全一致，没有新增质量回归。
+- 激进精简 Prompt 虽将冷请求 TTFT 降到 2.84 秒，但 holdout 从 17/24 崩塌到 **5/24**。
+
+### 结论是什么
+
+启用完整 Prompt 的公共前缀缓存，是当前最大且已验证无新增回归的推理优化；激进精简 Prompt 不可采用。该缓存结论只在单 slot、`parallel=1` 下成立，生产并发环境仍需重新验证命中率和质量。
+
+---
+
+## Round 009：最终模型 APP 集成
+
+### 当前轮次实验目标
+
+不重做 APP，在保留原有双轨界面、工具循环和多轮交互的基础上，把最终模型方案接入现有应用，完成训练前后对比、运行验证和人工验收。
+
+### 做了什么
+
+- 新增 Phase 06 APP 配置和模型校验清单生成脚本。
+- 接入三个可追踪模型资产：未训练 F16 基线、Round 004 0.6B Q8 质量版、Round 004 0.6B Q4 低延迟版。
+- 左侧固定使用未经 SFT 的 0.6B Base F16，右侧可切换训练后的 Q8 质量版与 Q4 低延迟版，形成训练前后对比。
+- 两个部署模型均使用 Round 008 确定的 batch 参数和 Prompt Cache。
+- 使用独立端口，并增加 `/v1/models` 身份核验，避免误连遗留 llama.cpp 服务。
+- 修复相隔文本中的“下午 + 2点”归一化、力度偏好别名和唯一工具结果被模型非法覆盖的问题。
+
+### 结果是什么
+
+- Base F16、最终 Q8/Q4 及外部资产清单已接入现有双轨 APP。
+- 后端实测确认左侧加载约 1.5 GB 的 Base F16，右侧加载 Round 004 SFT Q8/Q4，不再发生界面名称与实际权重不一致。
+- 自动回归测试通过，标准预约输入完成参数提取、工具匹配与确认回复；人工验收通过。
+
+### 结论是什么
+
+Round 009 已完成训练前后模型 APP 集成和人工验收。最终界面以 Base F16 为固定基准，以 SFT Q8/Q4 为部署候选；确定性时间、工具事实和协议收口由 APP 负责。
+
+至此，Phase 06 九轮实验全部完成并正式收口。
+
+---
+
+## 全局效果提升总结
+
+### 九轮迭代全局表
+
+| 阶段/轮次 | 核心对象 | 关键结果 | 相对起点或上一关键版本的提升 | 最终决策 |
+|---|---|---|---|---|
+| Phase 05 基线 | 0.6B / 1.7B SFT | 0.6B：29/51；1.7B：34/51 | 阶段起点 | 开始定向数据迭代 |
+| Round 001 | `sft-v0.2` | 0.6B：33/51；1.7B：34/51 | 0.6B +4 | 继续 SFT |
+| Round 002 | `sft-v0.3` | 0.6B：36/51；1.7B：34/51 | 0.6B 较基线 +7 | 继续专项修复 |
+| Round 003 | `sft-v0.4` | 0.6B：37/51；1.7B：38/51 | 1.7B 较基线 +4，协议 51/51 | 最后一轮 SFT |
+| Round 004 | 最终定向 SFT + 盲测 | 0.6B：39/51，人工盲测 21/24；最佳 1.7B：38/51、21/24 | 0.6B 较基线 +10 | 选出 0.6B 首选、1.7B 备选 |
+| Round 005 | 统一 llama.cpp 复评 | 0.6B：40/51、21/24；1.7B：39/51、21/24 | 0.6B 较基线 **+11 条，通过率由 56.9% 升至 78.4%** | SFT 收口，部署聚焦 0.6B |
+| Round 006 | 八档量化矩阵 | F16 60/75；Q8 61/75；Q4 59/75 | Q8 约缩小 47%；Q4 约缩小 67% | 只保留 Q8/Q4 |
+| Round 007 | 真实 TTFT 终选 | Q8 8.81 s；Q4 5.58 s | Q4 较 Q8：TTFT -36.6%，端到端 -30.4%，体积 -38.0% | Q8 默认，Q4 低延迟 |
+| Round 008 | CPU 参数 + Prompt Cache | Q4 完整 Prompt：TTFT 5.35 s → 1.57 s | 缓存命中时 TTFT **-70.7%**，端到端约 -49.5%，无新增 holdout 回归 | 启用缓存，拒绝激进缩 Prompt |
+| Round 009 | APP 集成 | Base F16 固定基准、SFT Q8/Q4 候选接入双轨 APP | 完成真实训练前后对比并修复端口串模 | 完成，人工验收通过 |
+
+> 说明：Round 001–004 的主集成绩来自对应训练轮次的统一评分；Round 005 重新生成了本地 llama.cpp 输出并校准评分器，因此它是候选模型收口时的最终统一质量口径。Round 006–008 的质量与性能测试也各有明确硬件和运行时边界，不应将不同后端的绝对延迟直接横向比较。
+
+### 最终总结结论
+
+1. **模型质量得到实质提升。** 最终 0.6B 候选在统一复评中的主集通过数从 Phase 05 的 29/51 提升到 40/51，增加 11 条，通过率从 56.9% 提升到 78.4%，相对提升约 37.8%；holdout 达到 21/24。
+2. **确认了小模型 SFT 的工程瓶颈。** 四轮定向 SFT 后，收益开始变小且伴随能力回归；训练 loss 继续下降并不代表业务指标继续提高。剩余问题主要是日期计算、字段归一化、非法工具名和协议约束，更适合规则层、约束解码或更强基础模型，而不是继续堆相似训练样本。
+3. **量化形成清晰的双版本策略。** Q8 保持质量安全，模型体积相对 F16 约减少 47%；Q4 体积相对 F16 约减少 67%，但存在少量稳定质量回归，因此作为低延迟选项而非默认无损版本。
+4. **推理体验显著改善。** Q4 相对 Q8 将真实 TTFT 降低 36.6%；进一步启用公共前缀缓存后，Q4 缓存命中请求的 TTFT 从约 5.35 秒降到 1.57 秒，在本轮单 slot 条件下没有新增 holdout 回归。
+5. **最终成果已经进入应用层。** Round 009 已形成 Base F16 与 SFT Q8/Q4 的真实训练前后对比，并修复端口串模、日期归一化、力度偏好和工具结果协议收口。人工验收通过；后续若进入生产，仍需补充真实并发、长期进程治理和更多业务日历数据验证。
+</template>
+
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script>
+    const source = document.getElementById('markdown-source').content.textContent;
+    const content = document.getElementById('content');
+
+    if (window.marked) {
+      content.innerHTML = marked.parse(source, { gfm: true });
+      content.querySelectorAll('table').forEach((table) => {
+        const wrapper = document.createElement('div');
+        wrapper.className = 'table-wrap';
+        table.parentNode.insertBefore(wrapper, table);
+        wrapper.appendChild(table);
+      });
+    } else {
+      content.innerHTML = '<p class="render-error">页面渲染组件加载失败，请检查网络连接后刷新。</p>';
+    }
+  </script>
+</body>
+</html>

@@ -25,7 +25,7 @@ class StageManifest:
     model_id: str
     stage: str
     status: Literal["running", "complete", "failed"]
-    artifact_kind: Literal["f16", "q4_k_m"]
+    artifact_kind: str
     is_anchor: bool
     cache_key: str
     lineage: Lineage

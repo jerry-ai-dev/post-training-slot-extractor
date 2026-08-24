@@ -40,6 +40,18 @@ def test_dataset_specialty_aliases_are_normalized():
     assert result.status == "available"
 
 
+def test_strength_preference_alias_is_modelled():
+    result = EXECUTOR.find(
+        query(technician_name="王芳", gender_preference=None, preferences=("力气大",))
+    )
+    assert result.status == "available"
+
+
+def test_generic_massage_does_not_filter_technician_specialties():
+    result = EXECUTOR.find(query(technician_name="王芳", preferences=("按摩",)))
+    assert result.status == "available"
+
+
 def test_end_boundary_is_valid_but_one_minute_beyond_is_not():
     assert (
         EXECUTOR.find(query(technician_name="王芳", start_time=datetime(2026, 8, 13, 17))).status

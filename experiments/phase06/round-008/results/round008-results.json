@@ -1,0 +1,651 @@
+{
+  "created_at": "2026-08-23T13:06:08.834764+00:00",
+  "model": "models\\gguf\\phase06-round006-local\\r004-qwen3-0.6b-sft-Q4_K_M.gguf",
+  "parameter_matrix": [
+    {
+      "threads": 4,
+      "threads_batch": 4,
+      "batch": 2048,
+      "ubatch": 512,
+      "input_tokens": 1331,
+      "prefill_ms": 7189.853,
+      "prefill_tokens_per_s": 185.12200458062216,
+      "decode_tokens_per_s": 30.934702941890247,
+      "total_ms": 9938.846400007606
+    },
+    {
+      "threads": 8,
+      "threads_batch": 8,
+      "batch": 2048,
+      "ubatch": 512,
+      "input_tokens": 1331,
+      "prefill_ms": 4610.0,
+      "prefill_tokens_per_s": 288.7201735357918,
+      "decode_tokens_per_s": 35.95797879694732,
+      "total_ms": 7059.179100091569
+    },
+    {
+      "threads": 16,
+      "threads_batch": 16,
+      "batch": 2048,
+      "ubatch": 512,
+      "input_tokens": 1331,
+      "prefill_ms": 4537.499,
+      "prefill_tokens_per_s": 293.3333979798122,
+      "decode_tokens_per_s": 10.725289386434897,
+      "total_ms": 11657.444900018163
+    },
+    {
+      "threads": 8,
+      "threads_batch": 16,
+      "batch": 2048,
+      "ubatch": 512,
+      "input_tokens": 1331,
+      "prefill_ms": 4345.581,
+      "prefill_tokens_per_s": 306.2881580161548,
+      "decode_tokens_per_s": 31.738794194035783,
+      "total_ms": 7057.887300034054
+    },
+    {
+      "threads": 8,
+      "threads_batch": 8,
+      "batch": 512,
+      "ubatch": 128,
+      "input_tokens": 1331,
+      "prefill_ms": 4782.986,
+      "prefill_tokens_per_s": 278.2780463919401,
+      "decode_tokens_per_s": 31.706535029469215,
+      "total_ms": 7509.05450002756
+    },
+    {
+      "threads": 8,
+      "threads_batch": 8,
+      "batch": 1024,
+      "ubatch": 256,
+      "input_tokens": 1331,
+      "prefill_ms": 5005.162,
+      "prefill_tokens_per_s": 265.9254585565862,
+      "decode_tokens_per_s": 34.068362247456264,
+      "total_ms": 7608.29260002356
+    },
+    {
+      "threads": 8,
+      "threads_batch": 8,
+      "batch": 2048,
+      "ubatch": 256,
+      "input_tokens": 1331,
+      "prefill_ms": 4814.307,
+      "prefill_tokens_per_s": 276.46762036571414,
+      "decode_tokens_per_s": 36.006046987384195,
+      "total_ms": 7228.151999996044
+    }
+  ],
+  "selected_parameters": {
+    "threads": 8,
+    "threads_batch": 16,
+    "batch": 2048,
+    "ubatch": 512
+  },
+  "latency": [
+    {
+      "label": "full-cold",
+      "rows": [
+        {
+          "id": "phase06-r4-holdout-001",
+          "input_tokens": 1334,
+          "prefill_ms": 4544.13,
+          "ttft_ms": 5025.0153000233695,
+          "decode_ms": 1768.761,
+          "total_ms": 6794.544999953359
+        },
+        {
+          "id": "phase06-r4-holdout-004",
+          "input_tokens": 1331,
+          "prefill_ms": 4688.723,
+          "ttft_ms": 5191.264600027353,
+          "decode_ms": 2146.443,
+          "total_ms": 7338.929800083861
+        },
+        {
+          "id": "phase06-r4-holdout-007",
+          "input_tokens": 1432,
+          "prefill_ms": 4887.003,
+          "ttft_ms": 5421.718499972485,
+          "decode_ms": 1991.713,
+          "total_ms": 7414.225399959832
+        },
+        {
+          "id": "phase06-r4-holdout-011",
+          "input_tokens": 1432,
+          "prefill_ms": 4894.025,
+          "ttft_ms": 5433.5674999747425,
+          "decode_ms": 1941.539,
+          "total_ms": 7376.2917999411
+        },
+        {
+          "id": "phase06-r4-holdout-015",
+          "input_tokens": 1432,
+          "prefill_ms": 5454.183,
+          "ttft_ms": 6072.232199949212,
+          "decode_ms": 2003.85,
+          "total_ms": 8077.098399982788
+        },
+        {
+          "id": "phase06-r4-holdout-018",
+          "input_tokens": 1340,
+          "prefill_ms": 5665.259,
+          "ttft_ms": 6214.551400044002,
+          "decode_ms": 3069.878,
+          "total_ms": 9285.534900031053
+        },
+        {
+          "id": "phase06-r4-holdout-021",
+          "input_tokens": 1334,
+          "prefill_ms": 4728.208,
+          "ttft_ms": 5277.629400021397,
+          "decode_ms": 2023.082,
+          "total_ms": 7301.485300064087
+        },
+        {
+          "id": "phase06-r4-holdout-024",
+          "input_tokens": 1331,
+          "prefill_ms": 4606.84,
+          "ttft_ms": 5132.69500003662,
+          "decode_ms": 2247.94,
+          "total_ms": 7381.313200108707
+        }
+      ],
+      "median": {
+        "input_tokens": 1337.0,
+        "prefill_ms": 4807.6055,
+        "ttft_ms": 5349.673949996941,
+        "decode_ms": 2013.466,
+        "total_ms": 7378.802500024904
+      }
+    },
+    {
+      "label": "full-cache",
+      "rows": [
+        {
+          "id": "phase06-r4-holdout-001",
+          "input_tokens": 1334,
+          "prefill_ms": 4436.654,
+          "ttft_ms": 4904.446100001223,
+          "decode_ms": 2227.817,
+          "total_ms": 7133.280599955469
+        },
+        {
+          "id": "phase06-r4-holdout-004",
+          "input_tokens": 1331,
+          "prefill_ms": 587.988,
+          "ttft_ms": 1096.4837999781594,
+          "decode_ms": 2117.785,
+          "total_ms": 3214.9899000069126
+        },
+        {
+          "id": "phase06-r4-holdout-007",
+          "input_tokens": 1432,
+          "prefill_ms": 1339.33,
+          "ttft_ms": 1843.8761999132112,
+          "decode_ms": 1855.516,
+          "total_ms": 3700.997299980372
+        },
+        {
+          "id": "phase06-r4-holdout-011",
+          "input_tokens": 1432,
+          "prefill_ms": 1434.288,
+          "ttft_ms": 1948.1876998906955,
+          "decode_ms": 1972.345,
+          "total_ms": 3921.3529999833554
+        },
+        {
+          "id": "phase06-r4-holdout-015",
+          "input_tokens": 1432,
+          "prefill_ms": 1358.308,
+          "ttft_ms": 1913.3434999966994,
+          "decode_ms": 1835.826,
+          "total_ms": 3749.7884000185877
+        },
+        {
+          "id": "phase06-r4-holdout-018",
+          "input_tokens": 1340,
+          "prefill_ms": 696.792,
+          "ttft_ms": 1220.4515999183059,
+          "decode_ms": 2691.224,
+          "total_ms": 3912.4649999430403
+        },
+        {
+          "id": "phase06-r4-holdout-021",
+          "input_tokens": 1334,
+          "prefill_ms": 767.309,
+          "ttft_ms": 1286.9958999799564,
+          "decode_ms": 1806.124,
+          "total_ms": 3093.916399986483
+        },
+        {
+          "id": "phase06-r4-holdout-024",
+          "input_tokens": 1331,
+          "prefill_ms": 589.863,
+          "ttft_ms": 1125.1870000269264,
+          "decode_ms": 2117.606,
+          "total_ms": 3243.7567999586463
+        }
+      ],
+      "median": {
+        "input_tokens": 1337.0,
+        "prefill_ms": 1053.3195,
+        "ttft_ms": 1565.4360499465838,
+        "decode_ms": 2044.9755,
+        "total_ms": 3725.39284999948
+      }
+    },
+    {
+      "label": "compact-cold",
+      "rows": [
+        {
+          "id": "phase06-r4-holdout-001",
+          "input_tokens": 602,
+          "prefill_ms": 2422.948,
+          "ttft_ms": 2890.997500042431,
+          "decode_ms": 1406.051,
+          "total_ms": 4297.894999966957
+        },
+        {
+          "id": "phase06-r4-holdout-004",
+          "input_tokens": 599,
+          "prefill_ms": 2335.231,
+          "ttft_ms": 2864.4062998937443,
+          "decode_ms": 1881.571,
+          "total_ms": 4746.603499981575
+        },
+        {
+          "id": "phase06-r4-holdout-007",
+          "input_tokens": 700,
+          "prefill_ms": 2501.802,
+          "ttft_ms": 2998.1357000069693,
+          "decode_ms": 1471.497,
+          "total_ms": 4469.684699899517
+        },
+        {
+          "id": "phase06-r4-holdout-011",
+          "input_tokens": 700,
+          "prefill_ms": 2221.541,
+          "ttft_ms": 2772.047200007364,
+          "decode_ms": 1414.326,
+          "total_ms": 4187.082799966447
+        },
+        {
+          "id": "phase06-r4-holdout-015",
+          "input_tokens": 700,
+          "prefill_ms": 2580.128,
+          "ttft_ms": 3131.0611000517383,
+          "decode_ms": 1540.685,
+          "total_ms": 4672.82130010426
+        },
+        {
+          "id": "phase06-r4-holdout-018",
+          "input_tokens": 608,
+          "prefill_ms": 1974.54,
+          "ttft_ms": 2489.3508000532165,
+          "decode_ms": 1982.852,
+          "total_ms": 4472.849800018594
+        },
+        {
+          "id": "phase06-r4-holdout-021",
+          "input_tokens": 602,
+          "prefill_ms": 1913.503,
+          "ttft_ms": 2453.304100083187,
+          "decode_ms": 1366.741,
+          "total_ms": 3821.029300102964
+        },
+        {
+          "id": "phase06-r4-holdout-024",
+          "input_tokens": 599,
+          "prefill_ms": 2229.146,
+          "ttft_ms": 2823.2582000782713,
+          "decode_ms": 1852.195,
+          "total_ms": 4675.925299990922
+        }
+      ],
+      "median": {
+        "input_tokens": 605.0,
+        "prefill_ms": 2282.1885,
+        "ttft_ms": 2843.832249986008,
+        "decode_ms": 1506.091,
+        "total_ms": 4471.267249959055
+      }
+    },
+    {
+      "label": "compact-cache",
+      "rows": [
+        {
+          "id": "phase06-r4-holdout-001",
+          "input_tokens": 602,
+          "prefill_ms": 1949.569,
+          "ttft_ms": 2365.4831999447197,
+          "decode_ms": 1584.409,
+          "total_ms": 3950.711000012234
+        },
+        {
+          "id": "phase06-r4-holdout-004",
+          "input_tokens": 599,
+          "prefill_ms": 373.767,
+          "ttft_ms": 893.151200027205,
+          "decode_ms": 1700.077,
+          "total_ms": 2594.2686001071706
+        },
+        {
+          "id": "phase06-r4-holdout-007",
+          "input_tokens": 700,
+          "prefill_ms": 953.36,
+          "ttft_ms": 1437.8828998887911,
+          "decode_ms": 1426.54,
+          "total_ms": 2864.9222999811172
+        },
+        {
+          "id": "phase06-r4-holdout-011",
+          "input_tokens": 700,
+          "prefill_ms": 985.745,
+          "ttft_ms": 1528.3847999526188,
+          "decode_ms": 1410.709,
+          "total_ms": 2939.8897999199107
+        },
+        {
+          "id": "phase06-r4-holdout-015",
+          "input_tokens": 700,
+          "prefill_ms": 1270.672,
+          "ttft_ms": 1776.6438000835478,
+          "decode_ms": 1470.407,
+          "total_ms": 3247.6058000465855
+        },
+        {
+          "id": "phase06-r4-holdout-018",
+          "input_tokens": 608,
+          "prefill_ms": 378.526,
+          "ttft_ms": 881.0027999570593,
+          "decode_ms": 1866.48,
+          "total_ms": 2748.245200025849
+        },
+        {
+          "id": "phase06-r4-holdout-021",
+          "input_tokens": 602,
+          "prefill_ms": 399.628,
+          "ttft_ms": 956.3966999994591,
+          "decode_ms": 1450.519,
+          "total_ms": 2407.293799915351
+        },
+        {
+          "id": "phase06-r4-holdout-024",
+          "input_tokens": 599,
+          "prefill_ms": 368.631,
+          "ttft_ms": 905.9283999959007,
+          "decode_ms": 2538.868,
+          "total_ms": 3446.015499997884
+        }
+      ],
+      "median": {
+        "input_tokens": 605.0,
+        "prefill_ms": 676.494,
+        "ttft_ms": 1197.1397999441251,
+        "decode_ms": 1527.408,
+        "total_ms": 2902.406049950514
+      }
+    }
+  ],
+  "quality": [
+    {
+      "label": "full",
+      "passed": 17,
+      "n": 24,
+      "rows": [
+        {
+          "id": "phase06-r4-holdout-001",
+          "passed": true,
+          "output": "{\"action\":\"tool_call\",\"tool_name\":\"find_technicians\",\"arguments\":{\"technician_name\":\"顾言\",\"start_time\":\"2030-02-12 16:00\",\"duration_minutes\":40,\"gender_preference\":null,\"preferences\":[]}}"
+        },
+        {
+          "id": "phase06-r4-holdout-002",
+          "passed": false,
+          "output": "{\"action\":\"final\",\"gender_preference\":null,\"technician_gender\":null,\"start_time\":null,\"duration_minutes\":60,\"preferences\":[\"腰背\"],\"technician_name\":\"苏禾\",\"technician_status\":\"not_checked\",\"confirmation\":false,\"info_complete\":false,\"unrelated\":false,\"missing_info\":[\"start_time\"],\"reply_type\":\"ask_start_time\",\"reply\":\"好的，已知悉。请问您想预约哪一天、几点开始？\"}"
+        },
+        {
+          "id": "phase06-r4-holdout-003",
+          "passed": true,
+          "output": "{\"action\":\"tool_call\",\"tool_name\":\"find_technicians\",\"arguments\":{\"technician_name\":\"程安\",\"start_time\":\"2030-02-14 16:00\",\"duration_minutes\":80,\"gender_preference\":null,\"preferences\":[\"芳香精油\"]}}"
+        },
+        {
+          "id": "phase06-r4-holdout-004",
+          "passed": true,
+          "output": "{\"action\":\"final\",\"gender_preference\":null,\"technician_gender\":null,\"start_time\":null,\"duration_minutes\":null,\"preferences\":[],\"technician_name\":null,\"technician_status\":\"not_checked\",\"confirmation\":false,\"info_complete\":false,\"unrelated\":true,\"missing_info\":[],\"reply_type\":\"handoff\",\"reply\":null}"
+        },
+        {
+          "id": "phase06-r4-holdout-005",
+          "passed": true,
+          "output": "{\"action\":\"tool_call\",\"tool_name\":\"find_technicians\",\"arguments\":{\"technician_name\":\"顾言\",\"start_time\":\"2030-02-16 16:00\",\"duration_minutes\":60,\"gender_preference\":null,\"preferences\":[]}}"
+        },
+        {
+          "id": "phase06-r4-holdout-006",
+          "passed": false,
+          "output": "{\"action\":\"final\",\"gender_preference\":null,\"technician_gender\":null,\"start_time\":null,\"duration_minutes\":80,\"preferences\":[\"腰背\"],\"technician_name\":\"苏禾\",\"technician_status\":\"not_checked\",\"confirmation\":false,\"info_complete\":false,\"unrelated\":false,\"missing_info\":[\"start_time\"],\"reply_type\":\"ask_start_time\",\"reply\":\"好的，已知悉。请问您想预约哪一天、几点开始？\"}"
+        },
+        {
+          "id": "phase06-r4-holdout-007",
+          "passed": true,
+          "output": "{\"action\":\"tool_call\",\"tool_name\":\"find_technicians\",\"arguments\":{\"technician_name\":\"程安\",\"start_time\":\"2030-02-18 16:00\",\"duration_minutes\":40,\"gender_preference\":null,\"preferences\":[\"芳香精油\"]}}"
+        },
+        {
+          "id": "phase06-r4-holdout-008",
+          "passed": true,
+          "output": "{\"action\":\"final\",\"gender_preference\":null,\"technician_gender\":null,\"start_time\":null,\"duration_minutes\":null,\"preferences\":[],\"technician_name\":null,\"technician_status\":\"not_checked\",\"confirmation\":false,\"info_complete\":false,\"unrelated\":true,\"missing_info\":[],\"reply_type\":\"handoff\",\"reply\":null}"
+        },
+        {
+          "id": "phase06-r4-holdout-009",
+          "passed": true,
+          "output": "{\"action\":\"tool_call\",\"tool_name\":\"find_technicians\",\"arguments\":{\"technician_name\":\"顾言\",\"start_time\":\"2030-02-20 16:00\",\"duration_minutes\":80,\"gender_preference\":null,\"preferences\":[]}}"
+        },
+        {
+          "id": "phase06-r4-holdout-010",
+          "passed": false,
+          "output": "{\"action\":\"final\",\"gender_preference\":null,\"technician_gender\":null,\"start_time\":null,\"duration_minutes\":40,\"preferences\":[\"腰背\"],\"technician_name\":\"苏禾\",\"technician_status\":\"not_checked\",\"confirmation\":false,\"info_complete\":false,\"unrelated\":false,\"missing_info\":[\"start_time\"],\"reply_type\":\"ask_start_time\",\"reply\":\"好的，已知悉。请问您想预约哪一天、几点开始？\"}"
+        },
+        {
+          "id": "phase06-r4-holdout-011",
+          "passed": true,
+          "output": "{\"action\":\"tool_call\",\"tool_name\":\"find_technicians\",\"arguments\":{\"technician_name\":\"程安\",\"start_time\":\"2030-02-22 16:00\",\"duration_minutes\":60,\"gender_preference\":null,\"preferences\":[\"芳香精油\"]}}"
+        },
+        {
+          "id": "phase06-r4-holdout-012",
+          "passed": true,
+          "output": "{\"action\":\"final\",\"gender_preference\":null,\"technician_gender\":null,\"start_time\":null,\"duration_minutes\":null,\"preferences\":[],\"technician_name\":null,\"technician_status\":\"not_checked\",\"confirmation\":false,\"info_complete\":false,\"unrelated\":true,\"missing_info\":[],\"reply_type\":\"handoff\",\"reply\":null}"
+        },
+        {
+          "id": "phase06-r4-holdout-013",
+          "passed": true,
+          "output": "{\"action\":\"tool_call\",\"tool_name\":\"find_technicians\",\"arguments\":{\"technician_name\":\"顾言\",\"start_time\":\"2030-02-24 16:00\",\"duration_minutes\":40,\"gender_preference\":null,\"preferences\":[]}}"
+        },
+        {
+          "id": "phase06-r4-holdout-014",
+          "passed": false,
+          "output": "{\"action\":\"final\",\"gender_preference\":null,\"technician_gender\":null,\"start_time\":null,\"duration_minutes\":60,\"preferences\":[\"腰背\"],\"technician_name\":\"苏禾\",\"technician_status\":\"not_checked\",\"confirmation\":false,\"info_complete\":false,\"unrelated\":false,\"missing_info\":[\"start_time\"],\"reply_type\":\"ask_start_time\",\"reply\":\"好的，已知悉。请问您想预约哪一天、几点开始？\"}"
+        },
+        {
+          "id": "phase06-r4-holdout-015",
+          "passed": true,
+          "output": "{\"action\":\"tool_call\",\"tool_name\":\"find_technicians\",\"arguments\":{\"technician_name\":\"程安\",\"start_time\":\"2030-02-26 16:00\",\"duration_minutes\":80,\"gender_preference\":null,\"preferences\":[\"芳香精油\"]}}"
+        },
+        {
+          "id": "phase06-r4-holdout-016",
+          "passed": true,
+          "output": "{\"action\":\"final\",\"gender_preference\":null,\"technician_gender\":null,\"start_time\":null,\"duration_minutes\":null,\"preferences\":[],\"technician_name\":null,\"technician_status\":\"not_checked\",\"confirmation\":false,\"info_complete\":false,\"unrelated\":true,\"missing_info\":[],\"reply_type\":\"handoff\",\"reply\":null}"
+        },
+        {
+          "id": "phase06-r4-holdout-017",
+          "passed": true,
+          "output": "{\"action\":\"tool_call\",\"tool_name\":\"find_technicians\",\"arguments\":{\"technician_name\":\"顾言\",\"start_time\":\"2030-02-28 16:00\",\"duration_minutes\":60,\"gender_preference\":null,\"preferences\":[]}}"
+        },
+        {
+          "id": "phase06-r4-holdout-018",
+          "passed": false,
+          "output": "{\"action\":\"final\",\"gender_preference\":null,\"technician_gender\":null,\"start_time\":null,\"duration_minutes\":80,\"preferences\":[\"腰背\"],\"technician_name\":\"苏禾\",\"technician_status\":\"not_checked\",\"confirmation\":false,\"info_complete\":false,\"unrelated\":false,\"missing_info\":[\"start_time\"],\"reply_type\":\"ask_start_time\",\"reply\":\"好的，已知悉。请问您想预约哪一天、几点开始？\"}"
+        },
+        {
+          "id": "phase06-r4-holdout-019",
+          "passed": false,
+          "output": "{\"action\":\"tool_call\",\"tool_name\":\"find_technicians\",\"arguments\":{\"technician_name\":\"程安\",\"start_time\":\"2030-02-30 16:00\",\"duration_minutes\":40,\"gender_preference\":null,\"preferences\":[\"芳香精油\"]}}"
+        },
+        {
+          "id": "phase06-r4-holdout-020",
+          "passed": true,
+          "output": "{\"action\":\"final\",\"gender_preference\":null,\"technician_gender\":null,\"start_time\":null,\"duration_minutes\":null,\"preferences\":[],\"technician_name\":null,\"technician_status\":\"not_checked\",\"confirmation\":false,\"info_complete\":false,\"unrelated\":true,\"missing_info\":[],\"reply_type\":\"handoff\",\"reply\":null}"
+        },
+        {
+          "id": "phase06-r4-holdout-021",
+          "passed": true,
+          "output": "{\"action\":\"tool_call\",\"tool_name\":\"find_technicians\",\"arguments\":{\"technician_name\":\"顾言\",\"start_time\":\"2030-03-04 16:00\",\"duration_minutes\":80,\"gender_preference\":null,\"preferences\":[]}}"
+        },
+        {
+          "id": "phase06-r4-holdout-022",
+          "passed": false,
+          "output": "{\"action\":\"final\",\"gender_preference\":null,\"technician_gender\":null,\"start_time\":null,\"duration_minutes\":40,\"preferences\":[\"腰背\"],\"technician_name\":\"苏禾\",\"technician_status\":\"not_checked\",\"confirmation\":false,\"info_complete\":false,\"unrelated\":false,\"missing_info\":[\"start_time\"],\"reply_type\":\"ask_start_time\",\"reply\":\"好的，已知悉。请问您想预约哪一天、几点开始？\"}"
+        },
+        {
+          "id": "phase06-r4-holdout-023",
+          "passed": true,
+          "output": "{\"action\":\"tool_call\",\"tool_name\":\"find_technicians\",\"arguments\":{\"technician_name\":\"程安\",\"start_time\":\"2030-03-06 16:00\",\"duration_minutes\":60,\"gender_preference\":null,\"preferences\":[\"芳香精油\"]}}"
+        },
+        {
+          "id": "phase06-r4-holdout-024",
+          "passed": true,
+          "output": "{\"action\":\"final\",\"gender_preference\":null,\"technician_gender\":null,\"start_time\":null,\"duration_minutes\":null,\"preferences\":[],\"technician_name\":null,\"technician_status\":\"not_checked\",\"confirmation\":false,\"info_complete\":false,\"unrelated\":true,\"missing_info\":[],\"reply_type\":\"handoff\",\"reply\":null}"
+        }
+      ]
+    },
+    {
+      "label": "compact",
+      "passed": 5,
+      "n": 24,
+      "rows": [
+        {
+          "id": "phase06-r4-holdout-001",
+          "passed": false,
+          "output": "{\"action\":\"tool_call\",\"tool_name\":\"find_technicians\",\"arguments\":{\"technician_name\":\"顾言\",\"start_time\":\"2030-02-12 16:00\",\"duration_minutes\":40,\"gender_preference\":null,\"preferences\":[\"按摩\"]}}"
+        },
+        {
+          "id": "phase06-r4-holdout-002",
+          "passed": false,
+          "output": "{\"action\":\"final\",\"gender_preference\":null,\"technician_gender\":null,\"start_time\":null,\"duration_minutes\":60,\"preferences\":[\"腰背\"],\"technician_name\":\"苏禾\",\"technician_status\":\"not_checked\",\"confirmation\":false,\"info_complete\":false,\"unrelated\":false,\"missing_info\":[\"start_time\"],\"reply_type\":\"ask_start_time\",\"reply\":\"好的，已知悉。请告诉我具体开始时间。\"}"
+        },
+        {
+          "id": "phase06-r4-holdout-003",
+          "passed": true,
+          "output": "{\"action\":\"tool_call\",\"tool_name\":\"find_technicians\",\"arguments\":{\"technician_name\":\"程安\",\"start_time\":\"2030-02-14 16:00\",\"duration_minutes\":80,\"gender_preference\":null,\"preferences\":[\"芳香精油\"]}}"
+        },
+        {
+          "id": "phase06-r4-holdout-004",
+          "passed": false,
+          "output": "{\"action\":\"final\",\"gender_preference\":null,\"technician_gender\":null,\"start_time\":null,\"duration_minutes\":60,\"preferences\":[],\"technician_name\":null,\"technician_status\":\"not_checked\",\"confirmation\":false,\"info_complete\":false,\"unrelated\":true,\"missing_info\":[\"start_time\"],\"reply_type\":\"ask_start_time\",\"reply\":\"好的，已知悉。\"}"
+        },
+        {
+          "id": "phase06-r4-holdout-005",
+          "passed": false,
+          "output": "{\"action\":\"tool_call\",\"tool_name\":\"find_technicians\",\"arguments\":{\"technician_name\":\"顾言\",\"start_time\":\"2030-02-16 16:00\",\"duration_minutes\":60,\"gender_preference\":null,\"preferences\":[\"按摩\"]}}"
+        },
+        {
+          "id": "phase06-r4-holdout-006",
+          "passed": false,
+          "output": "{\"action\":\"final\",\"gender_preference\":null,\"technician_gender\":null,\"start_time\":null,\"duration_minutes\":80,\"preferences\":[\"腰背\"],\"technician_name\":\"苏禾\",\"technician_status\":\"not_checked\",\"confirmation\":false,\"info_complete\":false,\"unrelated\":false,\"missing_info\":[\"start_time\"],\"reply_type\":\"ask_start_time\",\"reply\":\"请告诉我具体开始时间。\"}"
+        },
+        {
+          "id": "phase06-r4-holdout-007",
+          "passed": true,
+          "output": "{\"action\":\"tool_call\",\"tool_name\":\"find_technicians\",\"arguments\":{\"technician_name\":\"程安\",\"start_time\":\"2030-02-18 16:00\",\"duration_minutes\":40,\"gender_preference\":null,\"preferences\":[\"芳香精油\"]}}"
+        },
+        {
+          "id": "phase06-r4-holdout-008",
+          "passed": false,
+          "output": "{\"action\":\"final\",\"gender_preference\":null,\"technician_gender\":null,\"start_time\":null,\"duration_minutes\":60,\"preferences\":[],\"technician_name\":null,\"technician_status\":\"not_checked\",\"confirmation\":false,\"info_complete\":false,\"unrelated\":true,\"reply_type\":\"handoff\",\"reply\":\"好的，已知悉。\"}"
+        },
+        {
+          "id": "phase06-r4-holdout-009",
+          "passed": false,
+          "output": "{\"action\":\"tool_call\",\"tool_name\":\"find_technicians\",\"arguments\":{\"technician_name\":\"顾言\",\"start_time\":\"2030-02-20 16:00\",\"duration_minutes\":80,\"gender_preference\":null,\"preferences\":[\"按摩\"]}}"
+        },
+        {
+          "id": "phase06-r4-holdout-010",
+          "passed": false,
+          "output": "{\"action\":\"final\",\"gender_preference\":null,\"technician_gender\":null,\"start_time\":null,\"duration_minutes\":40,\"preferences\":[\"腰背\"],\"technician_name\":\"苏禾\",\"technician_status\":\"not_checked\",\"confirmation\":false,\"info_complete\":false,\"unrelated\":false,\"missing_info\":[\"start_time\"],\"reply_type\":\"ask_start_time\",\"reply\":\"请告诉我具体开始时间。\"}"
+        },
+        {
+          "id": "phase06-r4-holdout-011",
+          "passed": true,
+          "output": "{\"action\":\"tool_call\",\"tool_name\":\"find_technicians\",\"arguments\":{\"technician_name\":\"程安\",\"start_time\":\"2030-02-22 16:00\",\"duration_minutes\":60,\"gender_preference\":null,\"preferences\":[\"芳香精油\"]}}"
+        },
+        {
+          "id": "phase06-r4-holdout-012",
+          "passed": false,
+          "output": "{\"action\":\"final\",\"gender_preference\":null,\"technician_gender\":null,\"start_time\":null,\"duration_minutes\":60,\"preferences\":[],\"technician_name\":null,\"technician_status\":\"not_checked\",\"confirmation\":false,\"info_complete\":false,\"unrelated\":true,\"missing_info\":[\"start_time\"],\"reply_type\":\"ask_start_time\",\"reply\":\"好的，已知悉。\"}"
+        },
+        {
+          "id": "phase06-r4-holdout-013",
+          "passed": false,
+          "output": "{\"action\":\"tool_call\",\"tool_name\":\"find_technicians\",\"arguments\":{\"technician_name\":\"顾言\",\"start_time\":\"2030-02-24 16:00\",\"duration_minutes\":40,\"gender_preference\":null,\"preferences\":[\"按摩\"]}}"
+        },
+        {
+          "id": "phase06-r4-holdout-014",
+          "passed": false,
+          "output": "{\"action\":\"final\",\"gender_preference\":null,\"technician_gender\":null,\"start_time\":null,\"duration_minutes\":60,\"preferences\":[\"腰背\"],\"technician_name\":\"苏禾\",\"technician_status\":\"not_checked\",\"confirmation\":false,\"info_complete\":false,\"unrelated\":false,\"missing_info\":[\"start_time\"],\"reply_type\":\"ask_start_time\",\"reply\":\"请告诉我具体开始时间。\"}"
+        },
+        {
+          "id": "phase06-r4-holdout-015",
+          "passed": true,
+          "output": "{\"action\":\"tool_call\",\"tool_name\":\"find_technicians\",\"arguments\":{\"technician_name\":\"程安\",\"start_time\":\"2030-02-26 16:00\",\"duration_minutes\":80,\"gender_preference\":null,\"preferences\":[\"芳香精油\"]}}"
+        },
+        {
+          "id": "phase06-r4-holdout-016",
+          "passed": false,
+          "output": "{\"action\":\"final\",\"gender_preference\":null,\"technician_gender\":null,\"start_time\":null,\"duration_minutes\":60,\"preferences\":[],\"technician_name\":null,\"technician_status\":\"not_checked\",\"confirmation\":false,\"info_complete\":false,\"unrelated\":true,\"missing_info\":[\"start_time\"],\"reply_type\":\"ask_start_time\",\"reply\":\"好的，已知悉。\"}"
+        },
+        {
+          "id": "phase06-r4-holdout-017",
+          "passed": false,
+          "output": "{\"action\":\"tool_call\",\"tool_name\":\"find_technicians\",\"arguments\":{\"technician_name\":\"顾言\",\"start_time\":\"2030-02-28 16:00\",\"duration_minutes\":60,\"gender_preference\":null,\"preferences\":[\"按摩\"]}}"
+        },
+        {
+          "id": "phase06-r4-holdout-018",
+          "passed": false,
+          "output": "{\"action\":\"final\",\"gender_preference\":null,\"technician_gender\":null,\"start_time\":null,\"duration_minutes\":80,\"preferences\":[\"腰背\"],\"technician_name\":\"苏禾\",\"technician_status\":\"not_checked\",\"confirmation\":false,\"info_complete\":false,\"unrelated\":false,\"missing_info\":[\"start_time\"],\"reply_type\":\"ask_start_time\",\"reply\":\"请告诉我具体开始时间。\"}"
+        },
+        {
+          "id": "phase06-r4-holdout-019",
+          "passed": false,
+          "output": "{\"action\":\"tool_call\",\"tool_name\":\"find_technicians\",\"arguments\":{\"technician_name\":\"程安\",\"start_time\":\"2030-02-30 16:00\",\"duration_minutes\":40,\"gender_preference\":null,\"preferences\":[\"芳香精油\"]}}"
+        },
+        {
+          "id": "phase06-r4-holdout-020",
+          "passed": false,
+          "output": "{\"action\":\"final\",\"gender_preference\":null,\"technician_gender\":null,\"start_time\":null,\"duration_minutes\":60,\"preferences\":[],\"technician_name\":null,\"technician_status\":\"not_checked\",\"confirmation\":false,\"info_complete\":false,\"unrelated\":true,\"missing_info\":[\"start_time\"],\"reply_type\":\"ask_start_time\",\"reply\":\"好的，已知悉。\"}"
+        },
+        {
+          "id": "phase06-r4-holdout-021",
+          "passed": false,
+          "output": "{\"action\":\"tool_call\",\"tool_name\":\"find_technicians\",\"arguments\":{\"technician_name\":\"顾言\",\"start_time\":\"2030-03-04 16:00\",\"duration_minutes\":80,\"gender_preference\":null,\"preferences\":[\"按摩\"]}}"
+        },
+        {
+          "id": "phase06-r4-holdout-022",
+          "passed": false,
+          "output": "{\"action\":\"final\",\"gender_preference\":null,\"technician_gender\":null,\"start_time\":null,\"duration_minutes\":40,\"preferences\":[\"腰背\"],\"technician_name\":\"苏禾\",\"technician_status\":\"not_checked\",\"confirmation\":false,\"info_complete\":false,\"unrelated\":false,\"missing_info\":[\"start_time\"],\"reply_type\":\"ask_start_time\",\"reply\":\"请告诉我具体开始时间。\"}"
+        },
+        {
+          "id": "phase06-r4-holdout-023",
+          "passed": true,
+          "output": "{\"action\":\"tool_call\",\"tool_name\":\"find_technicians\",\"arguments\":{\"technician_name\":\"程安\",\"start_time\":\"2030-03-06 16:00\",\"duration_minutes\":60,\"gender_preference\":null,\"preferences\":[\"芳香精油\"]}}"
+        },
+        {
+          "id": "phase06-r4-holdout-024",
+          "passed": false,
+          "output": "{\"action\":\"final\",\"gender_preference\":null,\"technician_gender\":null,\"start_time\":null,\"duration_minutes\":60,\"preferences\":[],\"technician_name\":null,\"technician_status\":\"not_checked\",\"confirmation\":false,\"info_complete\":false,\"unrelated\":true,\"missing_info\":[\"start_time\"],\"reply_type\":\"ask_start_time\",\"reply\":\"好的，已知悉。\"}"
+        }
+      ]
+    }
+  ]
+}

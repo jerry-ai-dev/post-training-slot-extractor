@@ -1,0 +1,70 @@
+{
+  "phase06_sft_small_train_v0_5": {
+    "formatting": "sharegpt",
+    "tags": {
+      "role_tag": "from",
+      "content_tag": "value",
+      "user_tag": "human",
+      "assistant_tag": "gpt",
+      "function_tag": "function_call",
+      "observation_tag": "observation"
+    },
+    "file_name": "../sft/v0.5/small/train.jsonl",
+    "columns": {
+      "messages": "conversations",
+      "system": "system",
+      "tools": "tools"
+    }
+  },
+  "phase06_sft_small_val_v0_5": {
+    "formatting": "sharegpt",
+    "tags": {
+      "role_tag": "from",
+      "content_tag": "value",
+      "user_tag": "human",
+      "assistant_tag": "gpt",
+      "function_tag": "function_call",
+      "observation_tag": "observation"
+    },
+    "file_name": "../sft/v0.5/small/val.jsonl",
+    "columns": {
+      "messages": "conversations",
+      "system": "system",
+      "tools": "tools"
+    }
+  },
+  "phase06_sft_large_train_v0_5": {
+    "formatting": "sharegpt",
+    "tags": {
+      "role_tag": "from",
+      "content_tag": "value",
+      "user_tag": "human",
+      "assistant_tag": "gpt",
+      "function_tag": "function_call",
+      "observation_tag": "observation"
+    },
+    "file_name": "../sft/v0.5/large/train.jsonl",
+    "columns": {
+      "messages": "conversations",
+      "system": "system",
+      "tools": "tools"
+    }
+  },
+  "phase06_sft_large_val_v0_5": {
+    "formatting": "sharegpt",
+    "tags": {
+      "role_tag": "from",
+      "content_tag": "value",
+      "user_tag": "human",
+      "assistant_tag": "gpt",
+      "function_tag": "function_call",
+      "observation_tag": "observation"
+    },
+    "file_name": "../sft/v0.5/large/val.jsonl",
+    "columns": {
+      "messages": "conversations",
+      "system": "system",
+      "tools": "tools"
+    }
+  }
+}
